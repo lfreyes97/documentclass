@@ -1,0 +1,6 @@
+[package]
+name = "documentclass"
+version = "0.1.0"
+authors = ["Luis F. Reyes"]
+entrypoint = "lib.typ"
+description = "A Typst package providing a robust foundation for document creation, similar to LaTeX document classes (`article`, `report`, `book`)."
