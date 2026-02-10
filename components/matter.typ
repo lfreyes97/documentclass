@@ -27,6 +27,7 @@
 #let backmatter(body) = {
   // Actualizar estado a backmatter
   headings.matter-state.update("back")
+  headings.appendix-state.update(false) // Iniciar sin modo apéndice
 
   // Continuar numeración arábiga del mainmatter
   set page(numbering: "1", number-align: center)
@@ -36,30 +37,58 @@
 // Funciones de utilidad para el backmatter
 
 #let appendix(body) = {
-  heading(
-    level: 2,
-    numbering: none,
-    outlined: true,
-    body
-  )
+  // Activar modo apéndice y resetear contador
+  headings.set-appendix-mode(true)
+  headings.reset-appendix-counter()
+  body
+}
+
+// Desactivar modo apéndice (para usar después de los apéndices)
+#let end-appendix() = {
+  headings.set-appendix-mode(false)
+}
+
+/// Página de dedicatoria — centrada vertical y horizontalmente.
+/// Equivalente a `\dedicatory{}` en clases LaTeX como memoir.
+///
+/// - body: Contenido de la dedicatoria
+/// - style: Estilo del texto ("italic" o "normal")
+/// - size: Tamaño de la fuente
+#let dedication(
+  body,
+  style: "italic",
+  size: 1.1em,
+) = {
+  pagebreak(to: "odd", weak: true)
+  page(numbering: none)[
+    #v(1fr)
+    #align(center)[
+      #set text(size: size, style: style)
+      #set par(justify: false)
+      #body
+    ]
+    #v(1.5fr)
+  ]
 }
 
 #let bibliography(title: "Bibliografía", body) = {
+  headings.set-appendix-mode(false) // Desactivar modo apéndice
   heading(
     level: 2,
     numbering: none,
     outlined: true,
-    title
+    title,
   )
   body
 }
 
 #let index(title: "Índice Analítico", body) = {
+  headings.set-appendix-mode(false) // Desactivar modo apéndice
   heading(
     level: 2,
     numbering: none,
     outlined: true,
-    title
+    title,
   )
   body
 }
@@ -69,20 +98,19 @@
     level: 2,
     numbering: none,
     outlined: true,
-    title
+    title,
   )
-  locate(loc => {
-    let elems = query(figure.where(kind: image), loc)
+  context {
+    let elems = query(figure.where(kind: image))
     for elem in elems {
       let num = counter(figure.where(kind: image)).at(elem.location()).first()
       grid(
         columns: (20pt, auto),
         gutter: 1em,
-        align(right)[#num],
-        link(elem.location())[#elem.caption]
+        align(right)[#num], link(elem.location())[#elem.caption],
       )
     }
-  })
+  }
 }
 
 #let list-of-tables(title: "Lista de Tablas") = {
@@ -90,18 +118,17 @@
     level: 2,
     numbering: none,
     outlined: true,
-    title
+    title,
   )
-  locate(loc => {
-    let elems = query(figure.where(kind: table), loc)
+  context {
+    let elems = query(figure.where(kind: table))
     for elem in elems {
       let num = counter(figure.where(kind: table)).at(elem.location()).first()
       grid(
         columns: (20pt, auto),
         gutter: 1em,
-        align(right)[#num],
-        link(elem.location())[#elem.caption]
+        align(right)[#num], link(elem.location())[#elem.caption],
       )
     }
-  })
+  }
 }
