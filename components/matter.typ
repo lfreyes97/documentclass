@@ -48,6 +48,27 @@
   headings.set-appendix-mode(false)
 }
 
+/// Abstract — resumen del documento
+///
+/// - title: Título del resumen ("Resumen" por defecto)
+/// - body: Contenido del resumen
+#let abstract(
+  title: "Resumen",
+  body,
+) = {
+  v(1em)
+  align(center)[
+    #text(weight: "bold", size: 1.1em)[#title]
+  ]
+  v(0.5em)
+  pad(left: 2em, right: 2em)[
+    #set text(size: 0.95em)
+    #set par(leading: 0.55em)
+    #body
+  ]
+  v(1em)
+}
+
 /// Página de dedicatoria — centrada vertical y horizontalmente.
 /// Equivalente a `\dedicatory{}` en clases LaTeX como memoir.
 ///

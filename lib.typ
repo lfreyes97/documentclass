@@ -1,4 +1,6 @@
-#import "classes/book.typ": appendix, back, book, dedication, end-appendix, front, main
+#import "classes/book.typ": abstract, appendix, back, book, dedication, end-appendix, front, main
+#import "classes/article.typ": article
+#import "classes/report.typ": report
 #import "components/toc.typ"
 #import "components/minitoc.typ"
 #import "components/dropcap.typ"
