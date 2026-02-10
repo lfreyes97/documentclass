@@ -15,15 +15,15 @@
 #let setup(
   part-ornament: none,
   // Parámetros de tipografía para headings
-  h1-font: ("Bebas Neue", "Arial Narrow"),
+  h1-font: "Libertinus Sans",
   h1-weight: 700,
   h1-size: 1.6em, // Tamaño base para el título de la parte
   h1-smallcaps: false,
-  h2-font: ("Bebas Neue", "Arial Narrow"),
+  h2-font: "Libertinus Sans",
   h2-weight: 500,
   h2-size: 1.8em, // Tamaño base para el título del capítulo
   h2-smallcaps: false,
-  h3-font: ("EB Garamond", "Latin Modern Sans"),
+  h3-font: "Libertinus Sans",
   h3-weight: 400,
   h3-size: 1.2em, // Tamaño base para la sección
   h3-smallcaps: true, // Por defecto true para Ysabeau SC

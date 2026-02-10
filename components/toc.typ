@@ -5,7 +5,7 @@
   depth: none,
   indent: 1.5em,
   font: none,
-  h1-font: "Bebas NEUE",
+  h1-font: "Libertinus Sans",
   h2-font: none,
   numbering: none,
 ) = {

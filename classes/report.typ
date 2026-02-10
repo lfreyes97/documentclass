@@ -21,11 +21,12 @@
   margin-outside: 1.5cm,
   margin-y: 2cm,
   // Tipografía
-  font-serif: ("EB Garamond 12", "Source Serif Pro", "Latin Modern Roman"),
+  font-serif: "Libertinus Serif",
   lang: "es",
   // Fuentes para headings
-  h1-font: ("Bebas Neue", "Arial Narrow"),
-  h2-font: ("EB Garamond", "Latin Modern Sans"),
+  h1-font: "Libertinus Sans",
+  h2-font: "Libertinus Sans",
+  h3-font: "Libertinus Sans",
   body,
 ) = {
   set document(author: author, title: title)

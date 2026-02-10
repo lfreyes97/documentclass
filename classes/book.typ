@@ -20,14 +20,14 @@
   margin-outside: 1.5cm,
   margin-y: 2cm,
   // Parámetros de tipografía
-  font-serif: ("EB Garamond 12", "Source Serif Pro", "Latin Modern Roman"),
-  font-sans: ("Source Sans Pro", "Arial"),
-  font-mono: ("Source Code Pro", "Fira Mono"),
+  font-serif: "Libertinus Serif",
+  font-sans: "Libertinus Sans",
+  font-mono: "Libertinus Mono",
   lang: "es",
   // Parámetros de fuentes para headings
-  h1-font: ("Bebas Neue", "Arial Narrow"),
-  h2-font: ("Bebas Neue", "Arial Narrow"),
-  h3-font: ("EB Garamond", "Latin Modern Sans"),
+  h1-font: "Libertinus Sans",
+  h2-font: "Libertinus Sans",
+  h3-font: "Libertinus Sans",
   h4-font: none, // none = hereda del cuerpo
   minitoc: false,
   outline-font: none,

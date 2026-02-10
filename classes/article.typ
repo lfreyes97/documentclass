@@ -40,12 +40,12 @@
   margin-x: 2.5cm,
   margin-y: 2.5cm,
   // Tipografía
-  font-serif: ("EB Garamond 12", "Source Serif Pro", "Latin Modern Roman"),
+  font-serif: "Libertinus Serif",
   lang: "es",
   // Fuentes para headings
-  h1-font: ("EB Garamond", "Latin Modern Sans"),
-  h2-font: ("EB Garamond", "Latin Modern Sans"),
-  h3-font: ("EB Garamond", "Latin Modern Sans"),
+  h1-font: "Libertinus Sans",
+  h2-font: "Libertinus Sans",
+  h3-font: "Libertinus Sans",
   cols: 1,
   body,
 ) = {
