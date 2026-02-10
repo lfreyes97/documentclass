@@ -1,0 +1,19 @@
+# Generated files
+*.pdf
+*.png
+*.svg
+
+# Typst cache (if local)
+# .typst/
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+
+# System
+.DS_Store
+Thumbs.db
+
+# Internal tests
+test/

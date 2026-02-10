@@ -8,12 +8,12 @@
 /// - attribution: Autor o fuente de la cita
 /// - width: Ancho del bloque (por defecto 70%)
 /// - align-to: Alineación del bloque (por defecto derecha)
-#let epigraph(
-  quote,
-  attribution: none,
-  width: 70%,
-  align-to: right,
-) = {
+#let epigraph(quote, ..args) = {
+  // Extraer argumentos opcionales
+  let attribution = args.named().at("attribution", default: args.pos().at(0, default: none))
+  let width = args.named().at("width", default: 70%)
+  let align-to = args.named().at("align-to", default: right)
+
   v(1em)
   align(align-to)[
     #block(width: width)[
