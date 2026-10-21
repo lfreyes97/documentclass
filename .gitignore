@@ -2,6 +2,7 @@
 *.pdf
 *.png
 *.svg
+!components/assets/**/*.svg
 
 # Typst cache (if local)
 # .typst/

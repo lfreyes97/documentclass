@@ -159,6 +159,18 @@ With `use-parts: false`, `=` is a chapter and `==` a section; parts are created 
 )
 ```
 
+### Drop caps
+
+`dropcap` sets the first letter of a paragraph, with any surrounding punctuation, `height` lines tall, and the text flows around it. It uses the `initials` font role unless you pass `font`; any other `text` argument (`fill`, `weight`…) styles the letter.
+
+```typst
+#dropcap[Once upon a time…]
+#dropcap(height: 3, fill: maroon)[«Quoted» openings keep the quotes with the letter.]
+#ornate-dropcap(style: "rubricated")[Illuminated initial in two inks…]
+```
+
+`ornate-dropcap` uses the illuminated initials of [EB Garamond Initials](https://github.com/georgd/EB-Garamond-Initials) (SIL OFL 1.1, see `components/assets/eb-initials/COPYING`) in three styles: `"plain"`, `"inverted"` and `"rubricated"`, with `frame` and `wear` (printing wear, 0–1). Letters outside the set (accented letters, Ñ) fall back to `dropcap`. `ornate-initial("Q")` gives the letter alone.
+
 ### Covers
 
 `book` places a cover before the title page and a back cover at the end. It is compatible with coverbook, a separate cover package, but any content works:
