@@ -142,10 +142,12 @@ All classes accept the following common parameters:
 - `margin-inside`, `margin-outside`, `margin-y`: Page margins.
 
 ### Specific Parameters
-- **Book**: `part-ornament`, `minitoc`, `logo`, `custom-titlepage`, `equation-numbering`.
+- **Book**: `part-ornament`, `logo`, `custom-titlepage`, `equation-numbering`, `use-parts`, `cover` (see [Covers](#covers)), and `minitoc` with `minitoc-size`, `minitoc-depth`, `minitoc-indent`, `minitoc-weight`, `minitoc-numbered`.
 - **Article**: `cols` (column count), `abstract`.
 - **Report**: `abstract`, `logo`, `custom-titlepage`, `equation-numbering`.
 - **Essay**: see [Essay Class](#essay-class).
+
+With `use-parts: false`, `=` is a chapter and `==` a section; parts are created with `#part[Title]`. `tableofcontents(depth: 2)` still counts from the chapter. `#blank-page()` inserts an intentionally blank page, without header or folio.
 
 `logo`, `part-ornament` and `custom-titlepage` take content, not file paths. Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
 
@@ -156,6 +158,27 @@ All classes accept the following common parameters:
   custom-titlepage: include "my-titlepage.typ",
 )
 ```
+
+### Covers
+
+`book` places a cover before the title page and a back cover at the end. It is compatible with coverbook, a separate cover package, but any content works:
+
+```typst
+// A coverbook style function: the class calls it with title, subtitle, author
+// and publisher, plus `cover-data`, and adds the back cover automatically
+#show: book.with(
+  title: "Essays", author: "Author Name",
+  cover: minimal-cover,
+  cover-data: (isbn: "978-1-000-00000-0", back-text: [...]),
+  cover-options: (trim: "6x9"),
+)
+
+// Or covers already built, e.g. with coverbook's cover-pages
+#let (front-cover, back-cover) = cover-pages(minimal-cover, data)
+#show: book.with(cover: front-cover, back-cover: back-cover)
+```
+
+`back-cover: none` leaves the back cover out.
 
 ### Numbering and cross-references
 

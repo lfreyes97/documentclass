@@ -30,7 +30,23 @@
   // contents, abstract, figures, tables (ver components/i18n.typ)
   labels: (:),
   equation-numbering: false, // Numerar ecuaciones en bloque: (2.1)
+  // Portada y contraportada, compatibles con coverbook. `cover` es contenido ya
+  // armado (p. ej. de `cover-pages`) o una función de estilo (`minimal-cover`…),
+  // que se llama con title, subtitle, author y publisher más `cover-data`.
+  cover: none,
+  back-cover: auto, // auto = la de `cover` si es una función; o contenido; none = sin ella
+  cover-data: (:), // Datos extra para la función de portada: isbn, back-text, volume…
+  cover-options: (:), // Opciones de la función de portada: trim, spine, colores…
+  // true: `=` es parte y `==` capítulo. false: `=` es capítulo y las partes se
+  // crean con `#part[...]`
+  use-parts: true,
   minitoc: false,
+  // Minitoc de cada parte
+  minitoc-size: 0.9em,
+  minitoc-depth: 2,
+  minitoc-indent: 0pt,
+  minitoc-weight: none,
+  minitoc-numbered: false,
   body,
 ) = {
   // Configuración base
@@ -52,6 +68,17 @@
     numbering: "1",
     margin: (inside: margin-inside, outside: margin-outside, y: margin-y),
   )
+
+  // Datos del libro para una función de portada de coverbook
+  let cover-book = (title: title, subtitle: subtitle, author: author, publisher: publisher)
+    .pairs()
+    .filter(((_, value)) => value != none)
+    .to-dict() + cover-data
+  let make-cover(side) = cover(cover-book, side: side, ..cover-options)
+  let back-cover = if back-cover != auto { back-cover } else if type(cover) == function {
+    make-cover("back")
+  }
+  if type(cover) == function { make-cover("front") } else { cover }
 
   titlepage.render(
     custom: custom-titlepage,
@@ -94,9 +121,21 @@
     font-size: font-size,
     fonts: fonts,
     minitoc: minitoc,
+    minitoc-options: (
+      size: minitoc-size,
+      depth: minitoc-depth,
+      indent: minitoc-indent,
+      weight: minitoc-weight,
+      numbered: minitoc-numbered,
+    ),
   )
 
+  // Sin partes, `=` baja a capítulo; `#part[...]` fija su nivel 1 explícitamente
+  set heading(offset: 1) if not use-parts
+  headings.use-parts-state.update(use-parts)
+
   body
+  back-cover
 }
 
 #let front = matter.frontmatter

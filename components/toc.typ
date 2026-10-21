@@ -1,7 +1,11 @@
 // TOC tradicional con lista vertical (por defecto)
-#import "headings.typ": matter-state, numbered
+#import "headings.typ": matter-state, numbered, use-parts-state
 #import "fonts.typ" as fonts-mod
 #import "i18n.typ"
+
+// Con `use-parts: false` el capítulo es de nivel 2: `depth` cuenta desde el
+// capítulo, como lo escribe el documento. Requiere `context`.
+#let document-depth(depth) = if depth != none and not use-parts-state.get() { depth + 1 } else { depth }
 #let traditional(
   title: auto, // auto = etiqueta traducida
   depth: none,
@@ -9,6 +13,7 @@
   font: none,
   h1-font: none,
   h2-font: none,
+  h3-font: none, // Entradas de nivel 3 (secciones)
   numbering: none,
 ) = {
   fonts-mod.use("toc", font: font, page[
@@ -47,6 +52,8 @@
       entry-line(label, it.element.body, it)
     }
 
+    #show outline.entry.where(level: 3): set text(font: h3-font) if h3-font != none
+
     // Estilos para entradas de nivel 3+ (secciones)
     #show outline.entry: it => {
       if it.level >= 3 {
@@ -59,9 +66,9 @@
       }
     }
 
-    #outline(
+    #context outline(
       title: none,
-      depth: depth,
+      depth: document-depth(depth),
     )
   ])
 }
@@ -74,6 +81,7 @@
   font: none,
   h1-font: none,
   h2-font: none,
+  h3-font: none, // Entradas de nivel 3 (secciones)
   numbering: none,
 ) = {
   fonts-mod.use("toc", font: font, page[
@@ -102,6 +110,8 @@
       }
     }
 
+    #show outline.entry.where(level: 3): set text(font: h3-font) if h3-font != none
+
     // Estilos para entradas de nivel 3+ (secciones)
     #show outline.entry: it => {
       if it.level >= 3 {
@@ -112,10 +122,10 @@
       }
     }
 
-    #outline(
+    #context outline(
       indent: true,
       title: none,
-      depth: depth,
+      depth: document-depth(depth),
     )
   ])
 }
@@ -128,11 +138,15 @@
   indent: none, // Kept for interface compatibility
   h1-font: none,
   h2-font: none,
+  h3-font: none, // Entradas de nivel 3 (secciones)
   numbering: none,
 ) = {
-  fonts-mod.use("toc", font: font, outline(
+  show outline.entry.where(level: 1): set text(font: h1-font) if h1-font != none
+  show outline.entry.where(level: 2): set text(font: h2-font) if h2-font != none
+  show outline.entry.where(level: 3): set text(font: h3-font) if h3-font != none
+  fonts-mod.use("toc", font: font, context outline(
     title: text(size: 20pt, weight: "bold")[#i18n.title-or(title, "contents")],
-    depth: depth,
+    depth: document-depth(depth),
   ))
 }
 

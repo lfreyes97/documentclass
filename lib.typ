@@ -10,6 +10,7 @@
 #import "components/dropcap.typ"
 #import "components/environments.typ": blockquote, epigraph, verse
 #import "components/titlepage.typ": colophon, half-title
+#import "components/headings.typ": blank-page, part
 
 #let tableofcontents = toc.custom
 #let minitoc = minitoc.minitoc

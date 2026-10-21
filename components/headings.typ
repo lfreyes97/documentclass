@@ -6,6 +6,8 @@
 
 #let matter-state = state("matter-section", "front")
 #let appendix-state = state("appendix-mode", false)
+// false: `=` es capítulo (book con `use-parts: false`)
+#let use-parts-state = state("dc-use-parts", true)
 
 // Numeración de headings del book, sobre el contador nativo `counter(heading)`
 // para que funcionen `@ref` y los prefijos del índice. Partes en romanos;
@@ -52,6 +54,18 @@
   if type(m) == length { m.to-absolute() } else { 0pt }
 }
 
+// Página en blanco intencional, sin cabecera ni folio (usa las mismas marcas que
+// break-to-odd)
+#let blank-page() = {
+  [#metadata(none) <dc-break-before>]
+  page[]
+  [#metadata(none) <dc-break-after>]
+}
+
+// Parte explícita. Con `use-parts: false` en book, `=` es capítulo y las partes
+// solo se crean así.
+#let part(..args, body) = heading(level: 1, ..args, body)
+
 // Requiere `context`
 #let is-blank-page(page) = {
   let before = query(<dc-break-before>)
@@ -91,6 +105,8 @@
   h4-size: 1.05em,
   h4-smallcaps: false,
   minitoc: false, // Opción booleana para mostrar minitoc
+  // Opciones del minitoc de cada parte (ver minitoc.minitoc)
+  minitoc-options: (:),
   body,
 ) = {
   titlepage.check-content("part-ornament", part-ornament)
@@ -140,7 +156,7 @@
           block(width: 85%, {
             set align(left)
             set text(weight: "regular", tracking: 0pt)
-            minitoc-mod.minitoc(font: fonts.minitoc)
+            minitoc-mod.minitoc(font: fonts.minitoc, ..minitoc-options)
           })
         }
       ]
