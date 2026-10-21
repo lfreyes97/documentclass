@@ -50,7 +50,7 @@
   cols: 1,
   body,
 ) = {
-  set document(author: if author == none { () } else { author }, title: title)
+  set document(author: if type(author) in (str, array) { author } else { () }, title: title) // Los metadatos solo aceptan texto
   let fonts = fonts-mod.resolve(fonts)
   fonts-mod.current.update(fonts)
   i18n.check(labels)

@@ -10,6 +10,9 @@
     abstract: "Resumen",
     figures: "Lista de Figuras",
     tables: "Lista de Tablas",
+    note: "nota",
+    page: "Pág.",
+    of: "de",
   ),
   en: (
     part: "Part",
@@ -20,6 +23,9 @@
     abstract: "Abstract",
     figures: "List of Figures",
     tables: "List of Tables",
+    note: "note",
+    page: "Page",
+    of: "of",
   ),
   pt: (
     part: "Parte",
@@ -30,6 +36,9 @@
     abstract: "Resumo",
     figures: "Lista de Figuras",
     tables: "Lista de Tabelas",
+    note: "nota",
+    page: "Pág.",
+    of: "de",
   ),
   fr: (
     part: "Partie",
@@ -40,6 +49,9 @@
     abstract: "Résumé",
     figures: "Table des figures",
     tables: "Liste des tableaux",
+    note: "note",
+    page: "Page",
+    of: "sur",
   ),
   de: (
     part: "Teil",
@@ -50,6 +62,9 @@
     abstract: "Zusammenfassung",
     figures: "Abbildungsverzeichnis",
     tables: "Tabellenverzeichnis",
+    note: "Anmerkung",
+    page: "Seite",
+    of: "von",
   ),
   it: (
     part: "Parte",
@@ -60,8 +75,32 @@
     abstract: "Sommario",
     figures: "Elenco delle figure",
     tables: "Elenco delle tabelle",
+    note: "nota",
+    page: "Pag.",
+    of: "di",
   ),
 )
+
+// Nombres de los meses y orden de la fecha, por idioma
+#let months = (
+  es: ("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"),
+  en: ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"),
+  pt: ("janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"),
+  fr: ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"),
+  de: ("Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"),
+  it: ("gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"),
+)
+
+// Fecha en el idioma del texto: «22 de septiembre de 2026», «September 22, 2026»...
+// `datetime.display()` no traduce los meses.
+#let date(d) = context {
+  let lang = if text.lang in months { text.lang } else { "en" }
+  let (day, month, year) = (d.day(), months.at(lang).at(d.month() - 1), d.year())
+  if lang in ("es", "pt") [#day de #month de #year]
+  else if lang == "en" [#month #day, #year]
+  else if lang == "de" [#day. #month #year]
+  else [#day #month #year]
+}
 
 // Etiquetas que el documento sobrescribe con el parámetro `labels` de la clase
 #let overrides = state("dc-labels", (:))

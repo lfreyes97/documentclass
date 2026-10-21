@@ -2,6 +2,9 @@
 #import "components/matter.typ"
 #import "classes/article.typ": article
 #import "classes/report.typ": report
+#import "classes/essay.typ": essay
+#import "components/glosa/glosa.typ"
+#import "components/glosa/glosa.typ": note, notefigure, wideblock
 #import "components/toc.typ"
 #import "components/minitoc.typ"
 #import "components/dropcap.typ"

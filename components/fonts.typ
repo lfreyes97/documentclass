@@ -5,6 +5,7 @@
 //         │           └─ title (portada, half-title, titleblock)
 //         ├─ header (cabecera de página)
 //         ├─ toc (índice) ── minitoc
+//         ├─ note (notas al margen, clase essay)
 //         └─ initials (letra capital)
 //   mono (bloques de código, independiente)
 //
@@ -20,6 +21,7 @@
   header: "body",
   toc: "body",
   minitoc: "toc",
+  note: "body",
   initials: "body",
   mono: none,
 )

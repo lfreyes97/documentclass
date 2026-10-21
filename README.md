@@ -8,6 +8,7 @@ A robust, LaTeX-inspired document class package for Typst, providing `book`, `re
   - `book`: Supports Parts, Chapters, Frontmatter/Mainmatter/Backmatter, and Appendices.
   - `report`: Supports Chapters and Abstracts. Ideal for theses and technical reports.
   - `article`: Supports Sections, Multi-column layout, and Inline Abstracts.
+  - `essay`: Margin notes and figures, the title with its section outline in the margin, and a running header. Built on glosa, a margin-note engine derived from [marginalia](https://github.com/nleanba/typst-marginalia).
 - **Advanced Numbering**: Correct handling of H4 (subsections) numbering (`1.1.1`) and Appendix lettering (`A.1`). Cross-references (`@label`) work for parts, chapters, sections, figures and equations.
 - **Languages**: Labels ("Chapter", "Contents"...) follow `lang` (es, en, pt, fr, de, it) and can be overridden.
 - **Book Components**:
@@ -99,6 +100,29 @@ This is the first chapter.
 Section 1 starts here.
 ```
 
+### Essay Class
+
+```typst
+#import "lib.typ": essay, note, notefigure, wideblock
+
+#show: essay.with(
+  author: "Author Name",
+  fonts: (body: "EB Garamond"),
+  outer: (far: 16mm, width: 45mm, sep: 8mm), // margin-note column
+  book: true,                                // alternate inner/outer
+)
+
+= The Essay Title
+== First Section <sec-first>
+Text with a margin note#note[Note text.]<n-first>.
+
+As @sec-first and @n-first show... // "section I", "note 1"
+```
+
+The level-1 heading is the essay title: it goes to the page header with its number, and its section outline goes to the margin. Level-2 headings are the sections, numbered `I.`, `II.`… Margin notes are numbered `1, 2, 3…` through the whole essay and footnotes switch to `*, †, ‡`.
+
+`note-size` and `note-numbering` set the notes for the whole document, so files that `#include` content only need `#import "lib.typ": note`. Other options: `inner`/`outer` (each `(far, width, sep)`), `top`, `bottom`, `book`, `font-size`, `chapter-number-style`, `chapter-title-style`, `section-numbering`, `title-in-header`, `titlepage` and `debug-frame` (draws the margin columns). The engine itself is available as the `glosa` module (`glosa.header`, `glosa.notecounter`, `glosa.show-frame`…).
+
 For complete examples, check the `demos/` directory:
 - [demos/demo_book.typ](demos/demo_book.typ)
 - [demos/demo_article.typ](demos/demo_article.typ)
@@ -119,6 +143,7 @@ All classes accept the following common parameters:
 - **Book**: `part-ornament`, `minitoc`, `logo`, `custom-titlepage`, `equation-numbering`.
 - **Article**: `cols` (column count), `abstract`.
 - **Report**: `abstract`, `logo`, `custom-titlepage`, `equation-numbering`.
+- **Essay**: see [Essay Class](#essay-class).
 
 `logo`, `part-ornament` and `custom-titlepage` take content, not file paths. Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
 
@@ -151,7 +176,7 @@ In `book` and `report`, figures and tables are numbered within the chapter (`2.3
 
 ### Languages
 
-`lang` sets the hyphenation and the class labels: part, chapter, appendix, section, contents, abstract, figures and tables. Spanish, English, Portuguese, French, German and Italian are included; any other language falls back to English. To change a label, pass `labels`:
+`lang` sets the hyphenation and the class labels: part, chapter, appendix, section, contents, abstract, figures, tables, and in `essay` also note, page and of (the header's "Page 3 of 12"), plus the month names of the date. Spanish, English, Portuguese, French, German and Italian are included; any other language falls back to English. To change a label, pass `labels`:
 
 ```typst
 #show: book.with(
@@ -175,6 +200,7 @@ All classes take a `fonts` dictionary. Give only the roles you want to change; e
 | `header` | Running header (book) | `body` |
 | `toc` | `tableofcontents` | `body` |
 | `minitoc` | `minitoc`, including the automatic one in book parts | `toc` |
+| `note` | Margin notes (essay) | `body` |
 | `initials` | `dropcap` | `body` |
 | `mono` | Code (`raw`) | — (`"DejaVu Sans Mono"`) |
 
