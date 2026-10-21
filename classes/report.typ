@@ -3,6 +3,7 @@
 #import "../components/titlepage.typ"
 #import "../components/layout.typ"
 #import "../components/matter.typ"
+#import "../components/fonts.typ" as fonts-mod
 
 #let report(
   title: none,
@@ -20,21 +21,21 @@
   margin-inside: 2.5cm,
   margin-outside: 1.5cm,
   margin-y: 2cm,
-  // Tipografía
-  font-serif: "Libertinus Serif",
+  // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
+  // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
+  fonts: (:),
   lang: "es",
-  // Fuentes para headings
-  h1-font: "Libertinus Sans",
-  h2-font: "Libertinus Sans",
-  h3-font: "Libertinus Sans",
   body,
 ) = {
-  set document(author: author, title: title)
+  set document(author: if author == none { () } else { author }, title: title)
+  let fonts = fonts-mod.resolve(fonts)
+  fonts-mod.current.update(fonts)
   set text(
-    font: font-serif,
+    font: fonts.body,
     size: font-size,
     lang: lang,
   )
+  show raw: set text(font: fonts.mono)
 
   set page(
     paper: paper,
@@ -43,18 +44,15 @@
   )
 
   // Titlepage
-  if custom-titlepage == none {
-    titlepage.default(
-      title: title,
-      subtitle: subtitle,
-      author: author,
-      date: date,
-      publisher: publisher,
-      logo: logo,
-    )
-  } else if type(custom-titlepage) == str {
-    include custom-titlepage
-  }
+  titlepage.render(
+    custom: custom-titlepage,
+    title: title,
+    subtitle: subtitle,
+    author: author,
+    date: date,
+    publisher: publisher,
+    logo: logo,
+  )
 
   // Abstract en página separada (común en reportes)
   if abstract != none {
@@ -73,7 +71,7 @@
   // --- SHOW RULES ---
 
   // H1 = CAPÍTULO
-  show heading.where(level: 1): set text(font: h1-font, weight: "bold", hyphenate: true)
+  show heading.where(level: 1): set text(font: fonts.h1, weight: "bold", hyphenate: true)
   show heading.where(level: 1): it => {
     pagebreak(weak: true)
     v(2em)
@@ -91,7 +89,7 @@
   }
 
   // H2 = SECCIÓN
-  show heading.where(level: 2): set text(font: h2-font, weight: "bold", hyphenate: true)
+  show heading.where(level: 2): set text(font: fonts.h2, weight: "bold", hyphenate: true)
   show heading.where(level: 2): it => {
     v(1.2em)
     sec-counter.step()
@@ -107,6 +105,8 @@
   }
 
   // H3 = SUBSECCIÓN
+  show heading.where(level: 3): set text(font: fonts.h3, hyphenate: true)
+  show heading.where(level: 4): set text(font: fonts.h4)
   show heading.where(level: 3): it => {
     v(1em)
     subsec-counter.step()

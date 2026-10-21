@@ -1,19 +1,17 @@
-#import "headings.typ": chapter-counter, matter-state, part-counter
+#import "headings.typ": is-blank-page, matter-state
 
 #let setup(
   title: none,
   author: none,
-  header-font: ("Akshar", "Arial Narrow"),
+  header-font: none, // none = hereda del cuerpo
   body,
 ) = {
   // Headers y Footers (la geometría de página se configura en book.typ)
   set page(
     // Cabecera Dinámica (Running Header)
     header: context {
-      // 1. Obtener número de página actual (absoluto, para comparar con location().page())
+      // 1. Número de página físico: decide recto/verso y se compara con location().page()
       let abs-page = here().page()
-      // Número de página del contador (puede diferir si se reinicia el contador)
-      let page-num = counter(page).at(here()).first()
 
       // 2. Consultas globales de headings
       let all-h1 = query(heading.where(level: 1))
@@ -32,11 +30,8 @@
         return none
       }
 
-      // 3c. SUPRESIÓN DE PÁGINAS EN BLANCO: Si esta es una página PAR
-      // y la página siguiente tiene un heading, suprimir (es una página en blanco antes del título)
-      let h1-on-next = all-h1.filter(h => h.location().page() == abs-page + 1)
-      let h2-on-next = all-h2.filter(h => h.location().page() == abs-page + 1)
-      if calc.even(abs-page) and (h1-on-next.len() > 0 or h2-on-next.len() > 0) {
+      // 3c. SUPRESIÓN EN PÁGINAS SIN NUMERACIÓN O EN BLANCO (reversos antes de parte o capítulo)
+      if page.numbering == none or is-blank-page(abs-page) {
         return none
       }
 
@@ -73,10 +68,11 @@
       }
 
       // 6. Contenido de la Cabecera
-      set text(font: header-font, size: 9pt, weight: "regular")
+      set text(font: header-font) if header-font != none
+      set text(size: 9pt, weight: "regular")
 
-      // 7. Contenido dependiente de par/impar
-      if calc.odd(page-num) {
+      // 7. Contenido dependiente de recto (impar) / verso (par)
+      if calc.odd(abs-page) {
         // Página IMPAR (Derecha): Título del Capítulo (H2)
         let header-content = if valid-h2 {
           current-h2.body
@@ -102,8 +98,15 @@
 
     // Pie de página
     footer: context {
+      // Sin folio en páginas sin numeración (portada, dedicatoria), en blanco ni de parte
+      let abs-page = here().page()
+      let part-on-page = query(heading.where(level: 1)).any(h => (
+        h.location().page() == abs-page and matter-state.at(h.location()) != "front"
+      ))
+      if page.numbering == none or is-blank-page(abs-page) or part-on-page {
+        return none
+      }
       let page-num = counter(page).at(here()).first()
-      import "headings.typ": matter-state
       let state-val = matter-state.at(here())
       let pattern = if state-val == "front" { "i" } else { "1" }
 
@@ -114,19 +117,15 @@
     },
   )
 
-  // Configuración de párrafos
+  // Configuración de párrafos: la sangría separa los párrafos, sin espacio extra.
+  // Typst no sangra el primer párrafo tras un título o un bloque.
   set par(
     leading: 0.7em,
-    spacing: 1.35em,
+    spacing: 0.7em,
     justify: true,
     linebreaks: "optimized",
     first-line-indent: 1.5em,
   )
-
-  show heading: it => {
-    it
-    par(first-line-indent: 0pt)
-  }
 
   body
 }

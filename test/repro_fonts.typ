@@ -6,10 +6,10 @@
   author: "Tester",
   date: "2024",
   // Testing configurable fonts
-  h1-font: ("Roboto", "Arial"),
-  h2-font: ("Roboto", "Arial"),
-  h3-font: ("Roboto", "Arial"),
-  outline-font: ("Roboto", "Arial"),
+  fonts: (
+    heading: ("Roboto", "Arial"),
+    toc: ("Roboto", "Arial"),
+  ),
 )
 
 #show: front

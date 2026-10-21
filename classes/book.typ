@@ -2,6 +2,7 @@
 #import "../components/matter.typ"
 #import "../components/footer.typ"
 #import "../components/headings.typ"
+#import "../components/fonts.typ" as fonts-mod
 
 #import "../components/layout.typ"
 #let book(
@@ -19,55 +20,47 @@
   margin-inside: 2.5cm,
   margin-outside: 1.5cm,
   margin-y: 2cm,
-  // Parámetros de tipografía
-  font-serif: "Libertinus Serif",
-  font-sans: "Libertinus Sans",
-  font-mono: "Libertinus Mono",
+  // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
+  // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
+  fonts: (:),
   lang: "es",
-  // Parámetros de fuentes para headings
-  h1-font: "Libertinus Sans",
-  h2-font: "Libertinus Sans",
-  h3-font: "Libertinus Sans",
-  h4-font: none, // none = hereda del cuerpo
   minitoc: false,
-  outline-font: none,
   body,
 ) = {
   // Configuración base
-  set document(author: author, title: title)
-  // Usar los parámetros de fuente, priorizando las fuentes proporcionadas
+  set document(author: if author == none { () } else { author }, title: title)
+  let fonts = fonts-mod.resolve(fonts)
+  fonts-mod.current.update(fonts)
   set text(
-    font: (font-serif),
+    font: fonts.body,
     size: font-size,
     lang: lang,
   )
+  show raw: set text(font: fonts.mono)
 
   // Configuración de página base (márgenes para todo el documento, incluida la portada)
   set page(
     paper: paper,
-    numbering: none,
+    numbering: "1",
     margin: (inside: margin-inside, outside: margin-outside, y: margin-y),
   )
 
-  if custom-titlepage == none {
-    titlepage.default(
-      title: title,
-      subtitle: subtitle,
-      author: author,
-      date: date,
-      publisher: publisher,
-      logo: logo,
-    )
-  } else if type(custom-titlepage) == str {
-    include custom-titlepage
-  }
+  titlepage.render(
+    custom: custom-titlepage,
+    title: title,
+    subtitle: subtitle,
+    author: author,
+    date: date,
+    publisher: publisher,
+    logo: logo,
+  )
 
   // Aplicar Layout (Headers, Footers, Párrafos)
   // Envuelve el resto del documento — márgenes ya están configurados arriba
   show: layout.setup.with(
     title: title,
     author: author,
-    header-font: font-serif,
+    header-font: fonts.header,
   )
 
   // Footnotes
@@ -80,12 +73,9 @@
   // Aplicar estilos de headings
   show: headings.setup.with(
     part-ornament: part-ornament,
-    h1-font: h1-font,
-    h2-font: h2-font,
-    h3-font: h3-font,
-    h4-font: h4-font,
+    font-size: font-size,
+    fonts: fonts,
     minitoc: minitoc,
-    outline-font: outline-font,
   )
 
   body

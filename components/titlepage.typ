@@ -1,6 +1,17 @@
 // Componentes de página de título para libros
+#import "fonts.typ" as fonts-mod
 
 /// Titlepage por defecto — portada estándar con título, subtítulo, autor, editorial y fecha
+/// Las rutas en `image()` se resuelven relativas al archivo que la llama, así que
+/// una ruta en texto apuntaría dentro del paquete. Se exige contenido ya construido.
+#let check-content(name, value) = {
+  if type(value) == str {
+    panic(
+      name + " debe ser contenido, no una ruta: usa `" + name + ": image(\"" + value + "\")`",
+    )
+  }
+}
+
 #let default(
   title: none,
   subtitle: none,
@@ -9,12 +20,13 @@
   publisher: none,
   logo: none,
 ) = {
-  page(numbering: none)[
+  check-content("logo", logo)
+  fonts-mod.use("title", page(numbering: none)[
     #v(1fr)
     #align(center)[
       // Logo/escudo editorial
       #if logo != none {
-        image(logo, width: 30%)
+        logo
         v(1.5em)
       }
       // Título principal
@@ -38,19 +50,19 @@
       #text(size: 12pt)[#date]
     ]
     #v(1fr)
-  ]
+  ])
 }
 
 /// Half-title page — página con solo el título (tradición editorial).
 /// Se coloca antes de la portada completa.
 #let half-title(title: none) = {
-  page(numbering: none)[
+  fonts-mod.use("title", page(numbering: none)[
     #v(1fr)
     #align(center)[
       #text(size: 18pt, weight: "regular")[#title]
     ]
     #v(2fr)
-  ]
+  ])
 }
 
 /// Colophon — página de créditos editoriales, derechos de autor, ISBN, etc.
@@ -72,7 +84,7 @@
 
 // Lógica del componente
 #let render(
-  custom: none, // none = default, string = ruta personalizada
+  custom: none, // none = default, contenido = portada personalizada
   title: none,
   subtitle: none,
   author: none,
@@ -91,9 +103,13 @@
       logo: logo,
     )
   } else if type(custom) == str {
-    // Incluir titlepage personalizado
-    include custom
+    panic(
+      "custom-titlepage debe ser contenido, no una ruta: usa `custom-titlepage: include \""
+        + custom
+        + "\"`",
+    )
   } else {
-    panic("custom debe ser none o una ruta (string)")
+    // Titlepage personalizado del usuario
+    custom
   }
 }

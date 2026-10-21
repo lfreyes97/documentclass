@@ -45,7 +45,7 @@ Then import it in your Typst file:
   publisher: "My Press",
   paper: "a5",
   font-size: 11pt,
-  font-serif: ("EB Garamond", "Linux Libertine"),
+  fonts: (body: ("EB Garamond", "Libertinus Serif")),
 )
 
 #show: front
@@ -109,13 +109,54 @@ All classes accept the following common parameters:
 - `title`, `author`, `date`
 - `paper`: Paper size (e.g., "a4", "us-letter").
 - `font-size`: Base font size (10pt, 11pt, 12pt).
-- `font-serif`, `font-sans`, `font-mono`: Font families.
+- `fonts`: Font families by role (see [Fonts](#fonts)).
 - `margin-inside`, `margin-outside`, `margin-y`: Page margins.
 
 ### Specific Parameters
-- **Book**: `part-ornament`, `minitoc`.
+- **Book**: `part-ornament`, `minitoc`, `logo`, `custom-titlepage`.
 - **Article**: `cols` (column count), `abstract`.
-- **Report**: `abstract`.
+- **Report**: `abstract`, `logo`, `custom-titlepage`.
+
+`logo`, `part-ornament` and `custom-titlepage` take content, not file paths. Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
+
+```typst
+#show: book.with(
+  logo: image("escudo.png", width: 30%),
+  part-ornament: image("ornament.svg", width: 80%),
+  custom-titlepage: include "my-titlepage.typ",
+)
+```
+
+### Fonts
+
+All classes take a `fonts` dictionary. Give only the roles you want to change; every role you leave out takes its font from its parent:
+
+| Role | Used for | Inherits from |
+|------|----------|---------------|
+| `body` | Body text | — (`"Libertinus Serif"`) |
+| `heading` | All heading levels | `body` |
+| `h1`, `h2`, `h3`, `h4` | One heading level | `heading` |
+| `title` | Title page, half-title, article title block | `heading` |
+| `header` | Running header (book) | `body` |
+| `toc` | `tableofcontents` | `body` |
+| `minitoc` | `minitoc`, including the automatic one in book parts | `toc` |
+| `initials` | `dropcap` | `body` |
+| `mono` | Code (`raw`) | — (`"DejaVu Sans Mono"`) |
+
+```typst
+#show: book.with(
+  fonts: (
+    body: "EB Garamond",
+    heading: "Libertinus Sans", // h1–h4 and title
+    h1: "Cinzel",               // parts only
+    mono: "Fira Code",
+  ),
+)
+```
+
+Each value can be a family name or a fallback list, such as `("EB Garamond", "Libertinus Serif")`. The defaults ship with Typst, and other families must be installed on your system. An unknown role is an error.
+
+`tableofcontents`, `minitoc` and `dropcap` still take their own `font` argument, which overrides the role for that call.
 
 ## License
 

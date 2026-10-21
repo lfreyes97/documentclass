@@ -2,6 +2,7 @@
 
 #import "../components/headings.typ": matter-state, section-counter, subsection-counter
 #import "../components/matter.typ"
+#import "../components/fonts.typ" as fonts-mod
 
 /// Titleblock inline — título, autor y fecha en la misma página
 #let titleblock(
@@ -39,22 +40,22 @@
   font-size: 11pt,
   margin-x: 2.5cm,
   margin-y: 2.5cm,
-  // Tipografía
-  font-serif: "Libertinus Serif",
+  // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
+  // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
+  fonts: (:),
   lang: "es",
-  // Fuentes para headings
-  h1-font: "Libertinus Sans",
-  h2-font: "Libertinus Sans",
-  h3-font: "Libertinus Sans",
   cols: 1,
   body,
 ) = {
-  set document(author: author, title: title)
+  set document(author: if author == none { () } else { author }, title: title)
+  let fonts = fonts-mod.resolve(fonts)
+  fonts-mod.current.update(fonts)
   set text(
-    font: font-serif,
+    font: fonts.body,
     size: font-size,
     lang: lang,
   )
+  show raw: set text(font: fonts.mono)
 
   // Una sola cara: márgenes simétricos, numeración desde pág. 1
   set page(
@@ -72,9 +73,10 @@
   let subsec-counter = counter("article-subsection")
   let subsubsec-counter = counter("article-subsubsection")
 
-  show heading.where(level: 1): set text(font: h1-font, weight: "bold", hyphenate: true)
-  show heading.where(level: 2): set text(font: h2-font, weight: "bold", hyphenate: true)
-  show heading.where(level: 3): set text(font: h3-font, weight: "semibold", hyphenate: true)
+  show heading.where(level: 1): set text(font: fonts.h1, weight: "bold", hyphenate: true)
+  show heading.where(level: 2): set text(font: fonts.h2, weight: "bold", hyphenate: true)
+  show heading.where(level: 3): set text(font: fonts.h3, weight: "semibold", hyphenate: true)
+  show heading.where(level: 4): set text(font: fonts.h4)
 
   show heading.where(level: 1): it => {
     v(1.5em)
@@ -126,12 +128,12 @@
   }
 
   // Título inline
-  titleblock(
+  fonts-mod.use("title", titleblock(
     title: title,
     subtitle: subtitle,
     author: author,
     date: date,
-  )
+  ))
 
   // Abstract
   if abstract != none {
@@ -140,8 +142,8 @@
 
   // Aplicar columnas si se pidieron
   if cols > 1 {
-    show: columns.with(cols)
+    columns(cols, body)
+  } else {
+    body
   }
-
-  body
 }

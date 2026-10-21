@@ -1,21 +1,30 @@
 #import "headings.typ"
 
+// Los `update` de estado van después de `set page`: el salto de página que
+// provoca `set page` ocurre ahí, y un update anterior quedaría en la página previa.
+
 #let frontmatter(body) = {
-  // Actualizar estado a frontmatter
-  headings.matter-state.update("front")
+  // Empieza en recto; el reverso de la portada queda en blanco
+  headings.break-to-odd()
 
   // Numeración romana minúscula centrada
   set page(numbering: "i", number-align: center)
+
+  // Actualizar estado a frontmatter
+  headings.matter-state.update("front")
   counter(page).update(1)
   body
 }
 
 #let mainmatter(body) = {
-  // Actualizar estado a mainmatter
-  headings.matter-state.update("main")
+  // La página 1 arábiga siempre es un recto
+  headings.break-to-odd()
 
   // Numeración arábiga centrada
   set page(numbering: "1", number-align: center)
+
+  // Actualizar estado a mainmatter
+  headings.matter-state.update("main")
   counter(page).update(1)
 
   // Resetear contadores al entrar a mainmatter
@@ -25,12 +34,12 @@
 }
 
 #let backmatter(body) = {
+  // Continuar numeración arábiga del mainmatter
+  set page(numbering: "1", number-align: center)
+
   // Actualizar estado a backmatter
   headings.matter-state.update("back")
   headings.appendix-state.update(false) // Iniciar sin modo apéndice
-
-  // Continuar numeración arábiga del mainmatter
-  set page(numbering: "1", number-align: center)
   body
 }
 
@@ -80,7 +89,7 @@
   style: "italic",
   size: 1.1em,
 ) = {
-  pagebreak(to: "odd", weak: true)
+  headings.break-to-odd()
   page(numbering: none)[
     #v(1fr)
     #align(center)[
