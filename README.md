@@ -20,17 +20,19 @@ A robust, LaTeX-inspired document class package for Typst, providing `book`, `re
 
 ## Installation
 
-Clone this repository into your project or add it as a local package:
+Clone the repository into Typst's local package directory, so any document can import it as `@local/documentclass`:
 
 ```bash
-git clone https://github.com/your-username/documentclass.git
+# Linux; on macOS use ~/Library/Application Support/typst/packages/local
+git clone https://github.com/lfreyes97/documentclass.git \
+  ~/.local/share/typst/packages/local/documentclass/0.1.0
 ```
-
-Then import it in your Typst file:
 
 ```typst
-#import "documentclass/lib.typ": *
+#import "@local/documentclass:0.1.0": *
 ```
+
+You can also clone it anywhere next to your project and import `lib.typ` by its relative path.
 
 ## Usage
 
@@ -218,6 +220,14 @@ All classes take a `fonts` dictionary. Give only the roles you want to change; e
 Each value can be a family name or a fallback list, such as `("EB Garamond", "Libertinus Serif")`. The defaults ship with Typst, and other families must be installed on your system. An unknown role is an error.
 
 `tableofcontents`, `minitoc` and `dropcap` still take their own `font` argument, which overrides the role for that call.
+
+## Tests
+
+`test/` holds documents that exercise each feature (fonts, numbering and cross-references, the essay class). Compile them from the repository root:
+
+```bash
+for f in test/*.typ; do typst compile --root . "$f" /tmp/out.pdf; done
+```
 
 ## License
 

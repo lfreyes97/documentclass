@@ -15,5 +15,6 @@
 .DS_Store
 Thumbs.db
 
-# Internal tests
-test/
+# Local tooling
+.jj/
+graphify-out/

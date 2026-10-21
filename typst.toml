@@ -1,6 +1,12 @@
 [package]
 name = "documentclass"
 version = "0.1.0"
-authors = ["Luis F. Reyes"]
 entrypoint = "lib.typ"
-description = "A Typst package providing a robust foundation for document creation, similar to LaTeX document classes (`article`, `report`, `book`)."
+authors = ["Luis F. Reyes <https://github.com/lfreyes97>"]
+license = "MIT"
+description = "LaTeX-style document classes (book, report, article, essay) with role-based fonts, translated labels and margin notes."
+repository = "https://github.com/lfreyes97/documentclass"
+keywords = ["latex", "documentclass", "book", "report", "article", "essay", "margin notes", "sidenotes"]
+categories = ["book", "report", "paper"]
+compiler = "0.15.0"
+exclude = ["demos", "test"]
