@@ -1,14 +1,38 @@
-// Contadores
 #import "minitoc.typ" as minitoc-mod
 #import "titlepage.typ"
 #import "fonts.typ" as fonts-mod
-#let part-counter = counter("part-num")
-#let chapter-counter = counter("chapter")
-#let section-counter = counter("section")
-#let subsection-counter = counter("subsection")
-#let appendix-counter = counter("appendix")
+#import "i18n.typ"
+#import "numbering.typ" as numbering-mod
+
 #let matter-state = state("matter-section", "front")
 #let appendix-state = state("appendix-mode", false)
+
+// Numeración de headings del book, sobre el contador nativo `counter(heading)`
+// para que funcionen `@ref` y los prefijos del índice. Partes en romanos;
+// capítulos (nivel 2) sin la parte: 3, 3.1, 3.1.2. Cada matter fija la suya.
+// El contador reinicia los capítulos en cada parte, pero en el libro siguen la
+// cuenta: el número se obtiene contando los capítulos numerados del mainmatter
+// hasta aquí. Typst evalúa la numeración en la posición del título numerado.
+#let main-numbering(..nums) = {
+  let n = nums.pos()
+  if n.len() == 1 {
+    return numbering("I", n.first())
+  }
+  let chapter = query(heading.where(level: 2).before(here()))
+    .filter(h => h.numbering != none and matter-state.at(h.location()) == "main")
+    .len()
+  ((str(chapter),) + n.slice(2).map(str)).join(".")
+}
+
+// En apéndices el capítulo va en letras: A, A.1, A.1.2
+#let appendix-numbering(..nums) = {
+  let n = nums.pos()
+  if n.len() == 1 {
+    numbering("I", n.first())
+  } else {
+    ((numbering("A", n.at(1)),) + n.slice(2).map(str)).join(".")
+  }
+}
 
 // Salto a página impar con marcas a ambos lados: las páginas que quedan
 // estrictamente entre las dos marcas son páginas en blanco. Es débil para que
@@ -39,6 +63,13 @@
     let b-at-top = b.location().position().y <= top
     (b-page < page or (b-page == page and b-at-top)) and page < a-page
   })
+}
+
+// Si el heading muestra su número (requiere `context`). Tras `end-appendix()`
+// el back matter conserva la numeración de apéndice, pero no la muestra.
+#let numbered(it) = {
+  let loc = it.location()
+  it.numbering != none and (matter-state.at(loc) != "back" or appendix-state.at(loc))
 }
 
 // Configuración de headings para book
@@ -74,6 +105,11 @@
   show heading: set text(size: font-size)
   show heading: set par(justify: false, first-line-indent: 0pt, linebreaks: "simple")
 
+  // Nombre que acompaña a `@ref`; matter.appendix cambia el del nivel 2
+  show heading: set heading(supplement: i18n.term("section"))
+  show heading.where(level: 1): set heading(supplement: i18n.term("part"))
+  show heading.where(level: 2): set heading(supplement: i18n.term("chapter"))
+
   // NIVEL 1: PARTES (solo en mainmatter)
   show heading.where(level: 1): it => context {
     let current-matter = matter-state.get()
@@ -85,11 +121,12 @@
       v(1.5fr)
 
       align(center)[
-        #part-counter.step()
-        #let num = part-counter.at(here()).first()
-        #text(size: 1.15em, weight: 500, tracking: 0.25em)[PARTE #numbering("I", num)]
-
-        #v(1em)
+        #if it.numbering != none {
+          text(size: 1.15em, weight: 500, tracking: 0.25em)[
+            #upper(i18n.get("part")) #counter(heading).display(it.numbering)
+          ]
+          v(1em)
+        }
         #let h1-content = if h1-smallcaps { smallcaps(it.body) } else { it.body }
         #text(font: fonts.h1, h1-size, weight: h1-weight, tracking: 0.05em, upper(h1-content))
 
@@ -133,13 +170,13 @@
       v(4em)
 
       align(center)[
-        #chapter-counter.step()
-        #section-counter.update(1) // Resetear contador de secciones
-        #text(1.1em, weight: 500, tracking: 0.25em)[
-          CAPÍTULO #chapter-counter.display()
-        ]
-
-        #v(1em)
+        #if it.numbering != none {
+          numbering-mod.reset-in-chapter()
+          text(1.1em, weight: 500, tracking: 0.25em)[
+            #upper(i18n.get("chapter")) #counter(heading).display(it.numbering)
+          ]
+          v(1em)
+        }
         #let h2-content = if h2-smallcaps { smallcaps(it.body) } else { it.body }
         #text(h2-size, font: fonts.h2, weight: h2-weight, tracking: 0.05em, h2-content)
       ]
@@ -150,13 +187,12 @@
       v(4em)
 
       let is-appendix = appendix-state.get()
-      if is-appendix {
+      if is-appendix and it.numbering != none {
         // Estilo APÉNDICE con letra (A, B, C...)
         align(center)[
-          #appendix-counter.step()
-          #section-counter.update(1) // Resetear secciones para cada apéndice
+          #numbering-mod.reset-in-chapter()
           #text(1.1em, weight: 500, tracking: 0.25em)[
-            APÉNDICE #appendix-counter.display("A")
+            #upper(i18n.get("appendix")) #counter(heading).display(it.numbering)
           ]
 
           #v(1em)
@@ -184,89 +220,29 @@
     }
   }
 
-  // NIVEL 3: SECCIONES
+  // NIVEL 3: SECCIONES (3.1, A.1)
   show heading.where(level: 3): it => context {
-    let current-matter = matter-state.get()
-
     v(1em)
     let h3-content = if h3-smallcaps { smallcaps(it.body) } else { it.body }
-
-    if current-matter == "main" {
-      // En mainmatter: mostrar número de capítulo.sección
-      // Restamos 1 porque get() devuelve el valor después del step() del próximo H2
-      let chap-num = chapter-counter.get().first() - 1
-      text(h3-size, font: fonts.h3, weight: h3-weight, tracking: 0.03em)[
-        #section-counter.step()
-        #subsection-counter.update(1) // Resetear subsecciones
-        #chap-num\.#section-counter.display()
-        #h(7pt)
-        #h3-content
-      ]
-    } else if current-matter == "back" and appendix-state.get() {
-      // En backmatter con apéndice: mostrar A.1, A.2...
-      // Restamos 1 porque at(here()) lee el valor post-step del H2
-      let app-num = appendix-counter.at(here()).first() - 1
-      text(h3-size, font: fonts.h3, weight: h3-weight, tracking: 0.03em)[
-        #section-counter.step()
-        #subsection-counter.update(1) // Resetear subsecciones
-        #numbering("A", app-num)\.#section-counter.display()
-        #h(7pt)
-        #h3-content
-      ]
-    } else {
-      // En frontmatter/backmatter sin apéndice: solo el título sin número
-      text(h3-size, font: fonts.h3, weight: h3-weight, tracking: 0.03em)[#h3-content]
-    }
+    text(h3-size, font: fonts.h3, weight: h3-weight, tracking: 0.03em)[
+      #if numbered(it) [#counter(heading).display(it.numbering)#h(7pt)]
+      #h3-content
+    ]
     v(1em)
   }
 
-  // NIVEL 4: SUBSECCIONES
+  // NIVEL 4: SUBSECCIONES (3.1.1, A.1.1)
   show heading.where(level: 4): it => context {
-    let current-matter = matter-state.get()
-
     v(0.8em)
     let h4-content = if h4-smallcaps { smallcaps(it.body) } else { it.body }
-
-    if current-matter == "main" {
-      // En mainmatter: mostrar cap.sec.subsec (ej. 1.1.1)
-      let chap-num = chapter-counter.get().first() - 1
-      let sec-num = section-counter.get().first() - 1
-      text(h4-size, weight: h4-weight)[
-        #subsection-counter.step()
-        #chap-num\.#sec-num\.#subsection-counter.display()
-        #h(7pt)
-        #h4-content
-      ]
-    } else if current-matter == "back" and appendix-state.get() {
-      // En apéndice: A.1.1, A.1.2...
-      let app-num = appendix-counter.at(here()).first() - 1
-      let sec-num = section-counter.get().first() - 1
-      text(h4-size, weight: h4-weight)[
-        #subsection-counter.step()
-        #numbering("A", app-num)\.#sec-num\.#subsection-counter.display()
-        #h(7pt)
-        #h4-content
-      ]
-    } else {
-      // En frontmatter/backmatter sin apéndice: solo el título
-      text(h4-size, weight: h4-weight)[#h4-content]
-    }
+    text(h4-size, weight: h4-weight)[
+      #if numbered(it) [#counter(heading).display(it.numbering)#h(7pt)]
+      #h4-content
+    ]
     v(0.5em)
   }
 
   body
-}
-
-#let reset-chapter-counter() = {
-  chapter-counter.update(1)
-}
-
-#let reset-part-counter() = {
-  part-counter.update(1)
-}
-
-#let reset-appendix-counter() = {
-  appendix-counter.update(1)
 }
 
 #let set-appendix-mode(val) = {

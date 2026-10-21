@@ -1,8 +1,9 @@
 // TOC tradicional con lista vertical (por defecto)
-#import "headings.typ": appendix-counter, appendix-state, chapter-counter, matter-state, part-counter
+#import "headings.typ": matter-state, numbered
 #import "fonts.typ" as fonts-mod
+#import "i18n.typ"
 #let traditional(
-  title: "Contenido",
+  title: auto, // auto = etiqueta traducida
   depth: none,
   indent: 1.5em,
   font: none,
@@ -12,7 +13,7 @@
 ) = {
   fonts-mod.use("toc", font: font, page[
     #align(center)[
-      #text(size: 20pt, weight: "bold")[#title]
+      #text(size: 20pt, weight: "bold")[#i18n.title-or(title, "contents")]
     ]
     #v(2em)
 
@@ -33,8 +34,7 @@
     // Estilos para entradas de nivel 1 (partes)
     #show outline.entry.where(level: 1): it => context {
       v(0.8em, weak: true)
-      let num = part-counter.at(it.element.location()).first()
-      let label = if num > 0 [PARTE #std.numbering("I", num)#h(0.6em)]
+      let label = if numbered(it.element) [#upper(i18n.get("part")) #it.prefix()#h(0.6em)]
       set text(font: h1-font) if h1-font != none
       set text(weight: "bold")
       entry-line(label, it.element.body, it)
@@ -42,8 +42,7 @@
 
     // Estilos para entradas de nivel 2 (capítulos)
     #show outline.entry.where(level: 2): it => context {
-      let num = chapter-counter.at(it.element.location()).first()
-      let label = if num > 0 [#num.#h(0.4em)]
+      let label = if numbered(it.element) [#it.prefix().#h(0.4em)]
       set text(font: h2-font) if h2-font != none
       entry-line(label, it.element.body, it)
     }
@@ -69,7 +68,7 @@
 
 // TOC estilo párrafo/libro antiguo
 #let paragraph-style(
-  title: "Contenido",
+  title: auto, // auto = etiqueta traducida
   depth: none,
   indent: 1.5em,
   font: none,
@@ -79,7 +78,7 @@
 ) = {
   fonts-mod.use("toc", font: font, page[
     #align(center)[
-      #text(size: 20pt, weight: "bold")[#title]
+      #text(size: 20pt, weight: "bold")[#i18n.title-or(title, "contents")]
     ]
     #v(2em)
 
@@ -123,7 +122,7 @@
 
 // Tabla de contenidos simple usando outline nativo
 #let simple(
-  title: "Contenido",
+  title: auto, // auto = etiqueta traducida
   depth: none,
   font: none,
   indent: none, // Kept for interface compatibility
@@ -132,7 +131,7 @@
   numbering: none,
 ) = {
   fonts-mod.use("toc", font: font, outline(
-    title: text(size: 20pt, weight: "bold")[#title],
+    title: text(size: 20pt, weight: "bold")[#i18n.title-or(title, "contents")],
     depth: depth,
   ))
 }

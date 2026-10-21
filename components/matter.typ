@@ -1,4 +1,5 @@
 #import "headings.typ"
+#import "i18n.typ"
 
 // Los `update` de estado van después de `set page`: el salto de página que
 // provoca `set page` ocurre ahí, y un update anterior quedaría en la página previa.
@@ -7,8 +8,9 @@
   // Empieza en recto; el reverso de la portada queda en blanco
   headings.break-to-odd()
 
-  // Numeración romana minúscula centrada
+  // Numeración romana minúscula centrada; títulos sin número
   set page(numbering: "i", number-align: center)
+  set heading(numbering: none)
 
   // Actualizar estado a frontmatter
   headings.matter-state.update("front")
@@ -20,22 +22,21 @@
   // La página 1 arábiga siempre es un recto
   headings.break-to-odd()
 
-  // Numeración arábiga centrada
+  // Numeración arábiga centrada; partes, capítulos y secciones numerados
   set page(numbering: "1", number-align: center)
+  set heading(numbering: headings.main-numbering)
 
   // Actualizar estado a mainmatter
   headings.matter-state.update("main")
   counter(page).update(1)
-
-  // Resetear contadores al entrar a mainmatter
-  headings.reset-chapter-counter()
-  headings.reset-part-counter()
+  counter(heading).update(0)
   body
 }
 
 #let backmatter(body) = {
-  // Continuar numeración arábiga del mainmatter
+  // Continuar numeración arábiga del mainmatter; títulos sin número
   set page(numbering: "1", number-align: center)
+  set heading(numbering: none)
 
   // Actualizar estado a backmatter
   headings.matter-state.update("back")
@@ -46,28 +47,33 @@
 // Funciones de utilidad para el backmatter
 
 #let appendix(body) = {
-  // Activar modo apéndice y resetear contador
+  // Capítulos con letra (A, B...) que empiezan de nuevo
+  set heading(numbering: headings.appendix-numbering)
+  show heading.where(level: 2): set heading(supplement: i18n.term("appendix"))
   headings.set-appendix-mode(true)
-  headings.reset-appendix-counter()
+  counter(heading).update((..n) => (n.pos().at(0, default: 0), 0))
   body
 }
 
-// Desactivar modo apéndice (para usar después de los apéndices)
-#let end-appendix() = {
+// Desactivar modo apéndice. Como `#show: end-appendix` los títulos siguientes
+// quedan sin número; como `#end-appendix()` solo dejan de mostrarlo.
+#let end-appendix(..body) = {
   headings.set-appendix-mode(false)
+  set heading(numbering: none)
+  body.pos().join()
 }
 
 /// Abstract — resumen del documento
 ///
-/// - title: Título del resumen ("Resumen" por defecto)
+/// - title: Título del resumen (auto = "Resumen" en el idioma del documento)
 /// - body: Contenido del resumen
 #let abstract(
-  title: "Resumen",
+  title: auto, // auto = etiqueta traducida
   body,
 ) = {
   v(1em)
   align(center)[
-    #text(weight: "bold", size: 1.1em)[#title]
+    #text(weight: "bold", size: 1.1em)[#i18n.title-or(title, "abstract")]
   ]
   v(0.5em)
   pad(left: 2em, right: 2em)[
@@ -101,64 +107,13 @@
   ]
 }
 
-#let bibliography(title: "Bibliografía", body) = {
-  headings.set-appendix-mode(false) // Desactivar modo apéndice
-  heading(
-    level: 2,
-    numbering: none,
-    outlined: true,
-    title,
-  )
-  body
-}
+// Listas de figuras y tablas, con número y página de cada una
+#let list-of-figures(title: auto) = outline(
+  title: i18n.title-or(title, "figures"),
+  target: figure.where(kind: image),
+)
 
-#let index(title: "Índice Analítico", body) = {
-  headings.set-appendix-mode(false) // Desactivar modo apéndice
-  heading(
-    level: 2,
-    numbering: none,
-    outlined: true,
-    title,
-  )
-  body
-}
-
-#let list-of-figures(title: "Lista de Figuras") = {
-  heading(
-    level: 2,
-    numbering: none,
-    outlined: true,
-    title,
-  )
-  context {
-    let elems = query(figure.where(kind: image))
-    for elem in elems {
-      let num = counter(figure.where(kind: image)).at(elem.location()).first()
-      grid(
-        columns: (20pt, auto),
-        gutter: 1em,
-        align(right)[#num], link(elem.location())[#elem.caption],
-      )
-    }
-  }
-}
-
-#let list-of-tables(title: "Lista de Tablas") = {
-  heading(
-    level: 2,
-    numbering: none,
-    outlined: true,
-    title,
-  )
-  context {
-    let elems = query(figure.where(kind: table))
-    for elem in elems {
-      let num = counter(figure.where(kind: table)).at(elem.location()).first()
-      grid(
-        columns: (20pt, auto),
-        gutter: 1em,
-        align(right)[#num], link(elem.location())[#elem.caption],
-      )
-    }
-  }
-}
+#let list-of-tables(title: auto) = outline(
+  title: i18n.title-or(title, "tables"),
+  target: figure.where(kind: table),
+)

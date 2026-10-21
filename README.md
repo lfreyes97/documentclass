@@ -8,7 +8,8 @@ A robust, LaTeX-inspired document class package for Typst, providing `book`, `re
   - `book`: Supports Parts, Chapters, Frontmatter/Mainmatter/Backmatter, and Appendices.
   - `report`: Supports Chapters and Abstracts. Ideal for theses and technical reports.
   - `article`: Supports Sections, Multi-column layout, and Inline Abstracts.
-- **Advanced Numbering**: Correct handling of H4 (subsections) numbering (`1.1.1`) and Appendix lettering (`A.1`).
+- **Advanced Numbering**: Correct handling of H4 (subsections) numbering (`1.1.1`) and Appendix lettering (`A.1`). Cross-references (`@label`) work for parts, chapters, sections, figures and equations.
+- **Languages**: Labels ("Chapter", "Contents"...) follow `lang` (es, en, pt, fr, de, it) and can be overridden.
 - **Book Components**:
   - `dedication()`, `epigraph()`, `blockquote()`, `verse()`
   - Enhanced Titlepage (Subtitle, Publisher, Logo)
@@ -60,7 +61,7 @@ Content goes here...
 
 #show: back
 #show: appendix
-= Appendix A
+== Appendix A
 ```
 
 ### Report Class
@@ -110,12 +111,14 @@ All classes accept the following common parameters:
 - `paper`: Paper size (e.g., "a4", "us-letter").
 - `font-size`: Base font size (10pt, 11pt, 12pt).
 - `fonts`: Font families by role (see [Fonts](#fonts)).
+- `lang`: Document language; it also picks the labels (see [Languages](#languages)).
+- `labels`: Labels that replace the translated ones.
 - `margin-inside`, `margin-outside`, `margin-y`: Page margins.
 
 ### Specific Parameters
-- **Book**: `part-ornament`, `minitoc`, `logo`, `custom-titlepage`.
+- **Book**: `part-ornament`, `minitoc`, `logo`, `custom-titlepage`, `equation-numbering`.
 - **Article**: `cols` (column count), `abstract`.
-- **Report**: `abstract`, `logo`, `custom-titlepage`.
+- **Report**: `abstract`, `logo`, `custom-titlepage`, `equation-numbering`.
 
 `logo`, `part-ornament` and `custom-titlepage` take content, not file paths. Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
 
@@ -126,6 +129,38 @@ All classes accept the following common parameters:
   custom-titlepage: include "my-titlepage.typ",
 )
 ```
+
+### Numbering and cross-references
+
+Headings use Typst's own numbering, so `@label` works everywhere:
+
+```typst
+== Neutrality <neutral>
+As shown in @neutral...   // "Chapter 1" / "Capítulo 1"
+```
+
+- **Book**: parts are numbered `I, II…`; chapters (`==`) are numbered `1, 2…` and keep counting across parts; sections are `1.1` and `1.1.1`. Front matter and back matter headings are not numbered. After `#show: appendix`, chapters are `A, B…` and sections `A.1`. `#show: end-appendix` turns numbering off again for what follows, such as a glossary.
+- **Report**: chapters `1`, sections `1.1`, subsections `1.1.1`.
+- **Article**: sections `1.`, `1.1`, `1.1.1`.
+
+In `book` and `report`, figures and tables are numbered within the chapter (`2.3`, `A.1`). Set `equation-numbering: true` to number display equations the same way, as `(2.1)`. In `article` they are numbered through the whole document.
+
+`#heading(numbering: none)[...]` gives an unnumbered heading in any class. `#bibliography("refs.bib")` and `#outline()` produce unnumbered headings; in `book` they sit at chapter level, not as a part.
+
+`#listoffigures()` and `#listoftables()` list figures and tables with their numbers and pages.
+
+### Languages
+
+`lang` sets the hyphenation and the class labels: part, chapter, appendix, section, contents, abstract, figures and tables. Spanish, English, Portuguese, French, German and Italian are included; any other language falls back to English. To change a label, pass `labels`:
+
+```typst
+#show: book.with(
+  lang: "en",
+  labels: (chapter: "Lesson", contents: "Table of Contents"),
+)
+```
+
+An unknown label name is an error.
 
 ### Fonts
 

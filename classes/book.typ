@@ -3,6 +3,8 @@
 #import "../components/footer.typ"
 #import "../components/headings.typ"
 #import "../components/fonts.typ" as fonts-mod
+#import "../components/i18n.typ"
+#import "../components/numbering.typ" as numbering-mod
 
 #import "../components/layout.typ"
 #let book(
@@ -24,6 +26,10 @@
   // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
   fonts: (:),
   lang: "es",
+  // Etiquetas que reemplazan las traducidas: part, chapter, appendix, section,
+  // contents, abstract, figures, tables (ver components/i18n.typ)
+  labels: (:),
+  equation-numbering: false, // Numerar ecuaciones en bloque: (2.1)
   minitoc: false,
   body,
 ) = {
@@ -31,6 +37,8 @@
   set document(author: if author == none { () } else { author }, title: title)
   let fonts = fonts-mod.resolve(fonts)
   fonts-mod.current.update(fonts)
+  i18n.check(labels)
+  i18n.overrides.update(labels)
   set text(
     font: fonts.body,
     size: font-size,
@@ -62,6 +70,16 @@
     author: author,
     header-font: fonts.header,
   )
+
+  // Numeración: los títulos la reciben de cada matter; figuras y ecuaciones
+  // van por capítulo (nivel 2): 2.3, A.1
+  set heading(numbering: none)
+  set figure(numbering: numbering-mod.in-chapter.with(2))
+  set math.equation(numbering: numbering-mod.equation-in-chapter.with(2)) if equation-numbering
+  // El título de bibliografía y de outline() es de nivel 1, que en book es una
+  // parte: se baja a nivel de capítulo, sin número
+  show bibliography: set heading(offset: 1, numbering: none)
+  show outline: set heading(offset: 1, numbering: none)
 
   // Footnotes
   show footnote.entry: it => {

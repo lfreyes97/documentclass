@@ -27,5 +27,5 @@ Texto de prueba.
 
 #show: back
 #show: appendix
-= Apéndice A
+== Apéndice A
 Apéndice de ejemplo.

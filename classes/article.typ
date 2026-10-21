@@ -1,7 +1,7 @@
 // Clase article — equivalente a \documentclass{article} de LaTeX
 
-#import "../components/headings.typ": matter-state, section-counter, subsection-counter
 #import "../components/matter.typ"
+#import "../components/i18n.typ"
 #import "../components/fonts.typ" as fonts-mod
 
 /// Titleblock inline — título, autor y fecha en la misma página
@@ -34,7 +34,7 @@
   author: none,
   date: none,
   abstract: none,
-  abstract-title: "Resumen",
+  abstract-title: auto, // auto = etiqueta traducida
   // Parámetros de página
   paper: "a4",
   font-size: 11pt,
@@ -44,12 +44,17 @@
   // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
   fonts: (:),
   lang: "es",
+  // Etiquetas que reemplazan las traducidas: part, chapter, appendix, section,
+  // contents, abstract, figures, tables (ver components/i18n.typ)
+  labels: (:),
   cols: 1,
   body,
 ) = {
   set document(author: if author == none { () } else { author }, title: title)
   let fonts = fonts-mod.resolve(fonts)
   fonts-mod.current.update(fonts)
+  i18n.check(labels)
+  i18n.overrides.update(labels)
   set text(
     font: fonts.body,
     size: font-size,
@@ -69,9 +74,14 @@
   set par(leading: 0.55em, justify: true, spacing: 0.55em)
 
   // --- SHOW RULES PARA HEADINGS ---
-  let sec-counter = counter("article-section")
-  let subsec-counter = counter("article-subsection")
-  let subsubsec-counter = counter("article-subsubsection")
+  // Numeración nativa (1, 1.1, 1.1.1) para que funcionen las referencias
+  set heading(numbering: "1.1")
+  show heading: set heading(supplement: i18n.term("section"))
+  show bibliography: set heading(numbering: none)
+  show outline: set heading(numbering: none)
+
+  // Número del título seguido de `sep`, o nada si no está numerado
+  let number(it, sep) = if it.numbering != none [#counter(heading).display(it.numbering)#sep]
 
   show heading.where(level: 1): set text(font: fonts.h1, weight: "bold", hyphenate: true)
   show heading.where(level: 2): set text(font: fonts.h2, weight: "bold", hyphenate: true)
@@ -80,43 +90,19 @@
 
   show heading.where(level: 1): it => {
     v(1.5em)
-    sec-counter.step()
-    subsec-counter.update(0)
-    subsubsec-counter.update(0)
-    context {
-      let num = sec-counter.display()
-      text(size: 16pt, weight: "bold")[
-        #num. #it.body
-      ]
-    }
+    context text(size: 16pt, weight: "bold")[#number(it, [. ])#it.body]
     v(0.8em)
   }
 
   show heading.where(level: 2): it => {
     v(1em)
-    subsec-counter.step()
-    subsubsec-counter.update(0)
-    context {
-      let s-num = sec-counter.display()
-      let ss-num = subsec-counter.display()
-      text(size: 13pt, weight: "bold")[
-        #s-num.#ss-num #it.body
-      ]
-    }
+    context text(size: 13pt, weight: "bold")[#number(it, [ ])#it.body]
     v(0.6em)
   }
 
   show heading.where(level: 3): it => {
     v(0.8em)
-    subsubsec-counter.step()
-    context {
-      let s-num = sec-counter.display()
-      let ss-num = subsec-counter.display()
-      let sss-num = subsubsec-counter.display()
-      text(size: 11pt, weight: "semibold")[
-        #s-num.#ss-num.#sss-num #it.body
-      ]
-    }
+    context text(size: 11pt, weight: "semibold")[#number(it, [ ])#it.body]
     v(0.5em)
   }
 
