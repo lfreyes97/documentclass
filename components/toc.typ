@@ -14,6 +14,9 @@
   h1-font: none,
   h2-font: none,
   h3-font: none, // Entradas de nivel 3 (secciones)
+  chapter-label: false, // true = "Capítulo N:" / "Apéndice N:" en lugar de "N."
+  nest-indent: auto, // Sangría de cada nivel anidado (auto = por defecto de Typst)
+  chapter-gap: 0em, // Espacio antes de cada capítulo (nivel 2)
   numbering: none,
 ) = {
   fonts-mod.use("toc", font: font, page[
@@ -47,8 +50,24 @@
 
     // Estilos para entradas de nivel 2 (capítulos)
     #show outline.entry.where(level: 2): it => context {
-      let label = if numbered(it.element) [#it.prefix().#h(0.4em)]
+      v(chapter-gap, weak: true)
+      // El documento marca cada capítulo con <chapter-kind> (true = apéndice)
+      let loc = it.element.location()
+      let kinds = query(selector(<chapter-kind>).before(loc, inclusive: true))
+      let is-appendix = kinds.len() > 0 and kinds.last().value
+      let label = if chapter-label and is-appendix {
+        // Los apéndices se cuentan con romanos aparte de la numeración del cuerpo
+        let count = kinds.filter(k => k.value).len()
+        [#i18n.get("appendix") #std.numbering("I", count):#h(0.4em)]
+      } else if not numbered(it.element) {
+        none
+      } else if chapter-label {
+        [#i18n.get("chapter") #it.prefix():#h(0.4em)]
+      } else {
+        [#it.prefix().#h(0.4em)]
+      }
       set text(font: h2-font) if h2-font != none
+      set text(weight: "bold") if chapter-label and label != none
       entry-line(label, it.element.body, it)
     }
 
@@ -69,6 +88,7 @@
     #context outline(
       title: none,
       depth: document-depth(depth),
+      indent: nest-indent,
     )
   ])
 }
