@@ -17,6 +17,7 @@ A robust, LaTeX-inspired document class package for Typst, providing `book`, `re
   - `half-title()`, `colophon()`
 - **Layout Control**: Configurable margins, paper size (`a4`, `a5`, etc.), and font sizes.
 - **Microtypography**: Smart header suppression on empty pages or before Parts.
+- **Tables of contents**: the `tocs` module adds presets, per-level styles, partial tables and lists of figures, tables and listings, next to `tableofcontents` and `minitoc`.
 
 ## Installation
 
@@ -210,6 +211,38 @@ In `book` and `report`, figures and tables are numbered within the chapter (`2.3
 `#heading(numbering: none)[...]` gives an unnumbered heading in any class. `#bibliography("refs.bib")` and `#outline()` produce unnumbered headings; in `book` they sit at chapter level, not as a part.
 
 `#listoffigures()` and `#listoftables()` list figures and tables with their numbers and pages.
+
+### Tables of contents (tocs)
+
+`tableofcontents`, `minitoc`, `listoffigures` and `listoftables` work as before. The `tocs` module is a second, more configurable set of tables that reads the class on its own: parts and chapters in `book`, chapters in `report`, sections in `article` and `essay`; chapter and appendix numbers; each entry's folio in the numbering of its page (`iii`, `7`); the `toc` and `minitoc` font roles; and the translated labels, including `labels` overrides.
+
+```typst
+#show: front
+#tocs.toc(style: "elegant", depth: 2) // "classic", "modern", "elegant" or "compact"
+#tocs.lof()                           // also lot() and lol()
+
+#show: main
+= Foundations
+== A chapter title too long for the table #tocs.short[Short title]
+#tocs.partial()                       // sections of this chapter
+=== Working notes #tocs.omit()        // left out of the table
+```
+
+- `tocs.toc` takes `style`, `depth`, `parts`, `matter` (e.g. `("main", "back")`), `title`, `title-level`, `outlined`, `fill`, `font`, `size`, `columns`, `column-gutter`, `gutter`, `class` and `target`.
+- `levels` styles each role (`part`, `chapter`, `section`, `subsection`, `subsubsection`, `figure`): `text`, `number-text`, `page-text`, `smallcaps`, `upper`, `indent`, `number-width`, `number-format`, `number-break`, `label`, `appendix-label`, `fill`, `page`, `gutter`, `above`, `below`, `align`, `stroke`, `run-in`, `separator`, and `format: (entry, style) => content` to replace the whole layout.
+
+  ```typst
+  #tocs.toc(levels: (
+    part: (align: center, smallcaps: true, page: false),
+    section: (fill: repeat(gap: 0.6em)[·], text: (style: "italic")),
+  ))
+  ```
+
+- `#show: tocs.setup.with(...)` sets options for every table that follows. Presets are dictionaries (`tocs.presets`), and `tocs.merge` derives new ones from them.
+- `tocs.partial(scope: "part")` or `scope: "chapter"` lists the divisions inside the current part or chapter. `tocs.list-of(target: figure.where(kind: "diagram"), key: "figures")` lists any figure kind, and `supplement: true` shows "Figure 2.1".
+- `#tocs.add-entry(role: "section")[...]` adds an entry with the folio where it is placed, like `\addcontentsline`.
+
+The module also works without a class, through `#import "@local/documentclass:0.1.0": tocs`. `demos/demo_tocs.typ` shows a full book.
 
 ### Languages
 

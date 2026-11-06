@@ -7,6 +7,7 @@
 #import "components/glosa/glosa.typ": note, notefigure, wideblock
 #import "components/toc.typ"
 #import "components/minitoc.typ"
+#import "components/tocs/tocs.typ"
 #import "components/dropcap.typ" as dropcap-mod
 #import "components/environments.typ": blockquote, epigraph, verse
 #import "components/titlepage.typ": colophon, half-title
