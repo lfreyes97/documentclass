@@ -1,15 +1,17 @@
-// Preajustes de `page-style`. Un PDF por preajuste:
+// Preajustes de `page-style` y de `heading-style` (los que comparten nombre). Un PDF por preajuste:
 //   typst compile --root . --input style=modern demos/demo_pagestyle.typ modern.pdf
 #import "../lib.typ": *
 
 #let style = sys.inputs.at("style", default: "classic")
 #let toc-style = if style in ("modern", "elegant") { style } else { "classic" }
+#let heading-style = toc-style
 
 #show: book.with(
   title: "Estilos de página",
   author: "A. Autor",
   paper: "a5",
   page-style: style,
+  heading-style: heading-style,
 )
 #show: tocs.setup.with(style: toc-style)
 

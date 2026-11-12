@@ -57,6 +57,9 @@
   // Cabeceras y pies: un preajuste ("classic"), none o un diccionario con header y footer
   // (ver components/pagestyle.typ)
   page-style: "classic",
+  // Aperturas de parte y de capítulo: un preajuste ("classic") o un diccionario con part y
+  // chapter (ver components/openings.typ)
+  heading-style: "classic",
   // Minitoc en la página de cada parte: false, true (sus capítulos, sin número) o
   // un diccionario con opciones de `tocs.partial`, p. ej. `(depth: 2, size: 1em)`
   minitoc: false,
@@ -142,6 +145,7 @@
   // Aplicar estilos de headings
   show: headings.setup.with(
     part-ornament: part-ornament,
+    heading-style: heading-style,
     font-size: font-size,
     fonts: fonts,
     minitoc: minitoc != false and minitoc != none,

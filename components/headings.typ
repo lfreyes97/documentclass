@@ -4,6 +4,7 @@
 #import "fonts.typ" as fonts-mod
 #import "i18n.typ"
 #import "numbering.typ" as numbering-mod
+#import "openings.typ"
 
 #let matter-state = state("matter-section", "front")
 #let appendix-state = state("appendix-mode", false)
@@ -115,18 +116,60 @@
   levels: (chapter: (number: false, text: (weight: "regular"))),
 )
 
+// Apertura de un título de parte o capítulo con el estilo `s` de openings.leaf. Requiere
+// `context`. `reset` reinicia la numeración de figuras y ecuaciones si el título está numerado
+#let opening(it, s, font, part-ornament, extra: none, reset: false) = {
+  if s.start == "odd" {
+    break-to-odd()
+  } else if s.start == "facing" {
+    if facing-pages-state.get() { break-to-odd() } else { pagebreak(weak: true) }
+  } else if s.start == "page" {
+    pagebreak(weak: true)
+  }
+  v(s.above)
+  let numbered = it.numbering != none
+  if reset and numbered { numbering-mod.reset-in-chapter() }
+  let label = if type(s.label) == str {
+    let word = i18n.get(s.label)
+    if s.label-upper { upper(word) } else { word }
+  } else { s.label }
+  let title = {
+    let body = if s.title-smallcaps { smallcaps(it.body) } else { it.body }
+    text(..(font: font) + s.title-text, if s.title-upper { upper(body) } else { body })
+  }
+  let ornament = if s.ornament == auto { part-ornament } else { s.ornament }
+  align(s.align)[
+    #if numbered and (label != none or s.number-format != none) {
+      let number = (s.number-format)(counter(heading).display(it.numbering))
+      text(..s.label-text)[#if label != none [#label #number] else [#number]]
+      v(s.gap)
+    }
+    #title
+    #if s.rule != none {
+      v(s.rule-gap)
+      line(length: s.rule-length, stroke: s.rule)
+    }
+    #if ornament != none {
+      v(1em)
+      ornament
+    }
+    #if extra != none {
+      v(2em)
+      extra
+    }
+  ]
+  v(s.below)
+  if s.end == "odd" { break-to-odd() }
+}
+
 // Configuración de headings para book
 #let setup(
   part-ornament: none,
   font-size: 11pt, // Base de los tamaños en em de los headings
   fonts: fonts-mod.resolve((:)), // Fuentes ya resueltas (h1..h4, minitoc)
+  // Aperturas de parte y de capítulo: preajuste o diccionario (ver components/openings.typ)
+  heading-style: "classic",
   // Parámetros de tipografía para headings
-  h1-weight: 700,
-  h1-size: 1.8em, // Tamaño base para el título de la parte
-  h1-smallcaps: false,
-  h2-weight: 500,
-  h2-size: 1.8em, // Tamaño base para el título del capítulo
-  h2-smallcaps: false,
   h3-weight: 400,
   h3-size: 1.2em, // Tamaño base para la sección
   h3-smallcaps: true,
@@ -140,8 +183,8 @@
   titlepage.check-content("part-ornament", part-ornament)
 
   // Estilos globaloes pre-establecidos para los encabezados.
-  show heading.where(level: 1): set text(font: fonts.h1, weight: h1-weight, hyphenate: false)
-  show heading.where(level: 2): set text(font: fonts.h2, weight: h2-weight, hyphenate: false)
+  show heading.where(level: 1): set text(font: fonts.h1, weight: 700, hyphenate: false)
+  show heading.where(level: 2): set text(font: fonts.h2, weight: 500, hyphenate: false)
   show heading.where(level: 3): set text(font: fonts.h3, weight: h3-weight, hyphenate: false)
   show heading.where(level: 4): set text(font: fonts.h4, weight: h4-weight, hyphenate: false)
   // Typst aplica su tamaño por defecto (1.4em, 1.2em...) también dentro de las
@@ -154,115 +197,28 @@
   show heading.where(level: 1): set heading(supplement: i18n.term("part"))
   show heading.where(level: 2): set heading(supplement: i18n.term("chapter"))
 
-  // NIVEL 1: PARTES (solo en mainmatter)
+  let style = openings.resolve(heading-style)
+
+  // NIVEL 1: PARTES. En mainmatter y backmatter, con su página; en frontmatter, simples
   show heading.where(level: 1): it => context {
-    let current-matter = matter-state.get()
-
-    if current-matter == "main" or current-matter == "back" {
-      // Estilo de PARTE para mainmatter/backmatter
-      break-to-odd()
-
-      v(1.5fr)
-
-      align(center)[
-        #if it.numbering != none {
-          text(size: 1.15em, weight: 500, tracking: 0.25em)[
-            #upper(i18n.get("part")) #counter(heading).display(it.numbering)
-          ]
-          v(1em)
-        }
-        #let h1-content = if h1-smallcaps { smallcaps(it.body) } else { it.body }
-        #text(font: fonts.h1, h1-size, weight: h1-weight, tracking: 0.05em, upper(h1-content))
-
-        #if part-ornament != none {
-          v(1em)
-          part-ornament
-        }
-
-        #if minitoc {
-          v(2em)
-          block(width: 85%, {
-            set align(left)
-            set text(weight: "regular", tracking: 0pt)
-            tocs-mod.partial(..(minitoc-defaults + minitoc-options))
-          })
-        }
-      ]
-
-      v(1.5fr)
-      // La parte ocupa su propia página impar y deja el reverso en blanco
-      break-to-odd()
-    } else {
-      // Estilo simple para frontmatter
-      pagebreak(weak: true)
-      v(2em)
-      align(center)[
-        #let h1-content = if h1-smallcaps { smallcaps(it.body) } else { it.body }
-        #text(h1-size, font: fonts.h1, weight: h1-weight, tracking: 0.05em, upper(h1-content))
-      ]
-      v(2em)
+    let variant = if matter-state.get() in ("main", "back") { none } else { "front" }
+    let extra = if minitoc and variant == none {
+      block(width: 85%, {
+        set align(left)
+        set text(weight: "regular", tracking: 0pt)
+        tocs-mod.partial(..(minitoc-defaults + minitoc-options))
+      })
     }
+    opening(it, openings.leaf(style, "part", variant), fonts.h1, part-ornament, extra: extra)
   }
 
   // NIVEL 2: CAPÍTULOS
   show heading.where(level: 2): it => context {
-    let current-matter = matter-state.get()
-
-    if current-matter == "main" {
-      // Estilo de CAPÍTULO para mainmatter
-      break-to-odd()
-      v(4em)
-
-      align(center)[
-        #if it.numbering != none {
-          numbering-mod.reset-in-chapter()
-          text(1.1em, weight: 500, tracking: 0.25em)[
-            #upper(i18n.get("chapter")) #counter(heading).display(it.numbering)
-          ]
-          v(1em)
-        }
-        #let h2-content = if h2-smallcaps { smallcaps(it.body) } else { it.body }
-        #text(h2-size, font: fonts.h2, weight: h2-weight, tracking: 0.05em, h2-content)
-      ]
-
-      v(4em)
-    } else if current-matter == "back" {
-      break-to-odd()
-      v(4em)
-
-      let is-appendix = appendix-state.get()
-      if is-appendix and it.numbering != none {
-        // Estilo APÉNDICE con letra (A, B, C...)
-        align(center)[
-          #numbering-mod.reset-in-chapter()
-          #text(1.1em, weight: 500, tracking: 0.25em)[
-            #upper(i18n.get("appendix")) #counter(heading).display(it.numbering)
-          ]
-
-          #v(1em)
-          #let h2-content = if h2-smallcaps { smallcaps(it.body) } else { it.body }
-          #text(h2-size, font: fonts.h2, weight: h2-weight, tracking: 0.05em, h2-content)
-        ]
-      } else {
-        // Backmatter sin apéndice (bibliografía, índice, etc.)
-        align(center)[
-          #let h2-content = if h2-smallcaps { smallcaps(it.body) } else { it.body }
-          #text(h2-size, font: fonts.h2, weight: h2-weight, h2-content)
-        ]
-      }
-
-      v(4em)
-    } else {
-      // Estilo simple para frontmatter. Con `facing-pages` cada título empieza en
-      // recto; sin ella solo en página nueva, como los de nivel 1
-      if facing-pages-state.get() { break-to-odd() } else { pagebreak(weak: true) }
-      v(2em)
-      align(center)[
-        #let h2-content = if h2-smallcaps { smallcaps(it.body) } else { it.body }
-        #text(h2-size, font: fonts.h2, weight: h2-weight, h2-content)
-      ]
-      v(1.5em)
-    }
+    let matter = matter-state.get()
+    let variant = if matter == "main" { none } else if matter == "back" {
+      if appendix-state.get() and it.numbering != none { "appendix" } else { "back" }
+    } else { "front" }
+    opening(it, openings.leaf(style, "chapter", variant), fonts.h2, none, reset: variant in (none, "appendix"))
   }
 
   // NIVEL 3: SECCIONES (3.1, A.1)

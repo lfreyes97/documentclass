@@ -80,14 +80,17 @@ Inconsistencias medidas sobre las firmas de `book`, `report`, `article` y `essay
 Cabeceras y pies ya se configuran con `page-style` (ver abajo). Las aperturas siguen sin
 configuración; conviene diseñarlas antes de congelar la API, porque añaden parámetros nuevos.
 
-- [ ] **Aperturas de capítulo y de parte** (fncychap, titlesec). Estado actual:
-      `headings.setup` tiene `h1-size`…`h4-size`, `h*-weight` y `h*-smallcaps`, pero
-      `book()` no los pasa: desde la clase solo se cambian las fuentes. El estilo
-      "CAPÍTULO N" sobre el título está fijo. `report` y `article` tienen sus
-      encabezados escritos a mano en la clase. `essay` expone `chapter-number-style` y
-      `chapter-title-style` como diccionarios, con otra forma. Falta: estilos
-      preestablecidos con nombre, parámetros expuestos con la misma forma en todas las
-      clases y, para lo no cubierto, una función que reciba el número y el título.
+- [x] **Aperturas de capítulo y de parte: `heading-style`** en `book` (primera versión,
+      `components/openings.typ`, `test/openings.typ`). Preajustes `classic` (idéntico al
+      anterior: comprobado píxel a píxel y con las referencias de `test/structure.py`),
+      `modern` y `elegant`; diccionario por rol (`part`, `chapter`) con variantes `front`,
+      `back` y `appendix`. Las claves viejas `h1-size`…`h2-smallcaps` de `headings.setup`
+      desaparecieron.
+  - **Falta:** `report` y `article` (sus títulos siguen escritos a mano en la clase), los
+    niveles de sección (`h3`/`h4`, con parámetros planos), una función `ctx => contenido`
+    para lo que no cubra el diccionario, y la apertura de `essay` (queda para su revisión).
+  - Las versalitas de `elegant` dependen de la fuente: la Libertinus que Typst incluye las
+    tiene, la que instala `instatypst` en esta máquina no.
 - [x] **Cabeceras y pies: `page-style`** (primera versión, `components/pagestyle.typ`,
       `test/pagestyle.typ`). Preajuste `"classic"` (lo que hacía `book`, con páginas idénticas
       a las de antes), diccionario `header`/`footer` con `left`/`center`/`right`, `odd`/`even`,
