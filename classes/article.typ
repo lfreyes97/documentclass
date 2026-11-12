@@ -5,6 +5,7 @@
 #import "../components/fonts.typ" as fonts-mod
 #import "../components/microtype.typ" as microtype-mod
 #import "../components/margins.typ"
+#import "../components/pagestyle.typ"
 
 #let margin-defaults = (
   facing: (inside: 3cm, outside: 2cm, y: 2.5cm),
@@ -49,6 +50,9 @@
   margin: auto,
   // Doble cara (el `twoside` de LaTeX): márgenes interior y exterior que alternan
   facing-pages: false,
+  // Cabeceras y pies: none (los de Typst: folio al centro), un preajuste ("classic") o un
+  // diccionario con header y footer (ver components/pagestyle.typ)
+  page-style: none,
   // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
   // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
   fonts: (:),
@@ -81,6 +85,14 @@
     numbering: "1",
     number-align: center,
     margin: margins.resolve(margin, facing-pages, margin-defaults),
+  )
+  show: pagestyle.setup.with(
+    page-style,
+    class: "article",
+    title: title,
+    author: author,
+    header-font: fonts.header,
+    facing-pages: facing-pages,
   )
 
   // Párrafos

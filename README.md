@@ -151,6 +151,21 @@ All classes accept the following common parameters:
 
 With `use-parts: false`, `=` is a chapter and `==` a section; parts are created with `#part[Title]`. `tableofcontents(depth: 2)` still counts from the chapter. `facing-pages` (on by default in `book`) lays the front out as a printed book: after the cover the title page starts on a recto, and the contents and the rest of the front matter do too, so the versos are blank and carry no header or folio (cover, blank, title, blank, contents). `facing-pages: false` removes those versos, for a PDF read on screen. In `book`, any blank page left by a page break (the verso before a part or chapter, or your own `#pagebreak(to: "odd")`) gets no header or folio. `#blank-page()` inserts an intentionally blank page the same way.
 
+`page-style` sets the running header and the footer (LaTeX's fancyhdr). It is `"classic"` in `book` (the part on versos, the chapter on rectos, a grey rule, the folio centred in the footer; none of it on opening pages, blank pages or before the first part) and `none` in `report` and `article`, which keep Typst's folio. It also takes a dictionary that changes the preset, or `none`:
+
+```typst
+#show: book.with(page-style: (
+  header: (
+    odd: (left: ctx => ctx.section, right: ctx => ctx.chapter),
+    even: (left: ctx => ctx.part, right: ctx => ctx.author),
+    rule: 0.4pt,
+  ),
+  footer: (left: ctx => ctx.folio, right: ctx => ctx.title),
+))
+```
+
+`header` and `footer` each take `left`, `center`, `right` (content or `ctx => content`), `odd`/`even` for rectos and versos (used with `facing-pages: true`; otherwise every page is `odd`), `rule`, `text` and `when` (`ctx => bool`). Spaces you give replace the preset's; `rule`, `text` and `when` merge with them. `ctx` has `part`, `chapter`, `section` (the title in force on the page, like `\markboth`), `folio`, `page`, `title`, `author`, `started`, `opening`, `blank`, `numbered` and `matter`. Unknown keys fail with the list of valid ones.
+
 `logo`, `part-ornament` and `custom-titlepage` take content, not file paths. Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
 
 ```typst

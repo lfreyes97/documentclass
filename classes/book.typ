@@ -8,6 +8,7 @@
 #import "../components/numbering.typ" as numbering-mod
 
 #import "../components/layout.typ"
+#import "../components/pagestyle.typ"
 #import "../components/margins.typ"
 
 #let margin-defaults = (
@@ -53,6 +54,9 @@
   // los reversos quedan en blanco, sin cabecera ni folio. false = márgenes iguales en
   // todas las páginas y sin saltos (PDF para pantalla)
   facing-pages: true,
+  // Cabeceras y pies: un preajuste ("classic"), none o un diccionario con header y footer
+  // (ver components/pagestyle.typ)
+  page-style: "classic",
   // Minitoc en la página de cada parte: false, true (sus capítulos, sin número) o
   // un diccionario con opciones de `tocs.partial`, p. ej. `(depth: 2, size: 1em)`
   minitoc: false,
@@ -108,11 +112,15 @@
 
   // Aplicar Layout (Headers, Footers, Párrafos)
   // Envuelve el resto del documento — márgenes ya están configurados arriba
-  show: layout.setup.with(
+  show: pagestyle.setup.with(
+    page-style,
+    class: "book",
     title: title,
     author: author,
     header-font: fonts.header,
+    facing-pages: facing-pages,
   )
+  show: layout.setup
 
   // Numeración: los títulos la reciben de cada matter; figuras y ecuaciones
   // van por capítulo (nivel 2): 2.3, A.1

@@ -8,6 +8,7 @@
 #import "../components/i18n.typ"
 #import "../components/numbering.typ" as numbering-mod
 #import "../components/margins.typ"
+#import "../components/pagestyle.typ"
 
 #let margin-defaults = (
   facing: (inside: 2.5cm, outside: 1.5cm, y: 2cm),
@@ -31,6 +32,9 @@
   margin: auto,
   // Doble cara (el `twoside` de LaTeX): márgenes interior y exterior que alternan
   facing-pages: false,
+  // Cabeceras y pies: none (los de Typst: folio al centro), un preajuste ("classic") o un
+  // diccionario con header y footer (ver components/pagestyle.typ)
+  page-style: none,
   // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
   // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
   fonts: (:),
@@ -61,6 +65,14 @@
     paper: paper,
     numbering: "1",
     margin: margins.resolve(margin, facing-pages, margin-defaults),
+  )
+  show: pagestyle.setup.with(
+    page-style,
+    class: "report",
+    title: title,
+    author: author,
+    header-font: fonts.header,
+    facing-pages: facing-pages,
   )
 
   // Titlepage

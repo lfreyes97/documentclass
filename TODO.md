@@ -86,18 +86,29 @@ diseñarlas antes de congelar la API, porque añaden parámetros nuevos.
       `chapter-title-style` como diccionarios, con otra forma. Falta: estilos
       preestablecidos con nombre, parámetros expuestos con la misma forma en todas las
       clases y, para lo no cubierto, una función que reciba el número y el título.
-- [ ] **Cabeceras** (fancyhdr). Estado actual: `layout.setup` recibe solo `title`,
-      `author` y `header-font`. El contenido está fijo (verso: parte; recto: capítulo; 9 pt
-      en cursiva con filete gris) y solo existe en `book`. `report` y `article` no tienen
-      cabecera. Falta: contenido por izquierda, centro y derecha, distinto en recto y
-      verso (como `\lhead`, `\chead`, `\rhead`); acceso a la parte, el capítulo y la
-      sección vigentes (como `\markboth`); filete configurable; estilo distinto en las
-      páginas de apertura (el `plain` de LaTeX) y cabeceras en las demás clases.
-- [ ] **Pies de página.** Estado actual: el folio va centrado a 10 pt, sin opciones.
-      Falta: posición (centro, exterior o interior), formato del folio, contenido
-      adicional (título, autor), filete y estilo propio en las aperturas. Probablemente
-      conviene un único mecanismo de estilos de página para cabeceras y pies, con
-      izquierda, centro y derecha por recto y verso, en lugar de dos opciones separadas.
+- [x] **Cabeceras y pies: `page-style`** (primera versión, `components/pagestyle.typ`,
+      `test/pagestyle.typ`). Preajuste `"classic"` (lo que hacía `book`, con páginas idénticas
+      a las de antes), diccionario `header`/`footer` con `left`/`center`/`right`, `odd`/`even`,
+      `rule`, `text` y `when`, y funciones `ctx => contenido` con `part`, `chapter`, `section`,
+      `folio`, `title`, `author`… `book` usa `classic`; `report` y `article` aceptan
+      `page-style` pero por defecto es `none` (sin cambios). `layout.setup` quedó solo con el
+      estilo de párrafo y las marcas de salto.
+  - **Falta:** más preajustes (p. ej. folio exterior, solo pie), estilo propio para las
+    páginas de apertura (hoy `classic` las deja sin cabecera, fijo), formato del folio,
+    decidir el valor por defecto de `report` (¿`classic`?) y probar `page-style` en `essay`
+    (usa el motor de `glosa`, con su propia cabecera).
+  - Con `use-parts: false` y sin `#part`, `classic` no muestra cabecera (no hay primer nivel
+    de parte); es lo que ya hacía `book`. Revisar si debe mostrarla.
+
+## Revisión de `essay`
+
+- [ ] **Revisar `essay` como clase.** Se hará más adelante, con cambios propios del
+      usuario. Objetivo: evaluar qué de `essay` y de `glosa` puede integrarse al paquete
+      común (notas al margen en otras clases, cabecera con el título del ensayo, aperturas
+      con índice de secciones en el margen, `chapter-number-style`/`chapter-title-style`) y
+      qué aporta al sistema global (`page-style`, bloque común de título, aperturas).
+      Quedan pendientes aquí: renombrar `inner`/`outer` a `notes`, `titlepage`,
+      `subtitle`/`publisher`, `page-style` y la revisión a tamaño real.
 
 ## Clase para debates
 
