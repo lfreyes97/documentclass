@@ -3,6 +3,11 @@
 //   heading-style: "classic"                        un preajuste
 //   heading-style: (chapter: (align: left))         cambios sobre "classic"
 //   heading-style: (preset: "modern", part: (...), section: (...), h4: (...))
+//   heading-style: (scale: 1.2)                     todos los tamaños, más grandes
+//
+// `scale` agranda cuánto sobresale cada tamaño del texto del cuerpo (1em): con `scale: 1.5`,
+// 1.8em pasa a 2.2em y 1.2em a 1.3em, y un título a 1em sigue a 1em. Vale 1 por defecto. Afecta a
+// `size` de `title-text` y de `label-text`.
 //
 // Cada rol (part, chapter, section, subsection, subsubsection, paragraph) es un diccionario.
 // El rol de cada nivel depende de la clase: en book `part` es el nivel 1 y `chapter` el 2. `h1`…`h6`
@@ -265,8 +270,12 @@
   )
   let aliases = range(1, 7).map(n => "h" + str(n))
   let user = (:)
+  let scale = spec.at("scale", default: 1)
+  assert(type(scale) in (int, float, ratio), message: "heading-style: scale debe ser un número positivo, p. ej. `scale: 1.2`")
+  let scale = if type(scale) == ratio { scale / 100% } else { scale }
+  assert(scale > 0, message: "heading-style: scale debe ser un número positivo, p. ej. `scale: 1.2`")
   for (key, value) in spec {
-    if key == "preset" { continue }
+    if key in ("preset", "scale") { continue }
     let role = key
     if key in aliases {
       let level = int(key.slice(1))
@@ -276,7 +285,7 @@
     }
     assert(
       role in roles,
-      message: "heading-style: clave desconocida «" + key + "». Claves válidas: preset, " + roles.join(", ") + ", " + aliases.join(", "),
+      message: "heading-style: clave desconocida «" + key + "». Claves válidas: preset, scale, " + roles.join(", ") + ", " + aliases.join(", "),
     )
     assert(role not in user, message: "heading-style: «" + role + "» está dos veces (por su nombre y por su alias)")
     user.insert(role, value)
@@ -289,6 +298,26 @@
     check-role(role, own)
     out.insert(role, merge(presets.at(name).at(role), own))
   }
+  out.insert("scale", scale)
+  out
+}
+
+// `size` agrandado por `scale` en cuanto sobresale del cuerpo; las longitudes absolutas no cambian
+#let scale-size(size, scale) = {
+  if type(size) == length and size.abs == 0pt { 1em + (size - 1em) * scale } else { size }
+}
+
+#let scale-text(text-args, scale) = {
+  if "size" in text-args { text-args + (size: scale-size(text-args.size, scale)) } else { text-args }
+}
+
+// Aplica `scale` a los tamaños de un estilo ya resuelto
+#let scaled(s, scale) = {
+  if scale == 1 { return s }
+  let out = s
+  for key in ("title-text", "label-text") {
+    if key in out { out.insert(key, scale-text(out.at(key), scale)) }
+  }
   out
 }
 
@@ -296,7 +325,7 @@
 #let leaf(style, role, variant) = {
   let own = style.at(role)
   let plain = own.pairs().filter(((k, _)) => k not in variants).to-dict()
-  merge(merge(base, plain), if variant != none { own.at(variant, default: (:)) } else { (:) })
+  scaled(merge(merge(base, plain), if variant != none { own.at(variant, default: (:)) } else { (:) }), style.scale)
 }
 
 // Estilo de un título de sección: cada rol hereda del anterior, y el primero del cuerpo
@@ -306,5 +335,5 @@
     out = merge(out, style.at(name))
     if name == role { break }
   }
-  out
+  scaled(out, style.scale)
 }

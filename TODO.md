@@ -86,7 +86,8 @@ configuración; conviene diseñarlas antes de congelar la API, porque añaden pa
       `modern` y `elegant`; diccionario por rol (`part`, `chapter`, `section`, `subsection`,
       `subsubsection`, `paragraph`, con alias `h1`…`h6`). Las aperturas tienen variantes `front`,
       `back` y `appendix`; las secciones heredan del rol anterior y la primera del cuerpo. Las
-      claves viejas `h1-size`…`h4-smallcaps` de `headings.setup` desaparecieron. Los niveles 5 y
+      claves viejas `h1-size`…`h4-smallcaps` de `headings.setup` desaparecieron. `scale`
+      agranda a la vez todos los tamaños según cuánto sobresalen del cuerpo. Los niveles 5 y
       6 de `book` ya no usan el estilo por defecto de Typst, sino los de `heading-style`.
   - **Falta:** `report` y `article` (sus títulos siguen escritos a mano en la clase; harían
     falta preajustes por clase, porque el capítulo de `report` no se parece al de `book`),
