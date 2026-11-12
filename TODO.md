@@ -89,9 +89,11 @@ configuración; conviene diseñarlas antes de congelar la API, porque añaden pa
       claves viejas `h1-size`…`h4-smallcaps` de `headings.setup` desaparecieron. `scale`
       agranda a la vez todos los tamaños según cuánto sobresalen del cuerpo. Los niveles 5 y
       6 de `book` ya no usan el estilo por defecto de Typst, sino los de `heading-style`.
-  - **Falta:** `report` y `article` (sus títulos siguen escritos a mano en la clase; harían
-    falta preajustes por clase, porque el capítulo de `report` no se parece al de `book`),
-    títulos en línea con el párrafo (`run-in`, el `\paragraph` de LaTeX), una función
+  - `report` y `article` usan `heading-style` con preajustes por clase (`classic` idéntico al
+    anterior, comprobado píxel a píxel; `modern` y `elegant` derivados de los de `book`). Sus
+    tamaños de `classic` son los de un cuerpo de 11 pt, escritos en `em`, así que ahora siguen
+    `font-size`; antes eran en pt.
+  - **Falta:** títulos en línea con el párrafo (`run-in`, el `\paragraph` de LaTeX), una función
     `ctx => contenido` para lo que no cubra el diccionario, y la apertura de `essay`
     (queda para su revisión).
   - Las versalitas de `elegant` dependen de la fuente: la Libertinus que Typst incluye las

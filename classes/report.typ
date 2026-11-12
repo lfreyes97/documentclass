@@ -8,6 +8,8 @@
 #import "../components/i18n.typ"
 #import "../components/numbering.typ" as numbering-mod
 #import "../components/margins.typ"
+#import "../components/headings.typ"
+#import "../components/openings.typ"
 #import "../components/themes.typ"
 #import "../components/tocs/toc.typ" as tocs-mod
 #import "../components/pagestyle.typ"
@@ -37,6 +39,8 @@
   // Tema visual (classic, modern, elegant): lo comparten heading-style, page-style y el
   // índice (`tocs`). auto = el de cada parte. Los parámetros de cada parte lo sustituyen
   style: auto,
+  // Estilo de los títulos: un tema o un diccionario (ver components/openings.typ)
+  heading-style: auto,
   // Cabeceras y pies: un tema o variante ("classic", "plain"…), none (los de Typst) o un
   // diccionario con header y footer (ver components/pagestyle.typ)
   page-style: auto,
@@ -54,6 +58,7 @@
   body,
 ) = {
   let style = themes.check(style)
+  let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "report")
   let page-style = themes.pick(page-style, style, "plain")
   // El tema también fija el estilo de los índices; un `tocs.setup` posterior lo sustituye
   show: body => if style != auto { tocs-mod.setup(style: style, body) } else { body }
@@ -119,40 +124,31 @@
   set figure(numbering: numbering-mod.in-chapter.with(1))
   set math.equation(numbering: numbering-mod.equation-in-chapter.with(1)) if equation-numbering
 
-  // Número del título seguido de un espacio, o nada si no está numerado
-  let number(it) = if it.numbering != none [#counter(heading).display(it.numbering) ]
-
-  // --- SHOW RULES ---
-
-  // H1 = CAPÍTULO
+  // --- TÍTULOS ---
+  // Typst da a cada título su propio tamaño; los `em` del estilo se miden contra el cuerpo
+  show heading: set text(size: font-size)
+  // Las fuentes de cada nivel; el estilo (tamaños, espacios, etiqueta) viene de `heading-style`
   show heading.where(level: 1): set text(font: fonts.h1, weight: "bold", hyphenate: true)
-  // Los títulos van en un bloque: si fueran texto en línea, el párrafo que sigue se sangraría
-  // como si siguiera a otro párrafo
-  show heading.where(level: 1): it => {
-    pagebreak(weak: true)
-    // El espacio entre párrafos de antes (1.2em) se suma a los `v` de cada título
-    block(above: 0pt, below: 2.7em, {
-      set par(spacing: 1.2em)
-      v(2em)
-      if it.numbering != none {
-        numbering-mod.reset-in-chapter()
-        context text(size: 14pt, style: "italic")[
-          #i18n.get("chapter") #counter(heading).display(it.numbering)
-        ]
-        v(0.5em)
-      }
-      text(size: 24pt, weight: "bold")[#it.body]
-    })
-  }
-
-  // H2 = SECCIÓN
   show heading.where(level: 2): set text(font: fonts.h2, weight: "bold", hyphenate: true)
-  show heading.where(level: 2): it => block(above: 2.4em, below: 2em, context text(size: 14pt, weight: "bold")[#number(it)#it.body])
-
-  // H3 = SUBSECCIÓN
   show heading.where(level: 3): set text(font: fonts.h3, hyphenate: true)
   show heading.where(level: 4): set text(font: fonts.h4)
-  show heading.where(level: 3): it => block(above: 2.2em, below: 1.8em, context text(size: 12pt, weight: "bold")[#number(it)#it.body])
+
+  // Los títulos van en bloque: si fueran texto en línea, el párrafo que sigue se sangraría
+  show heading.where(level: 1): it => context {
+    headings.opening(it, openings.leaf(heading-style, "chapter", none), fonts.h1, none, reset: true, in-block: true)
+  }
+  show heading.where(level: 2): it => context {
+    headings.run-heading(it, openings.run-leaf(heading-style, "section"), fonts.h2, in-block: true)
+  }
+  show heading.where(level: 3): it => context {
+    headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h3, in-block: true)
+  }
+  show heading.where(level: 4): it => context {
+    headings.run-heading(it, openings.run-leaf(heading-style, "subsubsection"), fonts.h4, in-block: true)
+  }
+  show heading.where(level: 5): it => context {
+    headings.run-heading(it, openings.run-leaf(heading-style, "paragraph"), fonts.heading, in-block: true)
+  }
 
   // Footnotes
   show footnote.entry: it => {

@@ -5,6 +5,8 @@
 #import "../components/fonts.typ" as fonts-mod
 #import "../components/microtype.typ" as microtype-mod
 #import "../components/margins.typ"
+#import "../components/headings.typ"
+#import "../components/openings.typ"
 #import "../components/themes.typ"
 #import "../components/tocs/toc.typ" as tocs-mod
 #import "../components/pagestyle.typ"
@@ -55,6 +57,8 @@
   // Tema visual (classic, modern, elegant): lo comparten heading-style, page-style y el
   // índice (`tocs`). auto = el de cada parte. Los parámetros de cada parte lo sustituyen
   style: auto,
+  // Estilo de los títulos: un tema o un diccionario (ver components/openings.typ)
+  heading-style: auto,
   // Cabeceras y pies: un tema o variante ("classic", "plain"…), none (los de Typst) o un
   // diccionario con header y footer (ver components/pagestyle.typ)
   page-style: auto,
@@ -72,6 +76,7 @@
   body,
 ) = {
   let style = themes.check(style)
+  let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "article")
   let page-style = themes.pick(page-style, style, none)
   // El tema también fija el estilo de los índices; un `tocs.setup` posterior lo sustituye
   show: body => if style != auto { tocs-mod.setup(style: style, body) } else { body }
@@ -114,30 +119,25 @@
   show bibliography: set heading(numbering: none)
   show outline: set heading(numbering: none)
 
-  // Número del título seguido de `sep`, o nada si no está numerado
-  let number(it, sep) = if it.numbering != none [#counter(heading).display(it.numbering)#sep]
-
+  // Las fuentes de cada nivel; el estilo (tamaños, espacios) viene de `heading-style`
+  // Typst da a cada título su propio tamaño; los `em` del estilo se miden contra el cuerpo
+  show heading: set text(size: font-size)
   show heading.where(level: 1): set text(font: fonts.h1, weight: "bold", hyphenate: true)
   show heading.where(level: 2): set text(font: fonts.h2, weight: "bold", hyphenate: true)
   show heading.where(level: 3): set text(font: fonts.h3, weight: "semibold", hyphenate: true)
   show heading.where(level: 4): set text(font: fonts.h4)
 
-  show heading.where(level: 1): it => {
-    v(1.5em)
-    context text(size: 16pt, weight: "bold")[#number(it, [. ])#it.body]
-    v(0.8em)
+  show heading.where(level: 1): it => context {
+    headings.run-heading(it, openings.run-leaf(heading-style, "section"), fonts.h1)
   }
-
-  show heading.where(level: 2): it => {
-    v(1em)
-    context text(size: 13pt, weight: "bold")[#number(it, [ ])#it.body]
-    v(0.6em)
+  show heading.where(level: 2): it => context {
+    headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h2)
   }
-
-  show heading.where(level: 3): it => {
-    v(0.8em)
-    context text(size: 11pt, weight: "semibold")[#number(it, [ ])#it.body]
-    v(0.5em)
+  show heading.where(level: 3): it => context {
+    headings.run-heading(it, openings.run-leaf(heading-style, "subsubsection"), fonts.h3)
+  }
+  show heading.where(level: 4): it => context {
+    headings.run-heading(it, openings.run-leaf(heading-style, "paragraph"), fonts.h4)
   }
 
   // Footnotes

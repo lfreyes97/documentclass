@@ -202,18 +202,91 @@
   paragraph: (above: 0.8em, below: 0.3em),
 )
 
-#let presets = (classic: classic + classic-run, modern: modern + modern-run, elegant: elegant + elegant-run)
+#let variants = ("front", "back", "appendix")
+#let text-keys = ("label-text", "title-text", "number-text")
+
+// Une dos diccionarios; los de texto se combinan en lugar de reemplazarse
+#let merge(a, b) = {
+  let out = a
+  for (key, value) in b {
+    if key in text-keys and type(value) == dictionary {
+      out.insert(key, out.at(key, default: (:)) + value)
+    } else if key in variants {
+      out.insert(key, merge(out.at(key, default: (:)), value))
+    } else {
+      out.insert(key, value)
+    }
+  }
+  out
+}
+
+// Los preajustes de report y article reutilizan los de book con los niveles que les tocan: el
+// capítulo de report abre en página nueva, y en article la sección es el primer nivel y sobresale
+// como lo hacía el capítulo
+#let for-report(theme) = (
+  chapter: merge(theme.chapter, (start: "page", above: 2em, below: 2.5em)),
+  section: theme.section,
+  subsection: theme.subsection,
+  subsubsection: theme.subsubsection,
+  paragraph: theme.paragraph,
+)
+#let for-article(theme, size) = (
+  section: merge(theme.section, (title-text: (size: size))),
+  subsection: theme.section,
+  subsubsection: theme.subsection,
+  paragraph: theme.subsubsection,
+)
+
+// Capítulos en línea con su etiqueta y títulos en negrita, como las clases estándar de LaTeX.
+// Los tamaños son los de un cuerpo de 11 pt (16/11 em = 16 pt) y siguen al cuerpo si cambia
+#let classic-report = (
+  chapter: (
+    start: "page",
+    above: 2.8em,
+    below: 3.78em,
+    align: left,
+    label: "chapter",
+    label-text: (size: 14 / 11 * 1em, style: "italic"),
+    gap: 1.791em,
+    title-text: (size: 24 / 11 * 1em, weight: "bold"),
+  ),
+  section: (above: 2.88em, below: 2.4em, number-sep: [], title-text: (size: 14 / 11 * 1em, weight: "bold"), title-smallcaps: false),
+  subsection: (above: 2.2em, below: 1.8em, title-text: (size: 12 / 11 * 1em)),
+  subsubsection: (above: 1.4em, below: 0.64em, title-text: (size: 1em)),
+  paragraph: (:),
+)
+
+#let classic-article = (
+  section: (above: 2.1em, below: 1.12em, number-sep: [.], title-text: (size: 16 / 11 * 1em, weight: "bold"), title-smallcaps: false),
+  subsection: (above: 1.2em, below: 0.72em, number-sep: [], title-text: (size: 13 / 11 * 1em)),
+  subsubsection: (above: 0.8em, below: 0.5em, title-text: (size: 1em, weight: "semibold")),
+  paragraph: (:),
+)
+
+#let presets = (
+  classic: (book: classic + classic-run, report: classic-report, article: classic-article),
+  modern: (
+    book: modern + modern-run,
+    report: for-report(modern + modern-run),
+    article: for-article(modern + modern-run, 1.45em),
+  ),
+  elegant: (
+    book: elegant + elegant-run,
+    report: for-report(elegant + elegant-run),
+    article: for-article(elegant + elegant-run, 1.45em),
+  ),
+)
 #let names = presets.keys()
 
 #let openings = ("part", "chapter")
 #let runs = ("section", "subsection", "subsubsection", "paragraph")
 #let roles = openings + runs
-#let variants = ("front", "back", "appendix")
-#let text-keys = ("label-text", "title-text", "number-text")
 
 // Nivel de cada rol según la clase
 #let levels = (
   book: (part: 1, chapter: 2, section: 3, subsection: 4, subsubsection: 5, paragraph: 6),
+  report: (chapter: 1, section: 2, subsection: 3, subsubsection: 4, paragraph: 5),
+  article: (section: 1, subsection: 2, subsubsection: 3, paragraph: 4),
 )
 
 #let check-role(name, spec) = {
@@ -247,21 +320,6 @@
   }
 }
 
-// Une dos diccionarios; los de texto se combinan en lugar de reemplazarse
-#let merge(a, b) = {
-  let out = a
-  for (key, value) in b {
-    if key in text-keys and type(value) == dictionary {
-      out.insert(key, out.at(key, default: (:)) + value)
-    } else if key in variants {
-      out.insert(key, merge(out.at(key, default: (:)), value))
-    } else {
-      out.insert(key, value)
-    }
-  }
-  out
-}
-
 // `heading-style` ya validado y completo: un diccionario por rol. `h1`…`h6` se traducen
 // al rol que tiene ese nivel en `class`
 #let resolve(spec, class: "book") = {
@@ -289,16 +347,20 @@
       role in roles,
       message: "heading-style: clave desconocida «" + key + "». Claves válidas: preset, scale, " + roles.join(", ") + ", " + aliases.join(", "),
     )
+    assert(
+      role in levels.at(class),
+      message: "heading-style: la clase " + class + " no tiene el rol «" + role + "». Roles de " + class + ": " + levels.at(class).keys().join(", "),
+    )
     assert(role not in user, message: "heading-style: «" + role + "» está dos veces (por su nombre y por su alias)")
     user.insert(role, value)
   }
   let name = spec.at("preset", default: "classic")
   assert(name in presets, message: "heading-style: preajuste desconocido «" + str(name) + "». Preajustes: " + names.join(", ") + "." + themes.hint(name))
   let out = (:)
-  for role in roles {
+  for role in roles.filter(r => r in levels.at(class)) {
     let own = user.at(role, default: (:))
     check-role(role, own)
-    out.insert(role, merge(presets.at(name).at(role), own))
+    out.insert(role, merge(presets.at(name).at(class).at(role), own))
   }
   out.insert("scale", scale)
   out
@@ -334,6 +396,7 @@
 #let run-leaf(style, role) = {
   let out = run-base
   for name in runs {
+    if name not in style { continue }
     out = merge(out, style.at(name))
     if name == role { break }
   }

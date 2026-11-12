@@ -35,6 +35,20 @@
 #assert(near(leaf(resolve((scale: 150%)), "chapter", none).title-text.size, 2.2em))
 #assert.eq(leaf(resolve((scale: 1)), "chapter", none).title-text.size, 1.8em)
 
+// report y article tienen sus propios roles: en report el capítulo es h1 y en article la sección
+#for name in names {
+  let report = resolve(name, class: "report")
+  assert.eq(report.keys(), ("chapter", "section", "subsection", "subsubsection", "paragraph", "scale"))
+  assert.eq(leaf(report, "chapter", none).start, "page")
+  let article = resolve(name, class: "article")
+  assert.eq(article.keys(), ("section", "subsection", "subsubsection", "paragraph", "scale"))
+}
+#assert.eq(run-leaf(resolve((h1: (above: 7em)), class: "article"), "section").above, 7em)
+#assert.eq(leaf(resolve((h1: (above: 7em)), class: "report"), "chapter", none).above, 7em)
+// Los tamaños de classic son los de un cuerpo de 11 pt: 24 pt de capítulo, 16 pt de sección
+#assert(near(leaf(resolve("classic", class: "report"), "chapter", none).title-text.size, 24 / 11 * 1em))
+#assert(near(run-leaf(resolve("classic", class: "article"), "section").title-text.size, 16 / 11 * 1em))
+
 // Las claves del rol valen para todas las variantes; las de una variante, solo para ella
 #let custom = resolve((chapter: (align: left, front: (above: 1em))))
 #assert.eq(leaf(custom, "chapter", none).align, left)

@@ -118,7 +118,7 @@
 
 // Apertura de un título de parte o capítulo con el estilo `s` de openings.leaf. Requiere
 // `context`. `reset` reinicia la numeración de figuras y ecuaciones si el título está numerado
-#let opening(it, s, font, part-ornament, extra: none, reset: false) = {
+#let opening(it, s, font, part-ornament, extra: none, reset: false, in-block: false) = {
   if s.start == "odd" {
     break-to-odd()
   } else if s.start == "facing" {
@@ -126,7 +126,7 @@
   } else if s.start == "page" {
     pagebreak(weak: true)
   }
-  v(s.above)
+  if not in-block { v(s.above) }
   let numbered = it.numbering != none
   if reset and numbered { numbering-mod.reset-in-chapter() }
   let label = if type(s.label) == str {
@@ -138,7 +138,7 @@
     text(..(font: font) + s.title-text, if s.title-upper { upper(body) } else { body })
   }
   let ornament = if s.ornament == auto { part-ornament } else { s.ornament }
-  align(s.align)[
+  let content = align(s.align)[
     #if numbered and (label != none or s.number-format != none) {
       let number = (s.number-format)(counter(heading).display(it.numbering))
       text(..s.label-text)[#if label != none [#label #number] else [#number]]
@@ -158,13 +158,22 @@
       extra
     }
   ]
-  v(s.below)
+  // En un bloque, el párrafo que sigue no se sangra como si siguiera a otro párrafo
+  if in-block {
+    block(width: 100%, above: 0pt, below: s.below, {
+      v(s.above)
+      content
+    })
+  } else {
+    content
+    v(s.below)
+  }
   if s.end == "odd" { break-to-odd() }
 }
 
 // Título de sección con el estilo `s` de openings.run-leaf. Requiere `context`
-#let run-heading(it, s, font) = {
-  v(s.above)
+#let run-heading(it, s, font, in-block: false) = {
+  if not in-block { v(s.above) }
   let body = if s.title-smallcaps { smallcaps(it.body) } else { it.body }
   let body = if s.title-upper { upper(body) } else { body }
   let number = if numbered(it) and s.number-format != none {
@@ -175,8 +184,11 @@
     #if number != none [#number#s.number-sep]
     #body
   ]
-  if s.align == left { line } else { align(s.align, line) }
-  v(s.below)
+  let line = if s.align == left { line } else { align(s.align, line) }
+  if in-block { block(width: 100%, above: s.above, below: s.below, line) } else {
+    line
+    v(s.below)
+  }
 }
 
 // Configuración de headings para book
