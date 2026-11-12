@@ -169,7 +169,7 @@
 // Combina un área (header o footer) del preajuste con la del usuario
 #let merge-area(base, user) = {
   if user == none { return none }
-  if base == none { return user }
+  if base == none { return if user.len() == 0 { none } else { user } }
   let own-slots = user.keys().any(k => k in slot-keys + ("odd", "even"))
   let out = if own-slots {
     base.pairs().filter(((k, _)) => k not in slot-keys + ("odd", "even")).to-dict()
