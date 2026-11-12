@@ -55,6 +55,9 @@
   lang: "es",
   // Etiquetas que reemplazan las traducidas (ver components/i18n.typ)
   labels: (:),
+  // Notas al pie, que van con símbolos (*, †, ‡…): "page" reinicia la serie en cada página, como el
+  // `perpage` de LaTeX; "document" la sigue a lo largo de todo el documento
+  footnote-counter: "page",
   // Notas al margen: tamaño y numeración de `note` y `notefigure`
   note-size: 8.5pt,
   note-numbering: note-numbering,
@@ -106,6 +109,10 @@
   }
 
   assert(
+    footnote-counter in ("page", "document"),
+    message: "essay: footnote-counter debe ser \"page\" o \"document\", no " + repr(footnote-counter),
+  )
+  assert(
     page-counter in ("footer", "header", none),
     message: "essay: page-counter debe ser \"footer\", \"header\" o none, no " + repr(page-counter),
   )
@@ -122,10 +129,14 @@
       }
     },
     header-ascent: header-ascent,
-    header: if title-in-header {
-      glosa.title-header(style: title-style, number-style: number-style, fallback: header)
-    } else {
-      context header()
+    // El reinicio del contador de notas al pie va en la cabecera: se evalúa al empezar cada página
+    header: {
+      if footnote-counter == "page" { counter(footnote).update(0) }
+      if title-in-header {
+        glosa.title-header(style: title-style, number-style: number-style, fallback: header)
+      } else {
+        context header()
+      }
     },
   )
 

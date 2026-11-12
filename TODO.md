@@ -206,6 +206,9 @@ Lo que se vio al compilar el ensayo con la versión actual (24 páginas, 142 not
     páginas que aún desbordan (la última, o una nota que choca con un bloque ancho: hoy solo se
     detecta el desborde por arriba). La flecha va en el canal junto a la primera línea de la nota (opción
     `overflow-mark`). El tiempo de compilación del ensayo pasó de 2.5 s a 5.7 s.
+- [x] Las notas al pie (símbolos `*`, `†`, `‡`…) seguían la cuenta por todo el documento: la `‡` de la pág. 9 y la `§` de la
+      13 parecían la tercera y cuarta nota de una página con una sola. Ahora reinician en cada página
+      (`footnote-counter: "page"`, por defecto; `"document"` lo deja como antes).
 - [ ] Decidir si el ancho por defecto de la columna interior de `essay` baja a 0.
 - [ ] La fecha de la cabecera, si no se pasa `date:`, es la de hoy: el PDF cambia cada día.
       Valorar un aviso o fijarla.
