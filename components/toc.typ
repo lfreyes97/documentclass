@@ -50,7 +50,8 @@
 
     // Estilos para entradas de nivel 2 (capítulos)
     #show outline.entry.where(level: 2): it => context {
-      v(chapter-gap, weak: true)
+      // Un espacio débil de 0em anularía el espacio entre bloques y las líneas se montarían
+      if chapter-gap != 0em { v(chapter-gap, weak: true) }
       // El documento marca cada capítulo con <chapter-kind> (true = apéndice)
       let loc = it.element.location()
       let kinds = query(selector(<chapter-kind>).before(loc, inclusive: true))
