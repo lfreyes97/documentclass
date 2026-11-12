@@ -1,130 +1,65 @@
 # TODO
 
-Estado al 2026-11-12, tras los commits `ea6d924` (márgenes), `45a3bd9`, `643fa19` y `3c198b8`
-(`page-style`).
+Estado al 2026-11-12. Lo ya hecho está en `HECHO.md`.
 Meta: madurez del paquete antes de congelar la API. No hay libros cerrados, así que
 los cambios incompatibles salen baratos ahora.
 
-## Decisiones abiertas
-
-- [x] **Márgenes.** Decidido: un único `margin` (`auto`, longitud o diccionario) y
-      `facing-pages` como el `twoside` de LaTeX. Ver "Estabilizar la API".
-- [x] **Índice.** Decidido: la API de `tocs` es la canónica. `tableofcontents`,
-      `minitoc`, `listoffigures` y `listoftables` se conservan como nombres (son los de
-      LaTeX y los que usan los libros) pero pasan a ser `tocs`. Plan en "Estabilizar la API".
-- [x] **`report` y `page-style`.** Decidido: `report` usa `page-style: "plain"` (solo el
-      folio) y el estilo de párrafo y las marcas de `layout.setup`, como `book`. Sus títulos
-      van en bloque para que el primer párrafo no se sangre. Cambia respecto a antes: los
-      párrafos llevan sangría y el interlineado es el de `book`.
-
-## Estabilizar la API
+## API
 
 Inconsistencias medidas sobre las firmas de `book`, `report`, `article` y `essay`.
 
-- [x] **Márgenes unificados.** `margin` y `facing-pages` en `book`, `report` y `article`
-      (`components/margins.typ`, `test/margins.typ`). Con `facing-pages: true` el margen es
-      `inside`/`outside`; con `false`, `x` o `left`/`right`; lo no indicado conserva el valor
-      de la clase y una clave del tipo equivocado falla con mensaje. `facing-pages` es `true`
-      en `book` y `false` en `report` y `article` (`report` pasa de márgenes alternos a
-      simétricos). En `essay`, `book` se renombró a `facing-pages`.
-  - **Falta:** en `essay`, renombrar `inner` y `outer` (columnas de notas) a algo como
-    `notes`. En `report` y `article`, `facing-pages` cambia los márgenes y, si se activa
-    `page-style`, alterna cabeceras y pies (`odd`/`even`).
-- [ ] **Familias de opciones como diccionario**, como ya son `fonts`, `microtype` y
-      ahora `minitoc`: falta el grupo de portada (`cover`, `back-cover`, `cover-data`,
-      `cover-options`).
-- [ ] **Bloque común de título** en las cuatro clases: `title`, `subtitle`, `author`,
-      `date`, `publisher`. Hoy falta `subtitle` en `essay` y `publisher` en `article` y
-      `essay`. Lo exclusivo de una clase se documenta como tal.
-- [ ] **`essay.titlepage` vs `custom-titlepage`** (`book`, `report`): mismo concepto,
-      dos nombres. Unificar (no revisé cómo funciona el de `essay`).
-- [ ] **`essay.book`** (booleano que alterna columnas de notas): nombre poco claro y
-      distinto de `facing-pages`. Renombrar.
-- [ ] **`equation-numbering`** está solo en `book` y `report`. Decidir si va en
-      `article` y `essay`.
-- [x] **Un solo índice: `tocs` canónico.** Hecho:
-  - `tableofcontents`, `minitoc`, `listoffigures`, `listoftables` y `listoflistings` son
-    las funciones de `tocs`; se eliminaron `components/toc.typ`, `components/minitoc.typ` y
-    las listas de `matter.typ`.
-  - `book(minitoc: ...)` acepta `false`, `true` o un diccionario de opciones de
-    `tocs.partial`; desaparecieron los cinco `minitoc-*` sueltos. Por defecto: capítulos,
-    sin número, en peso normal y con puntos. `tocs` ganó la clave de estilo `number`
-    (`false` oculta número y etiqueta).
-  - `depth` cuenta los niveles bajo las partes. Un `depth` antiguo con partes equivale a
-    ese valor menos 1; sin partes (`use-parts: false`) es igual.
-  - Una opción antigua falla con un mensaje que dice su forma nueva (`h1-font`, `h2-font`,
-    `h3-font`, `chapter-label`, `nest-indent`, `indent`, `chapter-gap`, `numbering`).
-  - Con `facing-pages: false` el título del índice (un encabezado de nivel capítulo) ya no
-    fuerza una página impar en el front matter.
-  - Migrados y verificados contra sus PDFs anteriores (mismas palabras en el índice):
-    `Presup/siempre-listos/main.typ`, `Bahnsen-DebateSproul.typ`, `Defendiendo la fe.typ`,
-    `Warfield-Vol1.typ` y `Propaganda/espanol/main.typ` y `main-a5.typ`.
-  - **Falta:** `Presup/_duplicados/debate_bahnsen_sproul.typ` (copia) sigue con el API
-    antiguo y ya no compila. `chapter-label` de Warfield y Propaganda quedó como
-    `label: "chapter"`; mirar a ojo que el aspecto es el deseado. Los índices extra
-    de `Bahnsen-DebateSproul.typ` (`depth: 4`) también.
-  - Falta una prueba con aserciones sobre las entradas que aparecen a cada `depth` (hoy solo
-    se comprobó a mano); entra en el script de estructura de "Pruebas, CI y versión".
-- [ ] **Superficie pública explícita.** `lib.typ` hoy expone los módulos `matter`,
-      `toc`, `tocs` y `glosa`, y nombres genéricos (`main`, `front`, `back`, `note`,
-      `part`) que chocan con `import "lib.typ": *`. Exportar solo lo documentado.
+- [ ] **Familias de opciones como diccionario**, como ya son `fonts`, `microtype` y `minitoc`: falta el grupo
+      de portada (`cover`, `back-cover`, `cover-data`, `cover-options`).
+- [ ] **Bloque común de título** en las cuatro clases: `title`, `subtitle`, `author`, `date`, `publisher`.
+      Hoy falta `subtitle` en `essay` y `publisher` en `article` y `essay`. Lo exclusivo de una clase
+      se documenta como tal.
+- [ ] **`essay.titlepage` vs `custom-titlepage`** (`book`, `report`): mismo concepto, dos nombres.
+      Unificar (no revisé cómo funciona el de `essay`).
+- [ ] **`equation-numbering`** está solo en `book` y `report`. Decidir si va en `article` y `essay`.
+- [ ] **Superficie pública explícita.** `lib.typ` hoy expone los módulos `matter`, `toc`, `tocs` y
+      `glosa`, y nombres genéricos (`main`, `front`, `back`, `note`, `part`) que chocan con
+      `import "lib.typ": *`. Exportar solo lo documentado.
 - [ ] **Tabla "API estable / interna"** en el README.
-- [ ] **Validación uniforme.** Toda opción de tipo diccionario falla con un mensaje que
-      lista las claves válidas, como ya hacen `fonts`, `labels` y `microtype`.
-- [ ] **Estados con clave de texto** (`matter-section`, `appendix-mode`, `dc-*`) que
-      `tocs` lee por nombre (`components/tocs/bridge.typ`): documentarlos como contrato
-      o reducirlos.
+- [ ] **Validación uniforme.** Toda opción de tipo diccionario falla con un mensaje que lista las
+      claves válidas, como ya hacen `fonts`, `labels`, `microtype`, `margin`, `page-style` y `heading-style`.
+- [ ] **Estados con clave de texto** (`matter-section`, `appendix-mode`, `dc-*`) que `tocs` lee por
+      nombre (`components/tocs/bridge.typ`): documentarlos como contrato o reducirlos.
 
-## Cabeceras, pies y aperturas de capítulo (equivalentes a fancyhdr y fncychap)
+### Restos de la migración del índice
 
-Cabeceras y pies ya se configuran con `page-style` (ver abajo). Las aperturas siguen sin
-configuración; conviene diseñarlas antes de congelar la API, porque añaden parámetros nuevos.
+- [ ] `Presup/_duplicados/debate_bahnsen_sproul.typ` (copia) sigue con el API antiguo y ya no compila.
+- [ ] `chapter-label` de Warfield y Propaganda quedó como `label: "chapter"`; mirar a ojo que el
+      aspecto es el deseado. Los índices extra de `Bahnsen-DebateSproul.typ` (`depth: 4`) también.
 
-- [x] **Aperturas de capítulo y de parte: `heading-style`** en `book` (primera versión,
-      `components/openings.typ`, `test/openings.typ`). Preajustes `classic` (idéntico al
-      anterior: comprobado píxel a píxel y con las referencias de `test/structure.py`),
-      `modern` y `elegant`; diccionario por rol (`part`, `chapter`, `section`, `subsection`,
-      `subsubsection`, `paragraph`, con alias `h1`…`h6`). Las aperturas tienen variantes `front`,
-      `back` y `appendix`; las secciones heredan del rol anterior y la primera del cuerpo. Las
-      claves viejas `h1-size`…`h4-smallcaps` de `headings.setup` desaparecieron. `scale`
-      agranda a la vez todos los tamaños según cuánto sobresalen del cuerpo. Los niveles 5 y
-      6 de `book` ya no usan el estilo por defecto de Typst, sino los de `heading-style`.
-  - `report` y `article` usan `heading-style` con preajustes por clase (`classic` idéntico al
-    anterior, comprobado píxel a píxel; `modern` y `elegant` derivados de los de `book`). Sus
-    tamaños de `classic` son los de un cuerpo de 11 pt, escritos en `em`, así que ahora siguen
-    `font-size`; antes eran en pt.
-  - **Falta:** títulos en línea con el párrafo (`run-in`, el `\paragraph` de LaTeX), una función
-    `ctx => contenido` para lo que no cubra el diccionario, y la apertura de `essay`
-    (queda para su revisión).
-  - Las versalitas de `elegant` dependen de la fuente: la Libertinus que Typst incluye las
-    tiene, la que instala `instatypst` en esta máquina no.
-- [x] **Cabeceras y pies: `page-style`** (primera versión, `components/pagestyle.typ`,
-      `test/pagestyle.typ`). Preajuste `"classic"` (lo que hacía `book`, con páginas idénticas
-      a las de antes), diccionario `header`/`footer` con `left`/`center`/`right`, `odd`/`even`,
-      `rule`, `text` y `when`, y funciones `ctx => contenido` con `part`, `chapter`, `section`,
-      `folio`, `title`, `author`… `book` usa `classic`; `report` y `article` aceptan
-      `page-style`; en `report` es `"plain"` y en `article` `none`. `layout.setup` quedó solo con el
-      estilo de párrafo y las marcas de salto.
-  - Preajustes: `classic`, `modern` y `elegant` (temas, compartidos con `heading-style` y `tocs`) y las
-    variantes `plain`, `folio-outer` y `running-outer`, solo de `page-style`. El parámetro `style`
-    de las clases aplica un tema a las tres partes (`components/themes.typ`, `test/themes.typ`);
-    `demos/demo_pagestyle.typ`). Las
-    aperturas y el formato del folio no necesitaron claves propias: salen de `ctx.opening` y
-    de las funciones de cada espacio.
-  - **Falta:** probar `page-style` en `essay` (usa el motor de `glosa`, con su propia
-    cabecera) y decidir el valor por defecto de `article`.
-  - Con `use-parts: false` y sin `#part`, `classic` no muestra cabecera (no hay primer nivel
-    de parte); es lo que ya hacía `book`. Revisar si debe mostrarla.
+## Estilos de títulos, cabeceras y pies
+
+- [ ] **`heading-style`:** títulos en línea con el párrafo (`run-in`, el `\paragraph` de LaTeX) y una
+      función `ctx => contenido` para lo que no cubra el diccionario.
+- [ ] **`page-style`:** decidir el valor por defecto de `article` (hoy ninguno), y revisar que
+      `classic` no muestre cabecera con `use-parts: false` y sin `#part` (no hay primer nivel de
+      parte; es lo que ya hacía `book`).
+- [ ] Las versalitas de `elegant` dependen de la fuente: la Libertinus que Typst incluye las tiene, la
+      que instala `instatypst` en esta máquina no. Documentarlo o avisar.
 
 ## Revisión de `essay`
 
-- [ ] **Revisar `essay` como clase.** Se hará más adelante, con cambios propios del
-      usuario. Objetivo: evaluar qué de `essay` y de `glosa` puede integrarse al paquete
-      común (notas al margen en otras clases, cabecera con el título del ensayo, aperturas
-      con índice de secciones en el margen, `chapter-number-style`/`chapter-title-style`) y
-      qué aporta al sistema global (`page-style`, bloque común de título, aperturas).
-      Quedan pendientes aquí: renombrar `inner`/`outer` a `notes`, `titlepage`,
-      `subtitle`/`publisher`, `page-style` y la revisión a tamaño real.
+El ensayo real ya está revisado (ver `HECHO.md`). Queda la clase:
+
+- [ ] **Integrar `essay` al sistema común.** Evaluar qué de `essay` y de `glosa` puede pasar al paquete
+      y qué aporta al sistema global:
+  - notas al margen en `book`, `report` y `article` (hoy solo `essay`);
+  - `page-style` en `essay` (usa `glosa.header`, con su propia cabecera);
+  - `heading-style` en `essay` (`chapter-number-style`, `chapter-title-style`, `section-numbering`);
+  - `margin` en lugar de `top`, `bottom`, `inner` y `outer`.
+- [ ] Renombrar `inner` y `outer` (columnas de notas) a algo como `notes`, para no confundirlos
+      con márgenes.
+- [ ] Decidir si el ancho por defecto de la columna interior baja a 0, y si `top` y `header-ascent`
+      por defecto son más compactos cuando `chapter-numbering` es `none` (el título ya no lleva un
+      numeral de 60 pt, y 32 mm + 11 pt de margen superior sobra).
+- [ ] **Desborde de notas:** una consulta (`typst query … '<glosa-overflow>'`) y una marca en `debug-frame`
+      para las páginas que aún desbordan. Hoy solo se detecta el desborde por arriba: no se mueve una
+      nota que choca con un bloque ancho (`wideblock`), y la última página no puede pasar notas.
+- [ ] El tiempo de compilación del ensayo pasó de 2.5 s a 5.7 s con `carry`: ver si se puede bajar.
 
 ## Clase para debates
 
@@ -162,71 +97,35 @@ Ideas, sin decidir:
 - [ ] **Texto paralelo** original y traducción en dos columnas (opcional; hay un proyecto
       `translation-harness` en `Proyectos`).
 - [ ] **Dependencias.** Conviene diseñarla sobre el sistema común de cabeceras, pies y
-      aperturas de capítulo y sobre el bloque común de título (secciones de arriba), no
-      como una copia de `book`. Una demo con un extracto del libro actual haría de prueba.
+      aperturas de capítulo y sobre el bloque común de título, no como una copia de `book`.
+      Una demo con un extracto del libro actual haría de prueba.
 
 ## Pruebas, CI y versión
 
-- [x] **Pruebas que verifiquen estructura.** `test/structure.py`: compila todo y revisa
-      páginas con solo folio, orden de folios, solape de líneas, cabeceras y páginas en
-      blanco de `test/structure_book.typ`, y el texto y la posición de las líneas de seis
-      archivos contra `test/reference/`. Comprobado que detecta una cabecera invertida,
-      folios en páginas en blanco, líneas solapadas y un cambio de interlineado.
-  - **Falta:** aserciones sobre las entradas del índice a cada `depth` (pendiente de `tocs`),
-    pruebas de `report` y `article` con `page-style` (hoy solo `book` tiene fixture de
-    estructura) y fixtures con las fuentes que no incluye Typst (`dropcaps`, `fonts_roles`
-    salen con fallback).
-  - No he visto el CI correr: el workflow está sin probar en GitHub, y las referencias pueden
-    diferir si la versión de `pdftotext` del runner da otro texto.
-- [x] **CI** (`.github/workflows/test.yml`) ejecuta ese script con Typst 0.15.1.
-- [ ] **Changelog** y **etiquetas de versión** (sin urgencia: es una versión de desarrollo,
-      se sube cuando convenga; subir obliga a renombrar el enlace simbólico
-      `@local/documentclass:0.1.0` o a cambiar los imports). Cambios incompatibles desde `0.1.0`:
-      `logo`, `part-ornament` y `custom-titlepage` ahora son contenido; `fonts` sustituyó a
-      las fuentes sueltas; `microtype` y `facing-pages` cambian la maquetación por defecto.
+- [ ] Aserciones sobre las entradas del índice que aparecen a cada `depth` (hoy solo se comprobó
+      a mano), en `test/structure.py`.
+- [ ] Fixtures de estructura para `report` y `article` con `page-style` y `heading-style` (hoy solo
+      `book` tiene fixture), y para `essay` con notas al margen desbordadas.
+- [ ] Fixtures con las fuentes que no incluye Typst (`dropcaps`, `fonts_roles` salen con fallback).
+- [ ] El CI (`.github/workflows/test.yml`) no se ha visto correr en GitHub; las referencias pueden
+      diferir si la versión de `pdftotext` del runner da otro texto.
+- [ ] **Changelog** y **etiquetas de versión** (sin urgencia: es una versión de desarrollo, se sube
+      cuando convenga; subir obliga a renombrar el enlace simbólico `@local/documentclass:0.1.0` o a
+      cambiar los imports). `HECHO.md` es la base. Cambios incompatibles desde `0.1.0`: `logo`,
+      `part-ornament` y `custom-titlepage` ahora son contenido; `fonts` sustituyó a las fuentes
+      sueltas; `microtype` y `facing-pages` cambian la maquetación por defecto; `margin-inside`,
+      `margin-outside`, `margin-x` y `margin-y` son `margin`; `book` en `essay` es `facing-pages`;
+      `outer`/`minimal` de `page-style` son `running-outer`/`folio-outer`; `heading-style` sustituye
+      a `h1-size`…; el `date` de `essay` es `none`; las notas al pie de `essay` empiezan en `†`.
 - [ ] **README:** enlaza a `demos/`, pero `typst.toml` los excluye del paquete publicado.
-
-## Ensayo real (Iapocalipsis, copia temporal en `tmp-iapocalipsis/`, fuera del repositorio)
-
-Lo que se vio al compilar el ensayo con la versión actual (24 páginas, 142 notas al margen):
-
-- [x] El título ya no lleva numeral por defecto (`chapter-numbering: none`); con un solo ensayo el
-      "1" grande sobraba. `"1"` lo devuelve.
-- [x] El contador "Pág. n de N" salía a la izquierda de la cabecera, en la columna interior, y eso
-      obligaba a que esa columna midiera 15 mm. Ahora va en el pie, borde exterior
-      (`page-counter: "footer"`; `"header"` lo deja como antes). Con eso, `inner: (width: 0mm)`
-      libera esos 15 mm: probado dándoselos a las notas (`outer: (width: 60mm)`).
-- [x] **Desborde de notas** (`overflow: "carry"`, por defecto). En la pág. 22 había más notas de las que
-      caben y se salían por arriba, pisando la cabecera. `glosa` reparte ahora las notas en una
-      función pura (`_fit-page`, `_carry-layout`, probada en `test/glosa_carry.typ`): las últimas de la
-      página pasan al principio de la columna de la siguiente, con una flecha. Los avisos que no
-      se mueven se siguen dibujando desde su ancla, así que sin desborde el resultado es idéntico.
-      En el ensayo desaparece el desborde de las 24 páginas. `setup` se movió a `glosa/setup.typ`.
-  - **Falta:** una consulta (`typst query … '<glosa-overflow>'`) y una marca en `debug-frame` para las
-    páginas que aún desbordan (la última, o una nota que choca con un bloque ancho: hoy solo se
-    detecta el desborde por arriba). La flecha va en el canal junto a la primera línea de la nota (opción
-    `overflow-mark`). El tiempo de compilación del ensayo pasó de 2.5 s a 5.7 s.
-- [x] Las notas al pie (símbolos `*`, `†`, `‡`…) seguían la cuenta por todo el documento: la `‡` de la pág. 9 y la `§` de la
-      13 parecían la tercera y cuarta nota de una página con una sola. Ahora reinician en cada página
-      (`footnote-counter: "page"`, por defecto; `"document"` lo deja como antes).
-- [x] El `*` como superíndice queda en un punto (el glifo ya es pequeño y alto). Agrandarlo desestabilizaba
-      la maquetación (Typst avisaba de que no convergía), así que el juego por defecto empieza en `†`
-      (`footnote-symbols`, configurable).
-- [ ] Decidir si el ancho por defecto de la columna interior de `essay` baja a 0.
-- [x] **Fecha fija.** Sin `date:`, la cabecera llevaba la fecha de hoy y el PDF cambiaba cada día. Ahora `date`
-      es `none` por defecto: sin fecha en la cabecera ni en los metadatos del PDF. Una `datetime` o un
-      texto la ponen, y una `datetime` fija también la fecha del PDF; `datetime.today()` devuelve la de hoy.
-- [ ] Revisar las 24 páginas a ojo con los cambios (solo se vieron la 1, 9 y 22).
 
 ## Clases y revisión pendiente
 
 - [ ] **Microtipografía:** solo se midió en `book`. Revisar `report`, `article` (con
       `cols: 2`, columnas estrechas) y `essay` (notas al margen).
-- [ ] **`essay`:** nunca se vio a tamaño real. En una miniatura el texto parecía llegar
-      muy pegado a la columna de notas.
 - [ ] **`tocs`:** solo se sabe que compila; probarlo a fondo.
 - [ ] **Etiquetas traducidas** en pt, fr, de e it: no se verificó que estén bien.
-- [ ] **`glosa` y letras capitales:** no se examinaron por dentro.
+- [ ] **Letras capitales:** no se examinaron por dentro (`glosa` sí, con el reparto de notas).
 
 ## Imprenta
 
