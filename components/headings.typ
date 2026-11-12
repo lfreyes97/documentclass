@@ -36,14 +36,23 @@
   }
 }
 
-// Salto a página impar con marcas a ambos lados: las páginas que quedan
-// estrictamente entre las dos marcas son páginas en blanco. Es débil para que
-// dos saltos seguidos (parte + capítulo) no dejen páginas vacías de más.
-#let break-to-odd() = {
-  [#metadata(none) <dc-break-before>]
-  pagebreak(to: "odd", weak: true)
-  [#metadata(none) <dc-break-after>]
+// Marcas a ambos lados de un salto de página: las páginas que quedan
+// estrictamente entre las dos marcas son páginas en blanco. `layout.setup`
+// las pone en todo `pagebreak`, también en los que escribe el usuario, con
+// `mark-pagebreaks`; `blank-page` las pone a mano porque `page[]` no es un salto.
+#let mark-pagebreaks(body) = {
+  show pagebreak: it => {
+    [#metadata(none) <dc-break-before>]
+    it
+    [#metadata(none) <dc-break-after>]
+  }
+  body
 }
+
+// Salto a página impar. Es débil para que dos saltos seguidos (parte +
+// capítulo) no dejen páginas vacías de más. Las marcas de página en blanco
+// las añade `mark-pagebreaks`.
+#let break-to-odd() = pagebreak(to: "odd", weak: true)
 
 // Borde superior del área de texto de la página actual (requiere `context`)
 #let body-top() = {
@@ -55,7 +64,7 @@
 }
 
 // Página en blanco intencional, sin cabecera ni folio (usa las mismas marcas que
-// break-to-odd)
+// mark-pagebreaks)
 #let blank-page() = {
   [#metadata(none) <dc-break-before>]
   page[]

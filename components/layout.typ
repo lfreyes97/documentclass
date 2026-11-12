@@ -1,4 +1,4 @@
-#import "headings.typ": is-blank-page, matter-state
+#import "headings.typ": is-blank-page, mark-pagebreaks, matter-state
 
 #let setup(
   title: none,
@@ -127,5 +127,5 @@
     first-line-indent: 1.5em,
   )
 
-  body
+  mark-pagebreaks(body)
 }
