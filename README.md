@@ -140,6 +140,7 @@ All classes accept the following common parameters:
 - `fonts`: Font families by role (see [Fonts](#fonts)).
 - `lang`: Document language; it also picks the labels (see [Languages](#languages)).
 - `labels`: Labels that replace the translated ones.
+- `microtype`: Justification and no-break-space adjustments (see [Microtypography](#microtypography)).
 - `margin-inside`, `margin-outside`, `margin-y`: Page margins.
 
 ### Specific Parameters
@@ -289,9 +290,30 @@ Each value can be a family name or a fallback list, such as `("EB Garamond", "Li
 
 `tableofcontents`, `minitoc` and `dropcap` still take their own `font` argument, which overrides the role for that call.
 
+### Microtypography
+
+All four classes apply a few adjustments to justified text, on by default. `microtype: false` turns them off (Typst's own behavior) and a dictionary changes any of them:
+
+```typst
+#show: book.with(
+  microtype: (
+    spacing: (min: 90%, max: 120%),            // word space Typst may shrink or stretch
+    tracking: (min: -0.012em, max: 0.012em),   // letter spacing Typst may adjust
+    hyphenation: 130%,                         // cost of a hyphen (100% = Typst's default)
+    glue: true,                                // no-break spaces, see below
+  ),
+)
+```
+
+- **`spacing` and `tracking`** are Typst's `par.justification-limits`. With room to adjust both, Typst spreads the correction over many lines instead of loading it on the worst ones. `±0.012em` is about 0.13pt per letter at 11pt, below what the eye picks up.
+- **`hyphenation`** raises the cost of hyphenating (Typst's `text.costs`), so words break less often.
+- **`glue`** puts a no-break space after short abbreviations before a number (`p. 12`, `Col. 2:3`), titles (`Dr. Bahnsen`), initials (`L. F. Reyes`), numbered books (`1 Corintios`) and `n.º`, so a reference never splits across lines. It also keeps a dash (`—`) with the word before it, so it never starts a line.
+
+On a 39-page Spanish book (EB Garamond, A5) these defaults cut hyphenated lines from 8.1% to 3.4% and the spread of word spaces by about a quarter, and no abbreviation, title or dash was left at a line break. A document that already looked right can re-flow, so recheck page breaks after updating. Hanging punctuation (`overhang`) is already on in Typst.
+
 ## Tests
 
-`test/` holds documents that exercise each feature (fonts, numbering and cross-references, the essay class). Compile them from the repository root:
+`test/` holds documents that exercise each feature (fonts, numbering and cross-references, the essay class, microtypography). `test/microtype.typ` also checks the no-break rules with `assert`. Compile them from the repository root:
 
 ```bash
 for f in test/*.typ; do typst compile --root . "$f" /tmp/out.pdf; done

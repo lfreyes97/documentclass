@@ -3,6 +3,7 @@
 #import "../components/matter.typ"
 #import "../components/i18n.typ"
 #import "../components/fonts.typ" as fonts-mod
+#import "../components/microtype.typ" as microtype-mod
 
 /// Titleblock inline — título, autor y fecha en la misma página
 #let titleblock(
@@ -48,6 +49,9 @@
   // contents, abstract, figures, tables (ver components/i18n.typ)
   labels: (:),
   cols: 1,
+  // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
+  // true, false o un diccionario con spacing, tracking, hyphenation y glue
+  microtype: true,
   body,
 ) = {
   set document(author: if type(author) in (str, array) { author } else { () }, title: title) // Los metadatos solo aceptan texto
@@ -61,6 +65,7 @@
     lang: lang,
   )
   show raw: set text(font: fonts.mono)
+  show: microtype-mod.setup.with(microtype)
 
   // Una sola cara: márgenes simétricos, numeración desde pág. 1
   set page(

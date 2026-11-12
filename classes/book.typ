@@ -3,6 +3,7 @@
 #import "../components/footer.typ"
 #import "../components/headings.typ"
 #import "../components/fonts.typ" as fonts-mod
+#import "../components/microtype.typ" as microtype-mod
 #import "../components/i18n.typ"
 #import "../components/numbering.typ" as numbering-mod
 
@@ -47,6 +48,9 @@
   minitoc-indent: 0pt,
   minitoc-weight: none,
   minitoc-numbered: false,
+  // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
+  // true, false o un diccionario con spacing, tracking, hyphenation y glue
+  microtype: true,
   body,
 ) = {
   // Configuración base
@@ -61,6 +65,7 @@
     lang: lang,
   )
   show raw: set text(font: fonts.mono)
+  show: microtype-mod.setup.with(microtype)
 
   // Configuración de página base (márgenes para todo el documento, incluida la portada)
   set page(

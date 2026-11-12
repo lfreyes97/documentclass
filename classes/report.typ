@@ -4,6 +4,7 @@
 #import "../components/layout.typ"
 #import "../components/matter.typ"
 #import "../components/fonts.typ" as fonts-mod
+#import "../components/microtype.typ" as microtype-mod
 #import "../components/i18n.typ"
 #import "../components/numbering.typ" as numbering-mod
 
@@ -31,6 +32,9 @@
   // contents, abstract, figures, tables (ver components/i18n.typ)
   labels: (:),
   equation-numbering: false, // Numerar ecuaciones en bloque: (2.1)
+  // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
+  // true, false o un diccionario con spacing, tracking, hyphenation y glue
+  microtype: true,
   body,
 ) = {
   set document(author: if type(author) in (str, array) { author } else { () }, title: title) // Los metadatos solo aceptan texto
@@ -44,6 +48,7 @@
     lang: lang,
   )
   show raw: set text(font: fonts.mono)
+  show: microtype-mod.setup.with(microtype)
 
   set page(
     paper: paper,
