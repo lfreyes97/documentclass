@@ -17,7 +17,7 @@ A robust, LaTeX-inspired document class package for Typst, providing `book`, `re
   - `half-title()`, `colophon()`
 - **Layout Control**: Configurable margins, paper size (`a4`, `a5`, etc.), and font sizes.
 - **Microtypography**: Smart header suppression on empty pages or before Parts.
-- **Tables of contents**: the `tocs` module adds presets, per-level styles, partial tables and lists of figures, tables and listings, next to `tableofcontents` and `minitoc`.
+- **Tables of contents**: one API (`tocs`) behind `tableofcontents`, `minitoc`, `listoffigures`, `listoftables` and `listoflistings`: presets, per-level styles, partial tables and lists of figures, tables and listings.
 
 ## Installation
 
@@ -144,7 +144,7 @@ All classes accept the following common parameters:
 - `margin-inside`, `margin-outside`, `margin-y`: Page margins.
 
 ### Specific Parameters
-- **Book**: `part-ornament`, `logo`, `custom-titlepage`, `equation-numbering`, `use-parts`, `cover` (see [Covers](#covers)), and `minitoc` with `minitoc-size`, `minitoc-depth`, `minitoc-indent`, `minitoc-weight`, `minitoc-numbered`.
+- **Book**: `part-ornament`, `logo`, `custom-titlepage`, `equation-numbering`, `use-parts`, `cover` (see [Covers](#covers)), and `minitoc` (`true`, or a dictionary of `tocs.partial` options; see [Tables of contents](#tables-of-contents-tocs)).
 - **Article**: `cols` (column count), `abstract`.
 - **Report**: `abstract`, `logo`, `custom-titlepage`, `equation-numbering`.
 - **Essay**: see [Essay Class](#essay-class).
@@ -211,39 +211,41 @@ In `book` and `report`, figures and tables are numbered within the chapter (`2.3
 
 `#heading(numbering: none)[...]` gives an unnumbered heading in any class. `#bibliography("refs.bib")` and `#outline()` produce unnumbered headings; in `book` they sit at chapter level, not as a part.
 
-`#listoffigures()` and `#listoftables()` list figures and tables with their numbers and pages.
-
 ### Tables of contents (tocs)
 
-`tableofcontents`, `minitoc`, `listoffigures` and `listoftables` work as before. The `tocs` module is a second, more configurable set of tables that reads the class on its own: parts and chapters in `book`, chapters in `report`, sections in `article` and `essay`; chapter and appendix numbers; each entry's folio in the numbering of its page (`iii`, `7`); the `toc` and `minitoc` font roles; and the translated labels, including `labels` overrides.
+The LaTeX names are the `tocs` functions: `tableofcontents` is `tocs.toc`, `minitoc` is `tocs.partial`, `listoffigures` is `tocs.lof`, `listoftables` is `tocs.lot` and `listoflistings` is `tocs.lol`. They all take the same options and read the class on their own: parts and chapters in `book`, chapters in `report`, sections in `article` and `essay`; chapter and appendix numbers; each entry's folio in the numbering of its page (`iii`, `7`); the `toc` and `minitoc` font roles; and the translated labels, including `labels` overrides.
+
+`depth` counts the levels *under the parts*: `depth: 1` lists parts and chapters, `depth: 2` adds sections, `depth: 3` subsections. Parts always appear unless `parts: false`.
+
+In `book`, `minitoc: true` puts a table of the part's chapters on each part page, without numbers and with dot leaders. Pass a dictionary of `tocs.partial` options to change it, for example `minitoc: (depth: 2, size: 1em)`. A `levels` entry replaces the default one, so repeat `number: false` if you still want chapters without numbers.
 
 ```typst
 #show: front
-#tocs.toc(style: "elegant", depth: 2) // "classic", "modern", "elegant" or "compact"
-#tocs.lof()                           // also lot() and lol()
+#tableofcontents(style: "elegant", depth: 2) // "classic", "modern", "elegant" or "compact"
+#listoffigures()                            // also listoftables() and listoflistings()
 
 #show: main
 = Foundations
 == A chapter title too long for the table #tocs.short[Short title]
-#tocs.partial()                       // sections of this chapter
+#minitoc()                            // sections of this chapter
 === Working notes #tocs.omit()        // left out of the table
 ```
 
-- `tocs.toc` takes `style`, `depth`, `parts`, `matter` (e.g. `("main", "back")`), `title`, `title-level`, `outlined`, `fill`, `font`, `size`, `columns`, `column-gutter`, `gutter`, `class` and `target`.
-- `levels` styles each role (`part`, `chapter`, `section`, `subsection`, `subsubsection`, `figure`): `text`, `number-text`, `page-text`, `smallcaps`, `upper`, `indent`, `number-width`, `number-format`, `number-break`, `label`, `appendix-label`, `fill`, `page`, `gutter`, `above`, `below`, `align`, `stroke`, `run-in`, `separator`, and `format: (entry, style) => content` to replace the whole layout.
+- `tableofcontents` takes `style`, `depth`, `parts`, `matter` (e.g. `("main", "back")`), `title`, `title-level`, `outlined`, `fill`, `font`, `size`, `columns`, `column-gutter`, `gutter`, `class` and `target`.
+- `levels` styles each role (`part`, `chapter`, `section`, `subsection`, `subsubsection`, `figure`): `text`, `number-text`, `page-text`, `smallcaps`, `upper`, `indent`, `number-width`, `number-format`, `number-break`, `label`, `appendix-label`, `fill`, `number` (`false` hides the number and label), `page`, `gutter`, `above`, `below`, `align`, `stroke`, `run-in`, `separator`, and `format: (entry, style) => content` to replace the whole layout.
 
   ```typst
-  #tocs.toc(levels: (
+  #tableofcontents(levels: (
     part: (align: center, smallcaps: true, page: false),
     section: (fill: repeat(gap: 0.6em)[·], text: (style: "italic")),
   ))
   ```
 
 - `#show: tocs.setup.with(...)` sets options for every table that follows. Presets are dictionaries (`tocs.presets`), and `tocs.merge` derives new ones from them.
-- `tocs.partial(scope: "part")` or `scope: "chapter"` lists the divisions inside the current part or chapter. `tocs.list-of(target: figure.where(kind: "diagram"), key: "figures")` lists any figure kind, and `supplement: true` shows "Figure 2.1".
+- `minitoc(scope: "part")` or `scope: "chapter"` lists the divisions inside the current part or chapter. `tocs.list-of(target: figure.where(kind: "diagram"), key: "figures")` lists any figure kind, and `supplement: true` shows "Figure 2.1".
 - `#tocs.add-entry(role: "section")[...]` adds an entry with the folio where it is placed, like `\addcontentsline`.
 
-The module also works without a class, through `#import "@local/documentclass:0.1.0": tocs`. `demos/demo_tocs.typ` shows a full book.
+The module also works without a class, through `#import "@local/documentclass:0.1.0": tocs`. The options of the old `tableofcontents` (`h1-font`, `chapter-label`, `nest-indent`, `chapter-gap`…) are now `levels` entries, and an old option gives an error that says what to write instead. `demos/demo_tocs.typ` shows a full book.
 
 ### Languages
 

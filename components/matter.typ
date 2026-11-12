@@ -107,14 +107,3 @@
     #v(1.5fr)
   ]
 }
-
-// Listas de figuras y tablas, con número y página de cada una
-#let list-of-figures(title: auto) = outline(
-  title: i18n.title-or(title, "figures"),
-  target: figure.where(kind: image),
-)
-
-#let list-of-tables(title: auto) = outline(
-  title: i18n.title-or(title, "tables"),
-  target: figure.where(kind: table),
-)

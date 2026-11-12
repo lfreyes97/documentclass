@@ -5,12 +5,11 @@
   title: "Sin partes",
   author: "A",
   use-parts: false,
-  minitoc: true,
-  minitoc-numbered: true,
+  minitoc: (levels: (chapter: (number: true))),
 )
 
 #show: front
-#tableofcontents(h3-font: "DejaVu Sans Mono")
+#tableofcontents(levels: (section: (text: (font: "DejaVu Sans Mono"))))
 
 #show: main
 #blank-page()

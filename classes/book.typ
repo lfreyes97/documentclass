@@ -45,13 +45,9 @@
   // el resto del front matter también; los reversos quedan en blanco, sin cabecera
   // ni folio. false = las páginas siguen sin saltos (PDF para pantalla)
   facing-pages: true,
+  // Minitoc en la página de cada parte: false, true (sus capítulos, sin número) o
+  // un diccionario con opciones de `tocs.partial`, p. ej. `(depth: 2, size: 1em)`
   minitoc: false,
-  // Minitoc de cada parte
-  minitoc-size: 0.9em,
-  minitoc-depth: 2,
-  minitoc-indent: 0pt,
-  minitoc-weight: none,
-  minitoc-numbered: false,
   // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
   // true, false o un diccionario con spacing, tracking, hyphenation y glue
   microtype: true,
@@ -132,14 +128,8 @@
     part-ornament: part-ornament,
     font-size: font-size,
     fonts: fonts,
-    minitoc: minitoc,
-    minitoc-options: (
-      size: minitoc-size,
-      depth: minitoc-depth,
-      indent: minitoc-indent,
-      weight: minitoc-weight,
-      numbered: minitoc-numbered,
-    ),
+    minitoc: minitoc != false and minitoc != none,
+    minitoc-options: if type(minitoc) == dictionary { minitoc } else { (:) },
   )
 
   // Sin partes, `=` baja a capítulo; `#part[...]` fija su nivel 1 explícitamente

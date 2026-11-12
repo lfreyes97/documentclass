@@ -1,4 +1,5 @@
-#import "minitoc.typ" as minitoc-mod
+#import "tocs/toc.typ" as tocs-mod
+#import "tocs/presets.typ" as tocs-presets
 #import "titlepage.typ"
 #import "fonts.typ" as fonts-mod
 #import "i18n.typ"
@@ -105,6 +106,15 @@
   it.numbering != none and (matter-state.at(loc) != "back" or appendix-state.at(loc))
 }
 
+// Minitoc de cada parte: sus capítulos, en peso normal, con puntos y sin número.
+// Son opciones de `tocs.partial`; las que da el usuario reemplazan a estas, así que
+// pasar `levels` repone los números y el peso del preset si no se repiten aquí.
+#let minitoc-defaults = (
+  depth: 1,
+  fill: tocs-presets.dots,
+  levels: (chapter: (number: false, text: (weight: "regular"))),
+)
+
 // Configuración de headings para book
 #let setup(
   part-ornament: none,
@@ -123,9 +133,8 @@
   h4-weight: "bold",
   h4-size: 1.05em,
   h4-smallcaps: false,
-  minitoc: false, // Opción booleana para mostrar minitoc
-  // Opciones del minitoc de cada parte (ver minitoc.minitoc)
-  minitoc-options: (:),
+  minitoc: false, // Mostrar el minitoc en la página de cada parte
+  minitoc-options: (:), // Opciones de `tocs.partial`, sobre `minitoc-defaults`
   body,
 ) = {
   titlepage.check-content("part-ornament", part-ornament)
@@ -175,7 +184,7 @@
           block(width: 85%, {
             set align(left)
             set text(weight: "regular", tracking: 0pt)
-            minitoc-mod.minitoc(font: fonts.minitoc, ..minitoc-options)
+            tocs-mod.partial(..(minitoc-defaults + minitoc-options))
           })
         }
       ]
@@ -244,8 +253,9 @@
 
       v(4em)
     } else {
-      break-to-odd()
-      // Estilo simple para frontmatter
+      // Estilo simple para frontmatter. Con `facing-pages` cada título empieza en
+      // recto; sin ella solo en página nueva, como los de nivel 1
+      if facing-pages-state.get() { break-to-odd() } else { pagebreak(weak: true) }
       v(2em)
       align(center)[
         #let h2-content = if h2-smallcaps { smallcaps(it.body) } else { it.body }

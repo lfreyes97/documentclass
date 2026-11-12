@@ -28,9 +28,25 @@
 // Configuración del documento (`setup`), por encima de los valores por defecto
 #let config = state("tocs-config", (:))
 
+// Opciones del `tableofcontents` anterior a `tocs` y su forma actual. Se usan solo
+// para que el error diga qué escribir en su lugar.
+#let renamed = (
+  h1-font: "levels: (part: (text: (font: ...)))",
+  h2-font: "levels: (chapter: (text: (font: ...)))",
+  h3-font: "levels: (section: (text: (font: ...)))",
+  chapter-label: "levels: (chapter: (label: \"chapter\", appendix-label: true))",
+  nest-indent: "levels: (section: (indent: ...))",
+  indent: "levels: (chapter: (indent: ...))",
+  chapter-gap: "levels: (chapter: (above: ...))",
+  numbering: "levels: (chapter: (number: false))",
+)
+
 #let check(args) = {
   assert(args.pos().len() == 0, message: "tocs: las opciones van con nombre, p. ej. `toc(depth: 1)`")
   for key in args.named().keys() {
+    if key in renamed {
+      assert(false, message: "tocs: la opción «" + key + "» ya no existe; ahora se escribe `" + renamed.at(key) + "`")
+    }
     assert(key in defaults, message: "tocs: opción desconocida «" + key + "». Opciones: " + defaults.keys().join(", "))
   }
   args.named()

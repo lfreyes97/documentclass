@@ -10,7 +10,7 @@
 }
 
 #let number-of(entry, style) = {
-  if entry.number == none { return none }
+  if entry.number == none or not style.number { return none }
   let number = if style.number-format != none { (style.number-format)(entry.number) } else { entry.number }
   let label = label-of(entry, style)
   let number = if label != none [#label~#number] else { number }

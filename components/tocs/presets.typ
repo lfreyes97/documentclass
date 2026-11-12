@@ -7,6 +7,7 @@
 #let base = (
   text: (:), // Argumentos de `text` para toda la entrada
   number-text: (:), // … solo para el número (y su etiqueta)
+  number: true, // false = sin número ni etiqueta (el minitoc de una parte no los muestra)
   page-text: (:), // … solo para el folio
   smallcaps: false,
   upper: false,
