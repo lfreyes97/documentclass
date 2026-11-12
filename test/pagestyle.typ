@@ -1,7 +1,12 @@
 // Cabeceras y pies (`page-style`): resolución y validación de components/pagestyle.typ, y
 // un libro con estilo propio.
 #import "../lib.typ": *
-#import "../components/pagestyle.typ": classic, resolve
+#import "../components/pagestyle.typ": classic, names, resolve
+
+// Todos los preajustes se resuelven con cabecera y pie (o none) y sus claves son válidas
+#for name in names { assert(resolve(name) != none, message: name) }
+#assert.eq(names, ("classic", "plain", "outer", "minimal", "modern", "elegant"))
+#assert.eq(resolve("plain").header, none)
 
 // none desactiva; un nombre o `auto`-preset da el preajuste
 #assert.eq(resolve(none), none)

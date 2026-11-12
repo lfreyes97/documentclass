@@ -93,9 +93,11 @@ diseñarlas antes de congelar la API, porque añaden parámetros nuevos.
       `folio`, `title`, `author`… `book` usa `classic`; `report` y `article` aceptan
       `page-style` pero por defecto es `none` (sin cambios). `layout.setup` quedó solo con el
       estilo de párrafo y las marcas de salto.
-  - **Falta:** más preajustes (p. ej. folio exterior, solo pie), estilo propio para las
-    páginas de apertura (hoy `classic` las deja sin cabecera, fijo), formato del folio,
-    decidir el valor por defecto de `report` (¿`classic`?) y probar `page-style` en `essay`
+  - Preajustes: `classic`, `plain`, `outer`, `minimal`, `modern` y `elegant` (los dos últimos
+    combinan con los estilos de `tocs` del mismo nombre; `demos/demo_pagestyle.typ`). Las
+    aperturas y el formato del folio no necesitaron claves propias: salen de `ctx.opening` y
+    de las funciones de cada espacio.
+  - **Falta:** decidir el valor por defecto de `report` (¿`classic`?) y probar `page-style` en `essay`
     (usa el motor de `glosa`, con su propia cabecera).
   - Con `use-parts: false` y sin `#part`, `classic` no muestra cabecera (no hay primer nivel
     de parte); es lo que ya hacía `book`. Revisar si debe mostrarla.

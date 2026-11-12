@@ -30,30 +30,112 @@
 #import "headings.typ"
 #import "tocs/bridge.typ"
 
-// Como las clases estándar de LaTeX: en el recto el capítulo (o la parte, o el título),
-// en el verso la parte (o el título), con un filete gris; el folio al centro del pie. No
-// aparecen en el front matter, ni en las páginas de apertura, en blanco o sin numeración
+// Título corrido del recto (capítulo, o sección, o parte, o el título del documento) y del
+// verso (parte, o el título del documento)
+#let chain(..options) = options.pos().find(o => o != none)
+#let recto-title(ctx) = chain(ctx.chapter, ctx.section, ctx.part, ctx.title)
+#let verso-title(ctx) = chain(ctx.part, ctx.title)
+
+// Folio y título de la cabecera: antes de la primera división solo el folio
+#let with-title(ctx, title, first: false) = {
+  if not ctx.started { return ctx.folio }
+  if first [#ctx.folio#h(1.2em)#title] else [#title#h(1.2em)#ctx.folio]
+}
+
+#let soft = luma(45%)
+
+// Páginas que llevan algo: con numeración y no en blanco. Cada preajuste añade si quiere
+// la cabecera en las páginas de apertura (`ctx.opening`) y el folio en las de parte
+#let visible(ctx) = ctx.numbered and not ctx.blank
+#let running(ctx) = ctx.started and visible(ctx) and ctx.opening == none
+#let folio-shown(ctx) = visible(ctx) and ctx.opening != "part"
+
+// Como las clases estándar de LaTeX: en el recto el capítulo, en el verso la parte, con un
+// filete gris; el folio al centro del pie. La cabecera no aparece en el front matter ni en
+// las páginas de apertura, en blanco o sin numeración
 #let classic = (
   header: (
-    odd: (right: ctx => emph(
-      if ctx.chapter != none { ctx.chapter } else if ctx.section != none { ctx.section } else if ctx.part != none {
-        ctx.part
-      } else { ctx.title },
-    )),
-    even: (left: ctx => emph(if ctx.part != none { ctx.part } else { ctx.title })),
+    odd: (right: ctx => emph(recto-title(ctx))),
+    even: (left: ctx => emph(verso-title(ctx))),
     rule: 0.5pt + gray,
     text: (size: 9pt, weight: "regular"),
-    when: ctx => ctx.started and ctx.numbered and not ctx.blank and ctx.opening == none,
+    when: running,
   ),
   footer: (
     center: ctx => ctx.folio,
     rule: none,
     text: (size: 10pt),
-    when: ctx => ctx.numbered and not ctx.blank and ctx.opening != "part",
+    when: folio-shown,
   ),
 )
 
-#let presets = (classic: classic)
+// Solo el folio al centro, como el `plain` de LaTeX
+#let plain = (
+  header: none,
+  footer: classic.footer,
+)
+
+// Folio siempre en el borde exterior, junto al título corrido; en las aperturas, el folio
+// abajo y al centro. Para doble cara: sin ella todas las páginas son rectos
+#let outer = (
+  header: (
+    odd: (right: ctx => with-title(ctx, emph(recto-title(ctx)))),
+    even: (left: ctx => with-title(ctx, emph(verso-title(ctx)), first: true)),
+    rule: none,
+    text: (size: 9pt, weight: "regular"),
+    when: ctx => visible(ctx) and ctx.opening == none,
+  ),
+  footer: (
+    center: ctx => ctx.folio,
+    rule: none,
+    text: (size: 10pt),
+    when: ctx => visible(ctx) and ctx.opening == "chapter",
+  ),
+)
+
+// Un folio pequeño y gris en el borde exterior del pie y nada más
+#let minimal = (
+  header: none,
+  footer: (
+    odd: (right: ctx => ctx.folio),
+    even: (left: ctx => ctx.folio),
+    rule: none,
+    text: (size: 8.5pt, fill: soft),
+    when: folio-shown,
+  ),
+)
+
+// Cabecera en mayúsculas espaciadas, pequeñas y grises, y folio gris en el borde exterior;
+// con el índice `modern`
+#let modern = (
+  header: (
+    odd: (right: ctx => upper(recto-title(ctx))),
+    even: (left: ctx => upper(verso-title(ctx))),
+    rule: none,
+    text: (size: 7.5pt, weight: 500, tracking: 0.12em, fill: soft),
+    when: running,
+  ),
+  footer: minimal.footer,
+)
+
+// Título corrido centrado en versalitas y folio entre rayas; con el índice `elegant`
+#let elegant = (
+  header: (
+    odd: (center: ctx => smallcaps(recto-title(ctx))),
+    even: (center: ctx => smallcaps(verso-title(ctx))),
+    rule: none,
+    text: (size: 10pt, tracking: 0.08em),
+    when: running,
+  ),
+  footer: (
+    center: ctx => [— #ctx.folio —],
+    rule: none,
+    text: (size: 9pt),
+    when: folio-shown,
+  ),
+)
+
+#let presets = (classic: classic, plain: plain, outer: outer, minimal: minimal, modern: modern, elegant: elegant)
 #let names = presets.keys()
 
 #let slot-keys = ("left", "center", "right")
