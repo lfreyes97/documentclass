@@ -7,6 +7,12 @@
 #import "../components/microtype.typ" as microtype-mod
 #import "../components/i18n.typ"
 #import "../components/numbering.typ" as numbering-mod
+#import "../components/margins.typ"
+
+#let margin-defaults = (
+  facing: (inside: 2.5cm, outside: 1.5cm, y: 2cm),
+  single: (x: 2cm, y: 2cm),
+)
 
 #let report(
   title: none,
@@ -21,9 +27,10 @@
   // Parámetros de página
   paper: "a4",
   font-size: 11pt,
-  margin-inside: 2.5cm,
-  margin-outside: 1.5cm,
-  margin-y: 2cm,
+  // Márgenes: auto, una longitud o un diccionario (ver components/margins.typ)
+  margin: auto,
+  // Doble cara (el `twoside` de LaTeX): márgenes interior y exterior que alternan
+  facing-pages: false,
   // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
   // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
   fonts: (:),
@@ -53,7 +60,7 @@
   set page(
     paper: paper,
     numbering: "1",
-    margin: (inside: margin-inside, outside: margin-outside, y: margin-y),
+    margin: margins.resolve(margin, facing-pages, margin-defaults),
   )
 
   // Titlepage

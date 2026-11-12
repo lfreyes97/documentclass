@@ -112,7 +112,7 @@ Section 1 starts here.
   author: "Author Name",
   fonts: (body: "EB Garamond"),
   outer: (far: 16mm, width: 45mm, sep: 8mm), // margin-note column
-  book: true,                                // alternate inner/outer
+  facing-pages: true,                        // alternate inner/outer
 )
 
 = The Essay Title
@@ -124,7 +124,7 @@ As @sec-first and @n-first show... // "section I", "note 1"
 
 The level-1 heading is the essay title: it goes to the page header with its number, and its section outline goes to the margin. Level-2 headings are the sections, numbered `I.`, `II.`… Margin notes are numbered `1, 2, 3…` through the whole essay and footnotes switch to `*, †, ‡`.
 
-`note-size` and `note-numbering` set the notes for the whole document, so files that `#include` content only need `#import "lib.typ": note`. Other options: `inner`/`outer` (each `(far, width, sep)`), `top`, `bottom`, `book`, `font-size`, `chapter-number-style`, `chapter-title-style`, `section-numbering`, `title-in-header`, `titlepage` and `debug-frame` (draws the margin columns). The engine itself is available as the `glosa` module (`glosa.header`, `glosa.notecounter`, `glosa.show-frame`…).
+`note-size` and `note-numbering` set the notes for the whole document, so files that `#include` content only need `#import "lib.typ": note`. Other options: `inner`/`outer` (each `(far, width, sep)`), `top`, `bottom`, `facing-pages`, `font-size`, `chapter-number-style`, `chapter-title-style`, `section-numbering`, `title-in-header`, `titlepage` and `debug-frame` (draws the margin columns). The engine itself is available as the `glosa` module (`glosa.header`, `glosa.notecounter`, `glosa.show-frame`…).
 
 For complete examples, check the `demos/` directory:
 - [demos/demo_book.typ](demos/demo_book.typ)
@@ -141,7 +141,7 @@ All classes accept the following common parameters:
 - `lang`: Document language; it also picks the labels (see [Languages](#languages)).
 - `labels`: Labels that replace the translated ones.
 - `microtype`: Justification and no-break-space adjustments (see [Microtypography](#microtypography)).
-- `margin-inside`, `margin-outside`, `margin-y`: Page margins.
+- `margin`: Page margins: `auto` (the class default), a length, or a dictionary. With `facing-pages: true` (the default in `book`; `false` in `report` and `article`, like LaTeX's `twoside`) the horizontal margins are `inside` and `outside`, which alternate on each page, e.g. `margin: (inside: 3cm, outside: 2cm, y: 2cm)`; with `false` they are `x`, or `left` and `right`. Keys you leave out keep the class default, and a key of the wrong kind for `facing-pages` fails with a message.
 
 ### Specific Parameters
 - **Book**: `part-ornament`, `logo`, `custom-titlepage`, `equation-numbering`, `use-parts`, `cover` (see [Covers](#covers)), and `minitoc` (`true`, or a dictionary of `tocs.partial` options; see [Tables of contents](#tables-of-contents-tocs)).

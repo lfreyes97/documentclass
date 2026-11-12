@@ -29,12 +29,12 @@
   date: none, // Contenido o `datetime` para la cabecera; none = hoy
   paper: "a4",
   // Márgenes: cada lado tiene `far` (borde a columna de notas), `width` (columna de
-  // notas) y `sep` (columna de notas a texto). `book: true` alterna interior/exterior.
+  // notas) y `sep` (columna de notas a texto). `facing-pages: true` alterna interior/exterior.
   inner: (far: 16mm, width: 15mm, sep: 8mm),
   outer: (far: 16mm, width: 45mm, sep: 8mm),
   top: 2.5cm,
   bottom: 2.5cm,
-  book: false,
+  facing-pages: false, // Doble cara (el `twoside` de LaTeX): `inner` y `outer` alternan
   clearance: 12pt, // Distancia mínima entre notas
   font-size: 10pt,
   text-fill: luma(30),
@@ -153,7 +153,7 @@
     outer: outer,
     top: top,
     bottom: bottom,
-    book: book,
+    book: facing-pages,
     clearance: clearance,
     {
       titlepage-content

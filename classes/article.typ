@@ -4,6 +4,12 @@
 #import "../components/i18n.typ"
 #import "../components/fonts.typ" as fonts-mod
 #import "../components/microtype.typ" as microtype-mod
+#import "../components/margins.typ"
+
+#let margin-defaults = (
+  facing: (inside: 3cm, outside: 2cm, y: 2.5cm),
+  single: (x: 2.5cm, y: 2.5cm),
+)
 
 /// Titleblock inline — título, autor y fecha en la misma página
 #let titleblock(
@@ -39,8 +45,10 @@
   // Parámetros de página
   paper: "a4",
   font-size: 11pt,
-  margin-x: 2.5cm,
-  margin-y: 2.5cm,
+  // Márgenes: auto, una longitud o un diccionario (ver components/margins.typ)
+  margin: auto,
+  // Doble cara (el `twoside` de LaTeX): márgenes interior y exterior que alternan
+  facing-pages: false,
   // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
   // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
   fonts: (:),
@@ -67,12 +75,12 @@
   show raw: set text(font: fonts.mono)
   show: microtype-mod.setup.with(microtype)
 
-  // Una sola cara: márgenes simétricos, numeración desde pág. 1
+  // Por defecto, una sola cara: márgenes simétricos, numeración desde pág. 1
   set page(
     paper: paper,
     numbering: "1",
     number-align: center,
-    margin: (x: margin-x, y: margin-y),
+    margin: margins.resolve(margin, facing-pages, margin-defaults),
   )
 
   // Párrafos

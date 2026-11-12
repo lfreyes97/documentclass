@@ -8,6 +8,13 @@
 #import "../components/numbering.typ" as numbering-mod
 
 #import "../components/layout.typ"
+#import "../components/margins.typ"
+
+#let margin-defaults = (
+  facing: (inside: 2.5cm, outside: 1.5cm, y: 2cm),
+  single: (x: 2cm, y: 2cm),
+)
+
 #let book(
   custom-titlepage: none,
   title: none,
@@ -20,9 +27,9 @@
   // Parámetros de página (equivalente a \documentclass[a5paper]{book})
   paper: "a5",
   font-size: 11pt, // Tamaño base (10pt, 11pt, 12pt)
-  margin-inside: 2.5cm,
-  margin-outside: 1.5cm,
-  margin-y: 2cm,
+  // Márgenes: auto, una longitud o un diccionario (ver components/margins.typ). Con
+  // `facing-pages: true` llevan `inside` y `outside`; con `false`, `x` o `left` y `right`
+  margin: auto,
   // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
   // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
   fonts: (:),
@@ -41,9 +48,10 @@
   // true: `=` es parte y `==` capítulo. false: `=` es capítulo y las partes se
   // crean con `#part[...]`
   use-parts: true,
-  // Páginas enfrentadas: tras la portada, la portadilla va en recto, y el índice y
-  // el resto del front matter también; los reversos quedan en blanco, sin cabecera
-  // ni folio. false = las páginas siguen sin saltos (PDF para pantalla)
+  // Doble cara (el `twoside` de LaTeX): márgenes interior y exterior que alternan; tras la
+  // portada, la portadilla va en recto, y el índice y el resto del front matter también;
+  // los reversos quedan en blanco, sin cabecera ni folio. false = márgenes iguales en
+  // todas las páginas y sin saltos (PDF para pantalla)
   facing-pages: true,
   // Minitoc en la página de cada parte: false, true (sus capítulos, sin número) o
   // un diccionario con opciones de `tocs.partial`, p. ej. `(depth: 2, size: 1em)`
@@ -71,7 +79,7 @@
   set page(
     paper: paper,
     numbering: "1",
-    margin: (inside: margin-inside, outside: margin-outside, y: margin-y),
+    margin: margins.resolve(margin, facing-pages, margin-defaults),
   )
 
   // Datos del libro para una función de portada de coverbook
