@@ -162,20 +162,30 @@
   if s.end == "odd" { break-to-odd() }
 }
 
+// Título de sección con el estilo `s` de openings.run-leaf. Requiere `context`
+#let run-heading(it, s, font) = {
+  v(s.above)
+  let body = if s.title-smallcaps { smallcaps(it.body) } else { it.body }
+  let body = if s.title-upper { upper(body) } else { body }
+  let number = if numbered(it) and s.number-format != none {
+    let n = (s.number-format)(counter(heading).display(it.numbering))
+    if s.number-text.len() > 0 { text(..s.number-text, n) } else { n }
+  }
+  let line = text(..(font: font) + s.title-text)[
+    #if number != none [#number#s.number-sep]
+    #body
+  ]
+  if s.align == left { line } else { align(s.align, line) }
+  v(s.below)
+}
+
 // Configuración de headings para book
 #let setup(
   part-ornament: none,
   font-size: 11pt, // Base de los tamaños en em de los headings
   fonts: fonts-mod.resolve((:)), // Fuentes ya resueltas (h1..h4, minitoc)
-  // Aperturas de parte y de capítulo: preajuste o diccionario (ver components/openings.typ)
+  // Estilo de partes, capítulos y secciones: preajuste o diccionario (ver components/openings.typ)
   heading-style: "classic",
-  // Parámetros de tipografía para headings
-  h3-weight: 400,
-  h3-size: 1.2em, // Tamaño base para la sección
-  h3-smallcaps: true,
-  h4-weight: "bold",
-  h4-size: 1.05em,
-  h4-smallcaps: false,
   minitoc: false, // Mostrar el minitoc en la página de cada parte
   minitoc-options: (:), // Opciones de `tocs.partial`, sobre `minitoc-defaults`
   body,
@@ -185,10 +195,12 @@
   // Estilos globaloes pre-establecidos para los encabezados.
   show heading.where(level: 1): set text(font: fonts.h1, weight: 700, hyphenate: false)
   show heading.where(level: 2): set text(font: fonts.h2, weight: 500, hyphenate: false)
-  show heading.where(level: 3): set text(font: fonts.h3, weight: h3-weight, hyphenate: false)
-  show heading.where(level: 4): set text(font: fonts.h4, weight: h4-weight, hyphenate: false)
+  show heading.where(level: 3): set text(font: fonts.h3, hyphenate: false)
+  show heading.where(level: 4): set text(font: fonts.h4, hyphenate: false)
+  show heading.where(level: 5): set text(font: fonts.heading, hyphenate: false)
+  show heading.where(level: 6): set text(font: fonts.heading, hyphenate: false)
   // Typst aplica su tamaño por defecto (1.4em, 1.2em...) también dentro de las
-  // reglas show propias; se fija la base para que h1-size, h2-size... sean exactos.
+  // reglas show propias; se fija la base para que los tamaños del estilo (`title-text: (size: …)`) sean exactos.
   show heading: set text(size: font-size)
   show heading: set par(justify: false, first-line-indent: 0pt, linebreaks: "simple")
 
@@ -197,7 +209,7 @@
   show heading.where(level: 1): set heading(supplement: i18n.term("part"))
   show heading.where(level: 2): set heading(supplement: i18n.term("chapter"))
 
-  let style = openings.resolve(heading-style)
+  let style = openings.resolve(heading-style, class: "book")
 
   // NIVEL 1: PARTES. En mainmatter y backmatter, con su página; en frontmatter, simples
   show heading.where(level: 1): it => context {
@@ -221,27 +233,11 @@
     opening(it, openings.leaf(style, "chapter", variant), fonts.h2, none, reset: variant in (none, "appendix"))
   }
 
-  // NIVEL 3: SECCIONES (3.1, A.1)
-  show heading.where(level: 3): it => context {
-    v(1em)
-    let h3-content = if h3-smallcaps { smallcaps(it.body) } else { it.body }
-    text(h3-size, font: fonts.h3, weight: h3-weight, tracking: 0.03em)[
-      #if numbered(it) [#counter(heading).display(it.numbering)#h(7pt)]
-      #h3-content
-    ]
-    v(1em)
-  }
-
-  // NIVEL 4: SUBSECCIONES (3.1.1, A.1.1)
-  show heading.where(level: 4): it => context {
-    v(0.8em)
-    let h4-content = if h4-smallcaps { smallcaps(it.body) } else { it.body }
-    text(h4-size, weight: h4-weight)[
-      #if numbered(it) [#counter(heading).display(it.numbering)#h(7pt)]
-      #h4-content
-    ]
-    v(0.5em)
-  }
+  // NIVELES 3 A 6: SECCIONES (3.1, A.1), SUBSECCIONES (3.1.1), …
+  show heading.where(level: 3): it => context { run-heading(it, openings.run-leaf(style, "section"), fonts.h3) }
+  show heading.where(level: 4): it => context { run-heading(it, openings.run-leaf(style, "subsection"), fonts.h4) }
+  show heading.where(level: 5): it => context { run-heading(it, openings.run-leaf(style, "subsubsection"), fonts.heading) }
+  show heading.where(level: 6): it => context { run-heading(it, openings.run-leaf(style, "paragraph"), fonts.heading) }
 
   body
 }

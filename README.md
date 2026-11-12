@@ -151,17 +151,18 @@ All classes accept the following common parameters:
 
 With `use-parts: false`, `=` is a chapter and `==` a section; parts are created with `#part[Title]`. `tableofcontents(depth: 2)` still counts from the chapter. `facing-pages` (on by default in `book`) lays the front out as a printed book: after the cover the title page starts on a recto, and the contents and the rest of the front matter do too, so the versos are blank and carry no header or folio (cover, blank, title, blank, contents). `facing-pages: false` removes those versos, for a PDF read on screen. In `book`, any blank page left by a page break (the verso before a part or chapter, or your own `#pagebreak(to: "odd")`) gets no header or folio. `#blank-page()` inserts an intentionally blank page the same way.
 
-`heading-style` sets the openings of parts and chapters in `book` (LaTeX's fncychap): `"classic"` (the "CHAPTER N" label over a centred title), `"modern"` (left-aligned, a small grey label and a short rule) and `"elegant"` (italic label, small-caps title, a short rule), the same names as the `tocs` and `page-style` presets. A dictionary changes the preset:
+`heading-style` sets how every heading level looks in `book` (LaTeX's fncychap and titlesec): `"classic"` (the "CHAPTER N" label over a centred title, small-caps sections), `"modern"` (left-aligned, a small grey label, a short rule) and `"elegant"` (italic label, small-caps title), the same names as the `tocs` and `page-style` presets. A dictionary changes the preset. Each level is addressed by its role (`part`, `chapter`, `section`, `subsection`, `subsubsection`, `paragraph`) or by its level, `h1`…`h6`, which is the role that level has in the class (in `book`, `h1` is `part` and `h3` is `section`):
 
 ```typst
 #show: book.with(heading-style: (
   preset: "modern",
   chapter: (align: center, rule: none, title-text: (size: 2.4em)),
-  part: (label: none),
+  h3: (title-smallcaps: true, title-text: (size: 1em)), // sections in small caps at body size
+  subsection: (title-smallcaps: false),
 ))
 ```
 
-`part` and `chapter` take `start` and `end` (`"odd"`, `"page"`, `"facing"` or `none`), `above`, `below`, `align`, `label` (`"chapter"`, content or `none`), `label-text`, `label-upper`, `number-format` (`n => content`, `none` hides the number), `gap`, `title-text`, `title-upper`, `title-smallcaps`, `rule`, `ornament`. Keys apply to every variant of the role; `front`, `back` and, in `chapter`, `appendix` change only that variant. Unknown keys fail with the list of valid ones. `report` and `article` do not take `heading-style` yet.
+`part` and `chapter` are openings. They take `start` and `end` (`"odd"`, `"page"`, `"facing"` or `none`), `above`, `below`, `align`, `label` (`"chapter"`, content or `none`), `label-text`, `label-upper`, `number-format` (`n => content`, `none` hides the number), `gap`, `title-text`, `title-upper`, `title-smallcaps`, `rule` and `ornament`; their `front`, `back` and, in `chapter`, `appendix` variants change only what they set. The other roles take `above`, `below`, `align`, `number-format`, `number-text`, `number-sep`, `title-text`, `title-upper` and `title-smallcaps`; each inherits from the one above it what it does not set, and `section` from the body text. Unknown keys fail with the list of valid ones. `report` and `article` do not take `heading-style` yet.
 
 `page-style` sets the running header and the footer (LaTeX's fancyhdr). The presets are `"classic"`, `"plain"` (folio only), `"outer"` (folio at the outer edge beside the running title, folio at the foot of chapter openings), `"minimal"` (a small grey folio at the outer foot), `"modern"` and `"elegant"`; the last two go with the `tocs` styles of the same name (`demos/demo_pagestyle.typ` makes one PDF per preset with `--input style=…`). `book` uses `"classic"` (the part on versos, the chapter on rectos, a grey rule, the folio centred in the footer; none of it on opening pages, blank pages or before the first part) `"plain"` in `report` and `none` in `article` (Typst's own folio). It also takes a dictionary that changes the preset, or `none`:
 

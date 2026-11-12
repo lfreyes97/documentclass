@@ -83,12 +83,16 @@ configuración; conviene diseñarlas antes de congelar la API, porque añaden pa
 - [x] **Aperturas de capítulo y de parte: `heading-style`** en `book` (primera versión,
       `components/openings.typ`, `test/openings.typ`). Preajustes `classic` (idéntico al
       anterior: comprobado píxel a píxel y con las referencias de `test/structure.py`),
-      `modern` y `elegant`; diccionario por rol (`part`, `chapter`) con variantes `front`,
-      `back` y `appendix`. Las claves viejas `h1-size`…`h2-smallcaps` de `headings.setup`
-      desaparecieron.
-  - **Falta:** `report` y `article` (sus títulos siguen escritos a mano en la clase), los
-    niveles de sección (`h3`/`h4`, con parámetros planos), una función `ctx => contenido`
-    para lo que no cubra el diccionario, y la apertura de `essay` (queda para su revisión).
+      `modern` y `elegant`; diccionario por rol (`part`, `chapter`, `section`, `subsection`,
+      `subsubsection`, `paragraph`, con alias `h1`…`h6`). Las aperturas tienen variantes `front`,
+      `back` y `appendix`; las secciones heredan del rol anterior y la primera del cuerpo. Las
+      claves viejas `h1-size`…`h4-smallcaps` de `headings.setup` desaparecieron. Los niveles 5 y
+      6 de `book` ya no usan el estilo por defecto de Typst, sino los de `heading-style`.
+  - **Falta:** `report` y `article` (sus títulos siguen escritos a mano en la clase; harían
+    falta preajustes por clase, porque el capítulo de `report` no se parece al de `book`),
+    títulos en línea con el párrafo (`run-in`, el `\paragraph` de LaTeX), una función
+    `ctx => contenido` para lo que no cubra el diccionario, y la apertura de `essay`
+    (queda para su revisión).
   - Las versalitas de `elegant` dependen de la fuente: la Libertinus que Typst incluye las
     tiene, la que instala `instatypst` en esta máquina no.
 - [x] **Cabeceras y pies: `page-style`** (primera versión, `components/pagestyle.typ`,

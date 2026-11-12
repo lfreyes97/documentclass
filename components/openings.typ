@@ -1,10 +1,14 @@
-// Aperturas de parte y de capítulo (el fncychap de LaTeX), parámetro `heading-style`.
+// Estilo de los títulos (el fncychap y el titlesec de LaTeX), parámetro `heading-style`.
 //
 //   heading-style: "classic"                        un preajuste
 //   heading-style: (chapter: (align: left))         cambios sobre "classic"
-//   heading-style: (preset: "modern", part: (...), chapter: (...))
+//   heading-style: (preset: "modern", part: (...), section: (...), h4: (...))
 //
-// `part` y `chapter` son diccionarios con estas claves:
+// Cada rol (part, chapter, section, subsection, subsubsection, paragraph) es un diccionario.
+// El rol de cada nivel depende de la clase: en book `part` es el nivel 1 y `chapter` el 2. `h1`…`h6`
+// son alias del rol que tiene ese nivel en la clase.
+//
+// Aperturas (`part`, `chapter`):
 //   start         "odd" (página impar), "page" (página nueva), "facing" (impar solo con
 //                 `facing-pages`) o none
 //   end           igual, tras el título (una parte ocupa su propia página impar)
@@ -19,9 +23,15 @@
 //   title-upper, title-smallcaps
 //   rule          Filete bajo el título (un trazo) o none; rule-length, rule-gap
 //   ornament      Contenido bajo el título; en las partes, auto = `part-ornament`
-// Cada rol tiene variantes que cambian solo lo que indican: `front` (front matter),
+// Cada apertura tiene variantes que cambian solo lo que indican: `front` (front matter),
 // `back` (back matter) y, en `chapter`, `appendix`. Las claves de `part` o `chapter`
 // valen para todas las variantes; las de una variante, solo para ella.
+//
+// Títulos de sección (`section` y los inferiores): above, below, align, number-format,
+// number-text, number-sep, title-text, title-upper, title-smallcaps. Cada uno hereda del
+// anterior solo lo que no fija; `section` hereda del texto del cuerpo. Así `section:
+// (title-smallcaps: true)` pone en versalitas las secciones y las inferiores, y
+// `subsection: (title-smallcaps: false)` las quita en las subsecciones.
 
 // Valor de cada clave si el preajuste no la fija
 #let base = (
@@ -42,6 +52,19 @@
   rule-length: 100%,
   rule-gap: 0.6em,
   ornament: none,
+)
+
+// Valor de cada clave de un título de sección si el preajuste no la fija: el texto del cuerpo
+#let run-base = (
+  above: 1em,
+  below: 1em,
+  align: left,
+  number-format: n => n,
+  number-text: (:),
+  number-sep: h(7pt),
+  title-text: (:),
+  title-upper: false,
+  title-smallcaps: false,
 )
 
 #let soft = luma(45%)
@@ -136,17 +159,61 @@
   ),
 )
 
-#let presets = (classic: classic, modern: modern, elegant: elegant)
+// Secciones en versalitas con su número y, más abajo, títulos en negrita
+#let classic-run = (
+  section: (above: 1em, below: 1em, title-text: (size: 1.2em, weight: 400, tracking: 0.03em), title-smallcaps: true),
+  subsection: (above: 0.8em, below: 0.5em, title-text: (size: 1.05em, weight: "bold", tracking: 0pt), title-smallcaps: false),
+  subsubsection: (above: 0.8em, below: 0.4em, title-text: (size: 1em)),
+  paragraph: (above: 0.8em, below: 0.3em, title-text: (style: "italic")),
+)
+
+#let modern-run = (
+  section: (
+    above: 1.4em,
+    below: 0.8em,
+    number-text: (fill: soft),
+    number-sep: h(0.8em),
+    title-text: (size: 1.15em, weight: 700, tracking: 0em),
+    title-smallcaps: false,
+  ),
+  subsection: (above: 1.2em, below: 0.5em, title-text: (size: 1em, weight: 600)),
+  subsubsection: (above: 1em, below: 0.4em, title-text: (style: "italic")),
+  paragraph: (above: 0.8em, below: 0.3em),
+)
+
+#let elegant-run = (
+  section: (
+    above: 1.6em,
+    below: 1em,
+    align: center,
+    number-sep: h(0.6em),
+    title-text: (size: 1.1em, weight: 400, tracking: 0.08em),
+    title-smallcaps: true,
+  ),
+  subsection: (above: 1.2em, below: 0.6em, align: left, title-text: (size: 1.05em, weight: 400, style: "italic", tracking: 0pt), title-smallcaps: false),
+  subsubsection: (above: 1em, below: 0.4em, title-text: (size: 1em)),
+  paragraph: (above: 0.8em, below: 0.3em),
+)
+
+#let presets = (classic: classic + classic-run, modern: modern + modern-run, elegant: elegant + elegant-run)
 #let names = presets.keys()
 
-#let roles = ("part", "chapter")
+#let openings = ("part", "chapter")
+#let runs = ("section", "subsection", "subsubsection", "paragraph")
+#let roles = openings + runs
 #let variants = ("front", "back", "appendix")
-#let text-keys = ("label-text", "title-text")
+#let text-keys = ("label-text", "title-text", "number-text")
+
+// Nivel de cada rol según la clase
+#let levels = (
+  book: (part: 1, chapter: 2, section: 3, subsection: 4, subsubsection: 5, paragraph: 6),
+)
 
 #let check-role(name, spec) = {
   assert(type(spec) == dictionary, message: "heading-style: " + name + " debe ser un diccionario")
+  let valid = if name in openings { base } else { run-base }
   for (key, value) in spec {
-    if key in variants {
+    if name in openings and key in variants {
       assert(
         name == "chapter" or key != "appendix",
         message: "heading-style: «appendix» solo existe en chapter",
@@ -160,8 +227,14 @@
       }
     } else {
       assert(
-        key in base,
-        message: "heading-style: clave desconocida «" + key + "» en " + name + ". Claves válidas: " + base.keys().join(", ") + "; variantes: " + variants.join(", "),
+        key in valid,
+        message: "heading-style: clave desconocida «"
+          + key
+          + "» en "
+          + name
+          + ". Claves válidas: "
+          + valid.keys().join(", ")
+          + if name in openings { "; variantes: " + variants.join(", ") } else { "" },
       )
     }
   }
@@ -182,33 +255,56 @@
   out
 }
 
-// `heading-style` ya validado y completo: (part:, chapter:)
-#let resolve(spec) = {
+// `heading-style` ya validado y completo: un diccionario por rol. `h1`…`h6` se traducen
+// al rol que tiene ese nivel en `class`
+#let resolve(spec, class: "book") = {
   let spec = if type(spec) == str { (preset: spec) } else { spec }
   assert(
     type(spec) == dictionary,
     message: "heading-style debe ser el nombre de un preajuste (" + names.join(", ") + ") o un diccionario",
   )
-  for key in spec.keys() {
+  let aliases = range(1, 7).map(n => "h" + str(n))
+  let user = (:)
+  for (key, value) in spec {
+    if key == "preset" { continue }
+    let role = key
+    if key in aliases {
+      let level = int(key.slice(1))
+      role = levels.at(class).pairs().find(((_, l)) => l == level)
+      assert(role != none, message: "heading-style: la clase " + class + " no tiene nivel " + str(level) + " (" + key + ")")
+      role = role.first()
+    }
     assert(
-      key in ("preset",) + roles,
-      message: "heading-style: clave desconocida «" + key + "». Claves válidas: preset, " + roles.join(", "),
+      role in roles,
+      message: "heading-style: clave desconocida «" + key + "». Claves válidas: preset, " + roles.join(", ") + ", " + aliases.join(", "),
     )
+    assert(role not in user, message: "heading-style: «" + role + "» está dos veces (por su nombre y por su alias)")
+    user.insert(role, value)
   }
   let name = spec.at("preset", default: "classic")
   assert(name in presets, message: "heading-style: preajuste desconocido «" + str(name) + "». Preajustes: " + names.join(", "))
   let out = (:)
   for role in roles {
-    let user = spec.at(role, default: (:))
-    check-role(role, user)
-    out.insert(role, merge(presets.at(name).at(role), user))
+    let own = user.at(role, default: (:))
+    check-role(role, own)
+    out.insert(role, merge(presets.at(name).at(role), own))
   }
   out
 }
 
-// Estilo de un rol para una variante (none = la base): base ← claves del rol ← variante
+// Estilo de una apertura para una variante (none = la base): base ← claves del rol ← variante
 #let leaf(style, role, variant) = {
   let own = style.at(role)
   let plain = own.pairs().filter(((k, _)) => k not in variants).to-dict()
   merge(merge(base, plain), if variant != none { own.at(variant, default: (:)) } else { (:) })
+}
+
+// Estilo de un título de sección: cada rol hereda del anterior, y el primero del cuerpo
+#let run-leaf(style, role) = {
+  let out = run-base
+  for name in runs {
+    out = merge(out, style.at(name))
+    if name == role { break }
+  }
+  out
 }
