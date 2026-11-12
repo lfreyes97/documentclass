@@ -72,6 +72,8 @@
   title-smallcaps: false,
 )
 
+#import "themes.typ"
+
 #let soft = luma(45%)
 
 // Como las clases estándar de LaTeX, con la etiqueta "CAPÍTULO N" sobre el título centrado
@@ -291,7 +293,7 @@
     user.insert(role, value)
   }
   let name = spec.at("preset", default: "classic")
-  assert(name in presets, message: "heading-style: preajuste desconocido «" + str(name) + "». Preajustes: " + names.join(", "))
+  assert(name in presets, message: "heading-style: preajuste desconocido «" + str(name) + "». Preajustes: " + names.join(", ") + "." + themes.hint(name))
   let out = (:)
   for role in roles {
     let own = user.at(role, default: (:))

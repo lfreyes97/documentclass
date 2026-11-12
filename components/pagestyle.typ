@@ -69,15 +69,15 @@
   ),
 )
 
-// Solo el folio al centro, como el `plain` de LaTeX
+// `plain`: solo el folio al centro, como el `plain` de LaTeX
 #let plain = (
   header: none,
   footer: classic.footer,
 )
 
-// Folio siempre en el borde exterior, junto al título corrido; en las aperturas, el folio
+// `running-outer`: folio siempre en el borde exterior, junto al título corrido; en las aperturas, el folio
 // abajo y al centro. Para doble cara: sin ella todas las páginas son rectos
-#let outer = (
+#let running-outer = (
   header: (
     odd: (right: ctx => with-title(ctx, emph(recto-title(ctx)))),
     even: (left: ctx => with-title(ctx, emph(verso-title(ctx)), first: true)),
@@ -93,8 +93,8 @@
   ),
 )
 
-// Un folio pequeño y gris en el borde exterior del pie y nada más
-#let minimal = (
+// `folio-outer`: un folio pequeño y gris en el borde exterior del pie y nada más
+#let folio-outer = (
   header: none,
   footer: (
     odd: (right: ctx => ctx.folio),
@@ -115,7 +115,7 @@
     text: (size: 7.5pt, weight: 500, tracking: 0.12em, fill: soft),
     when: running,
   ),
-  footer: minimal.footer,
+  footer: folio-outer.footer,
 )
 
 // Título corrido centrado en versalitas y folio entre rayas; con el índice `elegant`
@@ -135,7 +135,14 @@
   ),
 )
 
-#let presets = (classic: classic, plain: plain, outer: outer, minimal: minimal, modern: modern, elegant: elegant)
+#let presets = (
+  classic: classic,
+  modern: modern,
+  elegant: elegant,
+  plain: plain,
+  folio-outer: folio-outer,
+  running-outer: running-outer,
+)
 #let names = presets.keys()
 
 #let slot-keys = ("left", "center", "right")

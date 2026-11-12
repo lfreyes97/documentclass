@@ -103,8 +103,10 @@ configuración; conviene diseñarlas antes de congelar la API, porque añaden pa
       `folio`, `title`, `author`… `book` usa `classic`; `report` y `article` aceptan
       `page-style`; en `report` es `"plain"` y en `article` `none`. `layout.setup` quedó solo con el
       estilo de párrafo y las marcas de salto.
-  - Preajustes: `classic`, `plain`, `outer`, `minimal`, `modern` y `elegant` (los dos últimos
-    combinan con los estilos de `tocs` del mismo nombre; `demos/demo_pagestyle.typ`). Las
+  - Preajustes: `classic`, `modern` y `elegant` (temas, compartidos con `heading-style` y `tocs`) y las
+    variantes `plain`, `folio-outer` y `running-outer`, solo de `page-style`. El parámetro `style`
+    de las clases aplica un tema a las tres partes (`components/themes.typ`, `test/themes.typ`);
+    `demos/demo_pagestyle.typ`). Las
     aperturas y el formato del folio no necesitaron claves propias: salen de `ctx.opening` y
     de las funciones de cada espacio.
   - **Falta:** probar `page-style` en `essay` (usa el motor de `glosa`, con su propia

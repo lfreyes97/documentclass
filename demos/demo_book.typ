@@ -1,8 +1,8 @@
-// Demostración de la clase book. El estilo se elige con el preajuste que da el nombre:
+// Demostración de la clase book. El tema se elige con `--input style=…`:
 //   typst compile --root . --input style=modern demos/demo_book.typ modern.pdf
 // (classic, modern o elegant; sin `style`, classic). Ver también demo_pagestyle.typ.
 #import "../lib.typ": (
-  appendix, back, book, dedication, epigraph, front, main, tableofcontents, tocs, verse,
+  appendix, back, book, dedication, epigraph, front, main, tableofcontents, verse,
 )
 
 #let style = sys.inputs.at("style", default: "classic")
@@ -17,13 +17,11 @@
   // Doble cara: márgenes interior y exterior, portadilla y front matter en recto
   facing-pages: true,
   margin: (inside: 2.5cm, outside: 1.8cm, y: 2cm),
-  // El mismo preajuste para títulos y cabeceras; el índice lo sigue con `tocs.setup`
-  heading-style: style,
-  page-style: style,
+  // Un tema para los títulos, las cabeceras y el índice; `heading-style`, `page-style` o
+  // `tocs.setup` lo sustituyen en una sola parte
+  style: style,
   minitoc: true,
 )
-
-#show: tocs.setup.with(style: style)
 
 #show: front
 #dedication[
@@ -33,7 +31,7 @@
 = Prefacio
 Este es un libro de demostración creado con la clase `book`. Muestra las partes que lo componen: front matter con numeración romana, cuerpo con partes y capítulos, y back matter con un apéndice.
 
-Cambia el aspecto con el argumento `style`, que elige a la vez las aperturas de capítulo (`heading-style`) y las cabeceras y pies (`page-style`).
+Cambia el aspecto con `style`, un tema que elige a la vez los títulos (`heading-style`), las cabeceras y pies (`page-style`) y el índice.
 
 #tableofcontents()
 

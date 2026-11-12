@@ -10,6 +10,8 @@
 #import "../components/layout.typ"
 #import "../components/pagestyle.typ"
 #import "../components/margins.typ"
+#import "../components/themes.typ"
+#import "../components/tocs/toc.typ" as tocs-mod
 
 #let margin-defaults = (
   facing: (inside: 2.5cm, outside: 1.5cm, y: 2cm),
@@ -54,12 +56,14 @@
   // los reversos quedan en blanco, sin cabecera ni folio. false = márgenes iguales en
   // todas las páginas y sin saltos (PDF para pantalla)
   facing-pages: true,
-  // Cabeceras y pies: un preajuste ("classic"), none o un diccionario con header y footer
-  // (ver components/pagestyle.typ)
-  page-style: "classic",
-  // Aperturas de parte y de capítulo: un preajuste ("classic") o un diccionario con part y
-  // chapter (ver components/openings.typ)
-  heading-style: "classic",
+  // Cabeceras y pies: un tema o variante ("classic", "plain"…), none o un diccionario con
+  // header y footer (ver components/pagestyle.typ)
+  page-style: auto,
+  // Tema visual (classic, modern, elegant): lo comparten heading-style, page-style y el
+  // índice (`tocs`). auto = el de cada parte. Los parámetros de cada parte lo sustituyen
+  style: auto,
+  // Estilo de los títulos: un tema o un diccionario (ver components/openings.typ)
+  heading-style: auto,
   // Minitoc en la página de cada parte: false, true (sus capítulos, sin número) o
   // un diccionario con opciones de `tocs.partial`, p. ej. `(depth: 2, size: 1em)`
   minitoc: false,
@@ -68,6 +72,11 @@
   microtype: true,
   body,
 ) = {
+  let style = themes.check(style)
+  let page-style = themes.pick(page-style, style, "classic")
+  let heading-style = themes.pick(heading-style, style, "classic")
+  // El tema también fija el estilo de los índices; un `tocs.setup` posterior lo sustituye
+  show: body => if style != auto { tocs-mod.setup(style: style, body) } else { body }
   // Configuración base
   set document(author: if type(author) in (str, array) { author } else { () }, title: title) // Los metadatos solo aceptan texto
   let fonts = fonts-mod.resolve(fonts)

@@ -8,6 +8,8 @@
 #import "../components/i18n.typ"
 #import "../components/numbering.typ" as numbering-mod
 #import "../components/margins.typ"
+#import "../components/themes.typ"
+#import "../components/tocs/toc.typ" as tocs-mod
 #import "../components/pagestyle.typ"
 
 #let margin-defaults = (
@@ -32,9 +34,12 @@
   margin: auto,
   // Doble cara (el `twoside` de LaTeX): márgenes interior y exterior que alternan
   facing-pages: false,
-  // Cabeceras y pies: un preajuste ("plain": solo el folio), none (los de Typst) o un
+  // Tema visual (classic, modern, elegant): lo comparten heading-style, page-style y el
+  // índice (`tocs`). auto = el de cada parte. Los parámetros de cada parte lo sustituyen
+  style: auto,
+  // Cabeceras y pies: un tema o variante ("classic", "plain"…), none (los de Typst) o un
   // diccionario con header y footer (ver components/pagestyle.typ)
-  page-style: "plain",
+  page-style: auto,
   // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
   // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
   fonts: (:),
@@ -48,6 +53,10 @@
   microtype: true,
   body,
 ) = {
+  let style = themes.check(style)
+  let page-style = themes.pick(page-style, style, "plain")
+  // El tema también fija el estilo de los índices; un `tocs.setup` posterior lo sustituye
+  show: body => if style != auto { tocs-mod.setup(style: style, body) } else { body }
   set document(author: if type(author) in (str, array) { author } else { () }, title: title) // Los metadatos solo aceptan texto
   let fonts = fonts-mod.resolve(fonts)
   fonts-mod.current.update(fonts)

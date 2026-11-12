@@ -1,3 +1,5 @@
+#import "../themes.typ"
+
 // Estilos predefinidos. Cada estilo da el formato de las partes (`part`), de
 // cada rango de división (`ranks`: 0 = capítulo en book y report, sección en
 // article; 1, 2, 3 debajo) y de las listas de figuras (`figure`), más el del
@@ -126,7 +128,7 @@
 
 #let get(name) = {
   if type(name) == dictionary { return name } // Estilo propio con la forma de un preset
-  assert(name in presets, message: "tocs: estilo desconocido «" + str(name) + "». Estilos: " + names.join(", "))
+  assert(name in presets, message: "tocs: estilo desconocido «" + str(name) + "». Estilos: " + names.join(", ") + "." + themes.hint(name))
   presets.at(name)
 }
 

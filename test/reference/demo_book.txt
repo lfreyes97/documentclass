@@ -15,14 +15,14 @@ Demostración de la clase book
 Muestra las partes que lo componen: front matter con numeración
 romana, cuerpo con partes y capítulos, y back matter con un
 apéndice.
-    Cambia el aspecto con el argumento style, que elige a la vez
-las aperturas de capítulo (heading-style) y las cabeceras y pies
-(page-style).
+    Cambia el aspecto con style, un tema que elige a la vez los
+títulos (heading-style), las cabeceras y pies (page-style) y el
+índice.
 
 
 
 
-                               ii
+                              ii
                          Contenido
 
 Prefacio                                                            ii
