@@ -239,6 +239,7 @@
     clearance: cfg.clearance,
     book: cfg.book,
     carry: cfg.overflow == "carry",
+    mark: cfg.overflow-mark,
     last: calc.max(counter(page).final().first(), 1),
     regs: (left: _note_extends_left.final(), right: _note_extends_right.final()),
   )
@@ -262,8 +263,15 @@
       let x = if side == "left" { column.far } else { pagewidth - column.far - column.width }
       let y = st.page.top + fit.offsets.at(str(index))
       place(top + left, dx: x, dy: y, item.body)
-      // The arrow sits above the note, in the gap, so the note keeps the height it was laid out with
-      place(top + left, dx: x, dy: y - 1.1em, text(size: 0.8em, fill: luma(40%))[↑])
+      // The mark sits in the gutter between the column and the text, level with the note's first line,
+      // so it never touches the neighbouring notes and the note keeps the height it was laid out with
+      if st.mark != none {
+        let mark = if st.mark == auto { text(size: 0.85em, fill: luma(35%))[↑] } else { st.mark }
+        let width = measure(mark).width
+        // The numerals hang out of the left edge of a column, so on the right the mark goes beyond them
+        let dx = if side == "left" { x + column.width + 3pt } else { x - width - 11pt }
+        place(top + left, dx: dx, dy: y + 0.05em, mark)
+      }
     }
   }
 }

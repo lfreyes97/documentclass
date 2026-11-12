@@ -204,8 +204,8 @@ Lo que se vio al compilar el ensayo con la versión actual (24 páginas, 142 not
       En el ensayo desaparece el desborde de las 24 páginas. `setup` se movió a `glosa/setup.typ`.
   - **Falta:** una consulta (`typst query … '<glosa-overflow>'`) y una marca en `debug-frame` para las
     páginas que aún desbordan (la última, o una nota que choca con un bloque ancho: hoy solo se
-    detecta el desborde por arriba). La flecha es una marca pequeña sobre la nota; una opción para
-    cambiarla. El tiempo de compilación del ensayo pasó de 2.5 s a 5.7 s.
+    detecta el desborde por arriba). La flecha va en el canal junto a la primera línea de la nota (opción
+    `overflow-mark`). El tiempo de compilación del ensayo pasó de 2.5 s a 5.7 s.
 - [ ] Decidir si el ancho por defecto de la columna interior de `essay` baja a 0.
 - [ ] La fecha de la cabecera, si no se pasa `date:`, es la de hoy: el PDF cambia cada día.
       Valorar un aviso o fijarla.

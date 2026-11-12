@@ -45,6 +45,8 @@
   // Notas que no caben en la columna de su página: "carry" (las últimas pasan al principio de la
   // columna de la página siguiente, marcadas con una flecha) o "none" (se desbordan por arriba)
   overflow: "carry",
+  // Marca junto a una nota que viene de la página anterior: auto (una flecha), none o contenido
+  overflow-mark: auto,
   font-size: 10pt,
   text-fill: luma(30),
   // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
@@ -178,6 +180,7 @@
     book: facing-pages,
     clearance: clearance,
     overflow: overflow,
+    overflow-mark: overflow-mark,
     {
       titlepage-content
       // Las notas al margen llevan los numerales; las notas al pie van con *, †, ‡…

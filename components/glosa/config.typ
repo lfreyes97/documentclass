@@ -21,6 +21,7 @@
     book: config.at("book", default: false),
     clearance: config.at("clearance", default: 12pt),
     overflow: config.at("overflow", default: "carry"),
+    overflow-mark: config.at("overflow-mark", default: auto),
   )
 }
 
@@ -121,6 +122,10 @@
   ///- ```typc "none"```: they are pushed up past the top margin.
   /// -> "none" | "carry"
   overflow: "carry",
+  /// The mark beside a note carried over from the previous page, in the gutter between its column and the
+  /// text: ```typc auto``` (a small arrow), ```typc none``` or content.
+  /// -> auto | none | content
+  overflow-mark: auto,
   /// -> content
   body,
 ) = {}
