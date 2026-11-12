@@ -124,7 +124,7 @@ As @sec-first and @n-first show... // "section I", "note 1"
 
 The level-1 heading is the essay title: it goes to the page header with its number, and its section outline goes to the margin. Level-2 headings are the sections, numbered `I.`, `II.`… Margin notes are numbered `1, 2, 3…` through the whole essay and footnotes switch to `*, †, ‡`.
 
-`note-size` and `note-numbering` set the notes for the whole document, so files that `#include` content only need `#import "lib.typ": note`. Other options: `inner`/`outer` (each `(far, width, sep)`), `top`, `bottom`, `facing-pages`, `font-size`, `chapter-number-style`, `chapter-title-style`, `section-numbering`, `title-in-header`, `titlepage` and `debug-frame` (draws the margin columns). The engine itself is available as the `glosa` module (`glosa.header`, `glosa.notecounter`, `glosa.show-frame`…).
+`note-size` and `note-numbering` set the notes for the whole document, so files that `#include` content only need `#import "lib.typ": note`. Other options: `inner`/`outer` (each `(far, width, sep)`), `top`, `bottom`, `facing-pages`, `page-counter` (where "Page 3 of 12" goes: `"footer"` at the outer edge, the default; `"header"` in the inner column; or `none`), `chapter-numbering` (`none` by default: the essay title carries no numeral; `"1"` shows it, for several chapters), `font-size`, `chapter-number-style`, `chapter-title-style`, `section-numbering`, `title-in-header`, `titlepage` and `debug-frame` (draws the margin columns). The engine itself is available as the `glosa` module (`glosa.header`, `glosa.notecounter`, `glosa.show-frame`…).
 
 For complete examples, check the `demos/` directory:
 - [demos/demo_book.typ](demos/demo_book.typ)

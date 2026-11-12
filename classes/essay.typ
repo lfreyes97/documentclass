@@ -10,18 +10,24 @@
 /// contador nunca se reinicia), para poder citarlas como «nota 42».
 #let note-numbering(..n) = super(numbering("1", n.pos().last()))
 
-/// Cabecera corrida en los tres espacios de `glosa.header`: «Pág. 3 de 12», autor y fecha.
-/// Requiere `context`.
-#let running-header(author, date) = {
+/// «Pág. 3 de 12». Requiere `context`.
+#let page-counter() = {
   let current = counter(page).get().first()
   let total = counter(page).final().first()
-  glosa.header(
-    text-style: (size: 8.5pt, number-type: "old-style"),
-    [#i18n.get("page") #current #i18n.get("of") #total],
-    author,
-    date,
-  )
+  [#i18n.get("page") #current #i18n.get("of") #total]
 }
+
+/// Cabecera corrida en los espacios de `glosa.header`: autor y fecha y, con `counter: true`, a
+/// su izquierda «Pág. 3 de 12», en la columna interior. Requiere `context`.
+#let running-header(author, date, counter: false) = {
+  let style = (size: 8.5pt, number-type: "old-style")
+  if counter { glosa.header(text-style: style, page-counter(), author, date) } else {
+    glosa.header(text-style: style, author, date)
+  }
+}
+
+/// Pie con «Pág. 3 de 12» en el borde exterior, bajo la columna de notas. Requiere `context`.
+#let running-footer() = glosa.header(text-style: (size: 8.5pt, number-type: "old-style"), page-counter())
 
 #let essay(
   title: none, // Título de la portada (`titlepage: true`) y de los metadatos
@@ -48,12 +54,15 @@
   note-size: 8.5pt,
   note-numbering: note-numbering,
   header-ascent: 16mm,
+  // «Pág. 3 de 12»: "footer" (borde exterior del pie, deja libre la columna interior de la cabecera),
+  // "header" (a la izquierda de la cabecera, en la columna interior) o none
+  page-counter: "footer",
   // Título de nivel 1 con su número e índice de secciones en el margen, y secciones de
   // nivel 2 numeradas con `section-numbering`
   sections: true,
   // El título de nivel 1 va en la cabecera de su página en lugar de en el cuerpo
   title-in-header: true,
-  chapter-numbering: "1", // none = sin numeral
+  chapter-numbering: none, // El título del ensayo no lleva numeral; "1" lo pone, para varios capítulos
   chapter-number-style: (size: 40pt, weight: "black"), // Sin `font` = rol `title`
   chapter-title-style: (size: 1.3em, weight: "black"), // Sin `font` = rol `title`
   section-numbering: "I.",
@@ -91,12 +100,22 @@
     date
   }
 
+  assert(
+    page-counter in ("footer", "header", none),
+    message: "essay: page-counter debe ser \"footer\", \"header\" o none, no " + repr(page-counter),
+  )
   let header = () => if here().page() > 1 {
     set text(font: fonts.header)
-    running-header(author, date)
+    running-header(author, date, counter: page-counter == "header")
   }
 
   set page(
+    footer: if page-counter == "footer" {
+      context {
+        set text(font: fonts.header)
+        running-footer()
+      }
+    },
     header-ascent: header-ascent,
     header: if title-in-header {
       glosa.title-header(style: title-style, number-style: number-style, fallback: header)

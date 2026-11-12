@@ -186,6 +186,25 @@ Ideas, sin decidir:
       las fuentes sueltas; `microtype` y `facing-pages` cambian la maquetación por defecto.
 - [ ] **README:** enlaza a `demos/`, pero `typst.toml` los excluye del paquete publicado.
 
+## Ensayo real (Iapocalipsis, copia temporal en `tmp-iapocalipsis/`, fuera del repositorio)
+
+Lo que se vio al compilar el ensayo con la versión actual (24 páginas, 142 notas al margen):
+
+- [x] El título ya no lleva numeral por defecto (`chapter-numbering: none`); con un solo ensayo el
+      "1" grande sobraba. `"1"` lo devuelve.
+- [x] El contador "Pág. n de N" salía a la izquierda de la cabecera, en la columna interior, y eso
+      obligaba a que esa columna midiera 15 mm. Ahora va en el pie, borde exterior
+      (`page-counter: "footer"`; `"header"` lo deja como antes). Con eso, `inner: (width: 0mm)`
+      libera esos 15 mm: probado dándoselos a las notas (`outer: (width: 60mm)`).
+- [ ] **Desborde de notas.** En la pág. 22 caben menos notas que las que hay: `glosa` las empuja hacia
+      arriba pasando el margen superior y pisan la cabecera. Con 60 mm de columna se resuelve, pero
+      no hay aviso cuando ocurre. Opciones: marcar la página en `debug-frame`, enviar a la página
+      siguiente las notas que no caben, o pasarlas a nota al pie.
+- [ ] Decidir si el ancho por defecto de la columna interior de `essay` baja a 0.
+- [ ] La fecha de la cabecera, si no se pasa `date:`, es la de hoy: el PDF cambia cada día.
+      Valorar un aviso o fijarla.
+- [ ] Revisar las 24 páginas a ojo con los cambios (solo se vieron la 1, 9 y 22).
+
 ## Clases y revisión pendiente
 
 - [ ] **Microtipografía:** solo se midió en `book`. Revisar `report`, `article` (con
