@@ -1,6 +1,7 @@
 # TODO
 
-Estado al 2026-11-12, tras los commits `e6f7698`, `7f2778e`, `4461dcc` y `ea15153`.
+Estado al 2026-11-12, tras los commits `ea6d924` (márgenes), `45a3bd9`, `643fa19` y `3c198b8`
+(`page-style`).
 Meta: madurez del paquete antes de congelar la API. No hay libros cerrados, así que
 los cambios incompatibles salen baratos ahora.
 
@@ -11,9 +12,10 @@ los cambios incompatibles salen baratos ahora.
 - [x] **Índice.** Decidido: la API de `tocs` es la canónica. `tableofcontents`,
       `minitoc`, `listoffigures` y `listoftables` se conservan como nombres (son los de
       LaTeX y los que usan los libros) pero pasan a ser `tocs`. Plan en "Estabilizar la API".
-- [ ] **`report` y `layout.setup`.** `report` lo importa pero no lo llama (no hereda
-      cabeceras ni el estilo de párrafo de `book`). ¿Es intencional (clase más simple)
-      o debe comportarse como `book`?
+- [ ] **`report` y `page-style`.** `layout.setup` ya solo lleva el estilo de párrafo y las
+      marcas de salto, y `report` no lo usa (sin sangría ni marcas de páginas en blanco).
+      `report` acepta `page-style` pero por defecto es `none`. ¿Debe ser `"classic"` o
+      `"plain"`, y debe usar el estilo de párrafo de `book`?
 
 ## Estabilizar la API
 
@@ -26,8 +28,8 @@ Inconsistencias medidas sobre las firmas de `book`, `report`, `article` y `essay
       en `book` y `false` en `report` y `article` (`report` pasa de márgenes alternos a
       simétricos). En `essay`, `book` se renombró a `facing-pages`.
   - **Falta:** en `essay`, renombrar `inner` y `outer` (columnas de notas) a algo como
-    `notes`. En `report` y `article`, `facing-pages` solo cambia los márgenes; falta que
-    alterne cabeceras y pies cuando exista el sistema común.
+    `notes`. En `report` y `article`, `facing-pages` cambia los márgenes y, si se activa
+    `page-style`, alterna cabeceras y pies (`odd`/`even`).
 - [ ] **Familias de opciones como diccionario**, como ya son `fonts`, `microtype` y
       ahora `minitoc`: falta el grupo de portada (`cover`, `back-cover`, `cover-data`,
       `cover-options`).
@@ -75,8 +77,8 @@ Inconsistencias medidas sobre las firmas de `book`, `report`, `article` y `essay
 
 ## Cabeceras, pies y aperturas de capítulo (equivalentes a fancyhdr y fncychap)
 
-Hoy no hay forma de configurar ninguna de las tres cosas desde las clases. Conviene
-diseñarlas antes de congelar la API, porque añaden parámetros nuevos.
+Cabeceras y pies ya se configuran con `page-style` (ver abajo). Las aperturas siguen sin
+configuración; conviene diseñarlas antes de congelar la API, porque añaden parámetros nuevos.
 
 - [ ] **Aperturas de capítulo y de parte** (fncychap, titlesec). Estado actual:
       `headings.setup` tiene `h1-size`…`h4-size`, `h*-weight` y `h*-smallcaps`, pero
