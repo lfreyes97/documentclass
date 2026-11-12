@@ -214,6 +214,14 @@ def check_structure_book(name: str, pages: list[str]) -> None:
             fail(name, f"el índice no lista «{title}»")
 
 
+def check_no_date(name: str, pages: list[str]) -> None:
+    """Un ensayo sin `date` no lleva fecha en la cabecera: ningún año en las primeras líneas."""
+    for n, page in enumerate(pages, 1):
+        head = " ".join(lines_of(page)[:2])
+        if re.search(r"\b20\d\d\b", head):
+            fail(name, f"la página {n} lleva una fecha en la cabecera: «{head[:60]}»")
+
+
 def check_reference(name: str, source: str, pages: list[str], pdf: Path, update: bool) -> None:
     """Texto de cada página (`.txt`) y posición de sus líneas (`.geometry`)."""
     stem = REFERENCE / Path(source).stem
@@ -273,6 +281,8 @@ def main() -> int:
                 check_overlap(rel, pdf)
             if source.name == "structure_book.typ":
                 check_structure_book(rel, pages)
+            if source.name == "essay_default.typ":
+                check_no_date(rel, pages)
             if rel in REFERENCED and not args.no_reference:
                 check_reference(rel, rel, pages, pdf, args.update)
     finally:

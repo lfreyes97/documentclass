@@ -28,8 +28,9 @@
 /// su izquierda «Pág. 3 de 12», en la columna interior. Requiere `context`.
 #let running-header(author, date, counter: false) = {
   let style = (size: 8.5pt, number-type: "old-style")
+  // Con `date: none` el autor queda en la columna del texto, no en la exterior
   if counter { glosa.header(text-style: style, page-counter(), author, date) } else {
-    glosa.header(text-style: style, author, date)
+    glosa.header(text-style: style, none, author, date)
   }
 }
 
@@ -39,7 +40,9 @@
 #let essay(
   title: none, // Título de la portada (`titlepage: true`) y de los metadatos
   author: none, // Autor de la cabecera y de la portada
-  date: none, // Contenido o `datetime` para la cabecera; none = hoy
+  // Fecha de la cabecera: contenido o `datetime`. none = sin fecha, así el PDF no cambia al recompilar
+  // otro día; `datetime.today()` pone la de hoy. Una `datetime` también fija la fecha del PDF
+  date: none,
   paper: "a4",
   // Márgenes: cada lado tiene `far` (borde a columna de notas), `width` (columna de
   // notas) y `sep` (columna de notas a texto). `facing-pages: true` alterna interior/exterior.
@@ -101,7 +104,12 @@
     numbering: note-numbering,
   ))
 
-  set document(author: if type(author) in (str, array) { author } else { () }, title: title) // Los metadatos solo aceptan texto
+  // Los metadatos solo aceptan texto. Sin `datetime` no hay fecha en el PDF: así no cambia al recompilar
+  set document(
+    author: if type(author) in (str, array) { author } else { () },
+    title: title,
+    date: if type(date) == datetime { date } else { none },
+  )
   set text(font: fonts.body, lang: lang)
   show raw: set text(font: fonts.mono)
   show: microtype-mod.setup.with(microtype)
@@ -110,7 +118,7 @@
   let number-style = (font: fonts.title, ..chapter-number-style)
   let title-style = (font: fonts.title, ..chapter-title-style)
   let date = if date == none {
-    i18n.date(datetime.today())
+    none
   } else if type(date) == datetime {
     i18n.date(date)
   } else {

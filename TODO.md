@@ -213,8 +213,9 @@ Lo que se vio al compilar el ensayo con la versión actual (24 páginas, 142 not
       la maquetación (Typst avisaba de que no convergía), así que el juego por defecto empieza en `†`
       (`footnote-symbols`, configurable).
 - [ ] Decidir si el ancho por defecto de la columna interior de `essay` baja a 0.
-- [ ] La fecha de la cabecera, si no se pasa `date:`, es la de hoy: el PDF cambia cada día.
-      Valorar un aviso o fijarla.
+- [x] **Fecha fija.** Sin `date:`, la cabecera llevaba la fecha de hoy y el PDF cambiaba cada día. Ahora `date`
+      es `none` por defecto: sin fecha en la cabecera ni en los metadatos del PDF. Una `datetime` o un
+      texto la ponen, y una `datetime` fija también la fecha del PDF; `datetime.today()` devuelve la de hoy.
 - [ ] Revisar las 24 páginas a ojo con los cambios (solo se vieron la 1, 9 y 22).
 
 ## Clases y revisión pendiente
