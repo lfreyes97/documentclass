@@ -20,6 +20,7 @@
     bottom: config.at("bottom", default: 2.5cm),
     book: config.at("book", default: false),
     clearance: config.at("clearance", default: 12pt),
+    overflow: config.at("overflow", default: "carry"),
   )
 }
 
@@ -88,7 +89,7 @@
 ///      Additionally, it replaces the `page-setup()` function that was needed previously and is no longer called `configure()`],
 ///   ),
 /// ))
-#let setup(
+#let _setup-doc(
   /// Inside/left margins.
   ///     - `far`: Distance between edge of page and margin (note) column.
   ///     - `width`: Width of the margin column.
@@ -115,46 +116,14 @@
   /// Minimal vertical distance between notes and to wide blocks.
   /// -> length
   clearance: 12pt,
+  /// What happens to notes that do not fit the margin column of their page:
+  ///- ```typc "carry"```: the last ones move to the top of the column on the next page, marked with an arrow.
+  ///- ```typc "none"```: they are pushed up past the top margin.
+  /// -> "none" | "carry"
+  overflow: "carry",
   /// -> content
   body,
 ) = {}
-#let setup(..config, body) = {
-  _config.update(_fill_config(..config))
-  set page(.._page-setup(..config))
-  show ref: it => {
-    if (
-      it.has("element")
-        and it.element != none
-        and it.element.has("children")
-        and it.element.children.len() > 1
-        and it.element.children.first().func() == metadata
-    ) {
-      if it.element.children.first().value == "_glosa_note" {
-        h(0pt, weak: true)
-        show link: it => {
-          show underline: i => i.body
-          it
-        }
-        let dest = query(selector(<_glosa_note>).after(it.element.location()))
-        assert(dest.len() > 0, message: "Could not find referenced note")
-        link(dest.first().location(), dest.first().value.anchor)
-      } else if it.element.children.first().value == "_glosa_notefigure" {
-        let dest = query(selector(<_glosa_notefigure_meta>).after(it.element.location()))
-        assert(dest.len() > 0, message: "Could not find referenced notefigure")
-        if it.has("form") {
-          std.ref(dest.first().value.label, form: it.form, supplement: it.supplement)
-        } else {
-          std.ref(dest.first().value.label, supplement: it.supplement)
-        }
-      } else {
-        it
-      }
-    } else {
-      it
-    }
-  }
-  body
-}
 
 /// // #internal[(mostly for internal use)]
 /// Returns a dictionary with the keys `far`, `width`, `sep` containing the respective widths of the

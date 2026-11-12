@@ -170,6 +170,104 @@
 }
 
 
+#let _overflow-eps = 0.5pt
+
+/// #internal[(mostly for internal use)]
+/// Places the items of one page and one side. When `carry` is true, the notes that do not fit
+/// (the last ones, in page order) are taken off the page and listed in `carried`.
+///
+/// `items` is an array of the items described in @_calculate-offsets; items that carry a `body`
+/// are notes and may be carried, the others (wide blocks) stay. The result is
+/// `(offsets: (<index>: offset), carried: (<index>, …))`, with `carried` in page order.
+/// -> dictionary
+#let _fit-page(page, items, clearance, carry) = {
+  let active = range(items.len())
+  let carried = ()
+  let offsets = (:)
+  while true {
+    let dict = active.map(k => (str(k), items.at(k))).to-dict()
+    offsets = _calculate-offsets(page, dict, clearance)
+    if not carry { break }
+    let movable = active.filter(k => items.at(k).shift not in (false, "ignore") and items.at(k).at("body", default: none) != none)
+    let above = movable.filter(k => items.at(k).natural + offsets.at(str(k)) < page.top - _overflow-eps)
+    if above.len() == 0 { break }
+    // The note furthest down the page goes first; carried-in notes (natural at the top) go last
+    let last = movable.sorted(key: k => (items.at(k).natural, k)).last()
+    active = active.filter(k => k != last)
+    carried.push(last)
+  }
+  (offsets: offsets, carried: carried.rev())
+}
+
+/// #internal[(mostly for internal use)]
+/// Lays out the notes of pages `1` to `upto`, carrying the ones that do not fit to the next page.
+/// `regs` has the form `(left: (<page>: items), right: (<page>: items))`. In a book the outer
+/// column alternates sides, so a note carried from the right column goes to the left one.
+/// The last page does not carry (there is no page to carry to): `last` is its number.
+///
+/// Returns `(<page>: (left: (items:, offsets:, carried:), right: …))`. Items carried into a page come
+/// first, with `carried: true` and `natural` at the top margin.
+/// -> dictionary
+#let _carry-layout(regs, page, clearance, book, upto, last, carry) = {
+  let result = (:)
+  let incoming = (left: (), right: ())
+  for p in range(1, upto + 1) {
+    let this = (:)
+    let next = (left: (), right: ())
+    for side in ("left", "right") {
+      let own = regs.at(side).at(str(p), default: ())
+      let carried-in = incoming.at(side).map(it => (..it, natural: page.top, shift: true, keep-order: true, carried: true))
+      let items = carried-in + own.map(it => (..it, carried: false))
+      let fit = _fit-page(page, items, clearance, carry and p < last)
+      this.insert(side, (items: items, offsets: fit.offsets, carried: fit.carried))
+      let target = if book { if side == "left" { "right" } else { "left" } } else { side }
+      for k in fit.carried { next.insert(target, next.at(target) + (items.at(k),)) }
+    }
+    result.insert(str(p), this)
+    incoming = next
+  }
+  result
+}
+
+/// #internal[(mostly for internal use)]
+/// The page geometry, the total number of pages and the registered notes (requires context).
+/// -> dictionary
+#let _note-state() = {
+  let cfg = _config.get()
+  (
+    page: (height: if page.flipped { page.width } else { page.height }, bottom: cfg.bottom, top: cfg.top),
+    clearance: cfg.clearance,
+    book: cfg.book,
+    carry: cfg.overflow == "carry",
+    last: calc.max(counter(page).final().first(), 1),
+    regs: (left: _note_extends_left.final(), right: _note_extends_right.final()),
+  )
+}
+
+/// #internal[(mostly for internal use)]
+/// Draws on every page the notes carried over from the previous one, each marked with an arrow.
+/// Requires context.
+/// -> content
+#let _draw-carried() = context {
+  let st = _note-state()
+  if not st.carry { return }
+  let n = here().page()
+  let layout = _carry-layout(st.regs, st.page, st.clearance, st.book, n, st.last, true).at(str(n))
+  let pagewidth = if page.flipped { page.height } else { page.width }
+  for side in ("left", "right") {
+    let fit = layout.at(side)
+    for (index, item) in fit.items.enumerate() {
+      if not item.carried or index in fit.carried { continue }
+      let column = if side == "left" { get-left() } else { get-right() }
+      let x = if side == "left" { column.far } else { pagewidth - column.far - column.width }
+      let y = st.page.top + fit.offsets.at(str(index))
+      place(top + left, dx: x, dy: y, item.body)
+      // The arrow sits above the note, in the gap, so the note keeps the height it was laid out with
+      place(top + left, dx: x, dy: y - 1.1em, text(size: 0.8em, fill: luma(40%))[↑])
+    }
+  }
+}
+
 // Internal use.
 // Requires Context.
 // -> "left" | "right"
@@ -221,26 +319,19 @@
 
       extends.update(old => {
         let oldpage = old.at(page_num, default: ())
-        oldpage.push((natural: natural_position, height: height, shift: shift, keep-order: keep-order))
+        oldpage.push((natural: natural_position, height: height, shift: shift, keep-order: keep-order, body: notebox, raw: body))
         old.insert(page_num, oldpage)
         old
       })
 
-      let offset_page = (
-        height: if page.flipped { page.width } else { page.height },
-        bottom: _config.get().bottom,
-        top: _config.get().top,
-      )
-      let offset_items = extends
-        .final()
-        .at(page_num, default: ())
-        .enumerate()
-        .map(((key, item)) => (str(key), item))
-        .to-dict()
-      let offset_clearance = _config.get().clearance
-      let offsets = _calculate-offsets(offset_page, offset_items, offset_clearance)
+      let st = _note-state()
+      let fit = _carry-layout(st.regs, st.page, st.clearance, st.book, anchor.page, st.last, st.carry).at(page_num).at(side)
+      // Notes carried into this page come before this page's own notes
+      let id = fit.items.filter(it => it.carried).len() + index
 
-      let vadjust = dy + offsets.at(str(index), default: 0pt)
+      // Carried out to the next page: that page draws it
+      if id in fit.carried { return }
+      let vadjust = dy + fit.offsets.at(str(id), default: 0pt)
 
       let hadjust = if side == "left" { get-left().far - anchor.x } else {
         pagewidth - anchor.x - get-right().far - get-right().width

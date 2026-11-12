@@ -42,6 +42,9 @@
   bottom: 2.5cm,
   facing-pages: false, // Doble cara (el `twoside` de LaTeX): `inner` y `outer` alternan
   clearance: 12pt, // Distancia mínima entre notas
+  // Notas que no caben en la columna de su página: "carry" (las últimas pasan al principio de la
+  // columna de la página siguiente, marcadas con una flecha) o "none" (se desbordan por arriba)
+  overflow: "carry",
   font-size: 10pt,
   text-fill: luma(30),
   // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
@@ -174,6 +177,7 @@
     bottom: bottom,
     book: facing-pages,
     clearance: clearance,
+    overflow: overflow,
     {
       titlepage-content
       // Las notas al margen llevan los numerales; las notas al pie van con *, †, ‡…

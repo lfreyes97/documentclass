@@ -196,10 +196,16 @@ Lo que se vio al compilar el ensayo con la versión actual (24 páginas, 142 not
       obligaba a que esa columna midiera 15 mm. Ahora va en el pie, borde exterior
       (`page-counter: "footer"`; `"header"` lo deja como antes). Con eso, `inner: (width: 0mm)`
       libera esos 15 mm: probado dándoselos a las notas (`outer: (width: 60mm)`).
-- [ ] **Desborde de notas.** En la pág. 22 caben menos notas que las que hay: `glosa` las empuja hacia
-      arriba pasando el margen superior y pisan la cabecera. Con 60 mm de columna se resuelve, pero
-      no hay aviso cuando ocurre. Opciones: marcar la página en `debug-frame`, enviar a la página
-      siguiente las notas que no caben, o pasarlas a nota al pie.
+- [x] **Desborde de notas** (`overflow: "carry"`, por defecto). En la pág. 22 había más notas de las que
+      caben y se salían por arriba, pisando la cabecera. `glosa` reparte ahora las notas en una
+      función pura (`_fit-page`, `_carry-layout`, probada en `test/glosa_carry.typ`): las últimas de la
+      página pasan al principio de la columna de la siguiente, con una flecha. Los avisos que no
+      se mueven se siguen dibujando desde su ancla, así que sin desborde el resultado es idéntico.
+      En el ensayo desaparece el desborde de las 24 páginas. `setup` se movió a `glosa/setup.typ`.
+  - **Falta:** una consulta (`typst query … '<glosa-overflow>'`) y una marca en `debug-frame` para las
+    páginas que aún desbordan (la última, o una nota que choca con un bloque ancho: hoy solo se
+    detecta el desborde por arriba). La flecha es una marca pequeña sobre la nota; una opción para
+    cambiarla. El tiempo de compilación del ensayo pasó de 2.5 s a 5.7 s.
 - [ ] Decidir si el ancho por defecto de la columna interior de `essay` baja a 0.
 - [ ] La fecha de la cabecera, si no se pasa `date:`, es la de hoy: el PDF cambia cada día.
       Valorar un aviso o fijarla.
