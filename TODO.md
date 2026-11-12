@@ -12,10 +12,10 @@ los cambios incompatibles salen baratos ahora.
 - [x] **Índice.** Decidido: la API de `tocs` es la canónica. `tableofcontents`,
       `minitoc`, `listoffigures` y `listoftables` se conservan como nombres (son los de
       LaTeX y los que usan los libros) pero pasan a ser `tocs`. Plan en "Estabilizar la API".
-- [ ] **`report` y `page-style`.** `layout.setup` ya solo lleva el estilo de párrafo y las
-      marcas de salto, y `report` no lo usa (sin sangría ni marcas de páginas en blanco).
-      `report` acepta `page-style` pero por defecto es `none`. ¿Debe ser `"classic"` o
-      `"plain"`, y debe usar el estilo de párrafo de `book`?
+- [x] **`report` y `page-style`.** Decidido: `report` usa `page-style: "plain"` (solo el
+      folio) y el estilo de párrafo y las marcas de `layout.setup`, como `book`. Sus títulos
+      van en bloque para que el primer párrafo no se sangre. Cambia respecto a antes: los
+      párrafos llevan sangría y el interlineado es el de `book`.
 
 ## Estabilizar la API
 
@@ -93,14 +93,14 @@ configuración; conviene diseñarlas antes de congelar la API, porque añaden pa
       a las de antes), diccionario `header`/`footer` con `left`/`center`/`right`, `odd`/`even`,
       `rule`, `text` y `when`, y funciones `ctx => contenido` con `part`, `chapter`, `section`,
       `folio`, `title`, `author`… `book` usa `classic`; `report` y `article` aceptan
-      `page-style` pero por defecto es `none` (sin cambios). `layout.setup` quedó solo con el
+      `page-style`; en `report` es `"plain"` y en `article` `none`. `layout.setup` quedó solo con el
       estilo de párrafo y las marcas de salto.
   - Preajustes: `classic`, `plain`, `outer`, `minimal`, `modern` y `elegant` (los dos últimos
     combinan con los estilos de `tocs` del mismo nombre; `demos/demo_pagestyle.typ`). Las
     aperturas y el formato del folio no necesitaron claves propias: salen de `ctx.opening` y
     de las funciones de cada espacio.
-  - **Falta:** decidir el valor por defecto de `report` (¿`classic`?) y probar `page-style` en `essay`
-    (usa el motor de `glosa`, con su propia cabecera).
+  - **Falta:** probar `page-style` en `essay` (usa el motor de `glosa`, con su propia
+    cabecera) y decidir el valor por defecto de `article`.
   - Con `use-parts: false` y sin `#part`, `classic` no muestra cabecera (no hay primer nivel
     de parte); es lo que ya hacía `book`. Revisar si debe mostrarla.
 

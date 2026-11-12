@@ -32,9 +32,9 @@
   margin: auto,
   // Doble cara (el `twoside` de LaTeX): márgenes interior y exterior que alternan
   facing-pages: false,
-  // Cabeceras y pies: none (los de Typst: folio al centro), un preajuste ("classic") o un
+  // Cabeceras y pies: un preajuste ("plain": solo el folio), none (los de Typst) o un
   // diccionario con header y footer (ver components/pagestyle.typ)
-  page-style: none,
+  page-style: "plain",
   // Tipografía: diccionario parcial de roles (ver components/fonts.typ)
   // body, heading, h1..h4, title, header, toc, minitoc, initials, mono
   fonts: (:),
@@ -86,6 +86,10 @@
     logo: logo,
   )
 
+  // Estilo de párrafo (sangría) y marcas de páginas en blanco, como en book
+  show: layout.setup
+  show heading: set par(first-line-indent: 0pt)
+
   // Abstract en página separada (común en reportes)
   if abstract != none {
     pagebreak(weak: true)
@@ -113,36 +117,33 @@
 
   // H1 = CAPÍTULO
   show heading.where(level: 1): set text(font: fonts.h1, weight: "bold", hyphenate: true)
+  // Los títulos van en un bloque: si fueran texto en línea, el párrafo que sigue se sangraría
+  // como si siguiera a otro párrafo
   show heading.where(level: 1): it => {
     pagebreak(weak: true)
-    v(2em)
-    if it.numbering != none {
-      numbering-mod.reset-in-chapter()
-      context text(size: 14pt, style: "italic")[
-        #i18n.get("chapter") #counter(heading).display(it.numbering)
-      ]
-      v(0.5em)
-    }
-    text(size: 24pt, weight: "bold")[#it.body]
-    v(1.5em)
+    // El espacio entre párrafos de antes (1.2em) se suma a los `v` de cada título
+    block(above: 0pt, below: 2.7em, {
+      set par(spacing: 1.2em)
+      v(2em)
+      if it.numbering != none {
+        numbering-mod.reset-in-chapter()
+        context text(size: 14pt, style: "italic")[
+          #i18n.get("chapter") #counter(heading).display(it.numbering)
+        ]
+        v(0.5em)
+      }
+      text(size: 24pt, weight: "bold")[#it.body]
+    })
   }
 
   // H2 = SECCIÓN
   show heading.where(level: 2): set text(font: fonts.h2, weight: "bold", hyphenate: true)
-  show heading.where(level: 2): it => {
-    v(1.2em)
-    context text(size: 14pt, weight: "bold")[#number(it)#it.body]
-    v(0.8em)
-  }
+  show heading.where(level: 2): it => block(above: 2.4em, below: 2em, context text(size: 14pt, weight: "bold")[#number(it)#it.body])
 
   // H3 = SUBSECCIÓN
   show heading.where(level: 3): set text(font: fonts.h3, hyphenate: true)
   show heading.where(level: 4): set text(font: fonts.h4)
-  show heading.where(level: 3): it => {
-    v(1em)
-    context text(size: 12pt, weight: "bold")[#number(it)#it.body]
-    v(0.6em)
-  }
+  show heading.where(level: 3): it => block(above: 2.2em, below: 1.8em, context text(size: 12pt, weight: "bold")[#number(it)#it.body])
 
   // Footnotes
   show footnote.entry: it => {
