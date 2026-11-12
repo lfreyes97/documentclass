@@ -149,7 +149,7 @@ All classes accept the following common parameters:
 - **Report**: `abstract`, `logo`, `custom-titlepage`, `equation-numbering`.
 - **Essay**: see [Essay Class](#essay-class).
 
-With `use-parts: false`, `=` is a chapter and `==` a section; parts are created with `#part[Title]`. `tableofcontents(depth: 2)` still counts from the chapter. In `book`, any blank page left by a page break (the verso before a part or chapter, or your own `#pagebreak(to: "odd")`) gets no header or folio. `#blank-page()` inserts an intentionally blank page the same way.
+With `use-parts: false`, `=` is a chapter and `==` a section; parts are created with `#part[Title]`. `tableofcontents(depth: 2)` still counts from the chapter. `facing-pages` (on by default in `book`) lays the front out as a printed book: after the cover the title page starts on a recto, and the contents and the rest of the front matter do too, so the versos are blank and carry no header or folio (cover, blank, title, blank, contents). `facing-pages: false` removes those versos, for a PDF read on screen. In `book`, any blank page left by a page break (the verso before a part or chapter, or your own `#pagebreak(to: "odd")`) gets no header or folio. `#blank-page()` inserts an intentionally blank page the same way.
 
 `logo`, `part-ornament` and `custom-titlepage` take content, not file paths. Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
 

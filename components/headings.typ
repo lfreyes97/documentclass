@@ -54,6 +54,16 @@
 // las añade `mark-pagebreaks`.
 #let break-to-odd() = pagebreak(to: "odd", weak: true)
 
+// Páginas enfrentadas (`facing-pages` de book): la portadilla y el front matter
+// empiezan en recto y el reverso queda en blanco
+#let facing-pages-state = state("dc-facing-pages", true)
+
+// Reverso en blanco antes de la portadilla, en recto. Va antes de `layout.setup`,
+// así que la página en blanco se declara sin numeración en vez de marcarse.
+// No hace nada si la página que toca ya es impar (sin portada, o portada de
+// dos páginas). Requiere `context`.
+#let blank-verso() = if calc.even(here().page()) { page(numbering: none)[] }
+
 // Borde superior del área de texto de la página actual (requiere `context`)
 #let body-top() = {
   let m = page.margin

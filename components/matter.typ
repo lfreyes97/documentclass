@@ -5,8 +5,9 @@
 // provoca `set page` ocurre ahí, y un update anterior quedaría en la página previa.
 
 #let frontmatter(body) = {
-  // Empieza en recto; el reverso de la portada queda en blanco
-  headings.break-to-odd()
+  // Con `facing-pages` el front matter empieza en recto: el reverso de la
+  // portadilla queda en blanco, sin cabecera ni folio
+  context if headings.facing-pages-state.get() { headings.break-to-odd() }
 
   // Numeración romana minúscula centrada; títulos sin número
   set page(numbering: "i", number-align: center)

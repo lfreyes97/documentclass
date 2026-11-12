@@ -41,6 +41,10 @@
   // true: `=` es parte y `==` capítulo. false: `=` es capítulo y las partes se
   // crean con `#part[...]`
   use-parts: true,
+  // Páginas enfrentadas: tras la portada, la portadilla va en recto, y el índice y
+  // el resto del front matter también; los reversos quedan en blanco, sin cabecera
+  // ni folio. false = las páginas siguen sin saltos (PDF para pantalla)
+  facing-pages: true,
   minitoc: false,
   // Minitoc de cada parte
   minitoc-size: 0.9em,
@@ -84,6 +88,9 @@
     make-cover("back")
   }
   if type(cover) == function { make-cover("front") } else { cover }
+
+  headings.facing-pages-state.update(facing-pages)
+  if facing-pages { context headings.blank-verso() }
 
   titlepage.render(
     custom: custom-titlepage,
