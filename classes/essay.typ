@@ -10,6 +10,13 @@
 /// contador nunca se reinicia), para poder citarlas como «nota 42».
 #let note-numbering(..n) = super(numbering("1", n.pos().last()))
 
+/// Marca de nota al pie: los símbolos en orden y luego repetidos (††, ‡‡…). El asterisco, como superíndice, queda
+/// en un punto, así que el juego por defecto no lo usa.
+#let footnote-mark(n, symbols) = {
+  let symbol = symbols.at(calc.rem(n - 1, symbols.len()))
+  symbol * (calc.quo(n - 1, symbols.len()) + 1)
+}
+
 /// «Pág. 3 de 12». Requiere `context`.
 #let page-counter() = {
   let current = counter(page).get().first()
@@ -55,9 +62,11 @@
   lang: "es",
   // Etiquetas que reemplazan las traducidas (ver components/i18n.typ)
   labels: (:),
-  // Notas al pie, que van con símbolos (*, †, ‡…): "page" reinicia la serie en cada página, como el
+  // Notas al pie, que van con símbolos (†, ‡, §…): "page" reinicia la serie en cada página, como el
   // `perpage` de LaTeX; "document" la sigue a lo largo de todo el documento
   footnote-counter: "page",
+  // Símbolos de las notas al pie, en orden y luego repetidos; el asterisco como superíndice apenas se ve
+  footnote-symbols: ("†", "‡", "§", "‖", "¶"),
   // Notas al margen: tamaño y numeración de `note` y `notefigure`
   note-size: 8.5pt,
   note-numbering: note-numbering,
@@ -194,8 +203,8 @@
     overflow-mark: overflow-mark,
     {
       titlepage-content
-      // Las notas al margen llevan los numerales; las notas al pie van con *, †, ‡…
-      set footnote(numbering: "*")
+      // Las notas al margen llevan los numerales; las notas al pie van con †, ‡, §…
+      set footnote(numbering: n => footnote-mark(n, footnote-symbols))
       // `@etiqueta` de una nota se imprime «nota 42», con enlace; `@etiqueta[n.]` cambia
       // la palabra. Esta regla, interior, precede a la de glosa.setup.
       show ref: it => {

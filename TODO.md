@@ -209,6 +209,9 @@ Lo que se vio al compilar el ensayo con la versión actual (24 páginas, 142 not
 - [x] Las notas al pie (símbolos `*`, `†`, `‡`…) seguían la cuenta por todo el documento: la `‡` de la pág. 9 y la `§` de la
       13 parecían la tercera y cuarta nota de una página con una sola. Ahora reinician en cada página
       (`footnote-counter: "page"`, por defecto; `"document"` lo deja como antes).
+- [x] El `*` como superíndice queda en un punto (el glifo ya es pequeño y alto). Agrandarlo desestabilizaba
+      la maquetación (Typst avisaba de que no convergía), así que el juego por defecto empieza en `†`
+      (`footnote-symbols`, configurable).
 - [ ] Decidir si el ancho por defecto de la columna interior de `essay` baja a 0.
 - [ ] La fecha de la cabecera, si no se pasa `date:`, es la de hoy: el PDF cambia cada día.
       Valorar un aviso o fijarla.
