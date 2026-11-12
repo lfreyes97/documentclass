@@ -155,12 +155,18 @@ Ideas, sin decidir:
 
 ## Pruebas, CI y versión
 
-- [ ] **Pruebas que verifiquen estructura.** De 21 archivos en `test/` y `demos/`, solo
-      `test/microtype.typ` tiene `assert`; el resto solo comprueba que compila. Un solape
-      del índice, una portada con el índice pegado o una página en blanco con folio pasan
-      sin avisar. Un script que compile todo y revise el orden de páginas, folios y páginas
-      en blanco.
-- [ ] **CI** (`.github/workflows`) que ejecute ese script.
+- [x] **Pruebas que verifiquen estructura.** `test/structure.py`: compila todo y revisa
+      páginas con solo folio, orden de folios, solape de líneas, cabeceras y páginas en
+      blanco de `test/structure_book.typ`, y el texto y la posición de las líneas de seis
+      archivos contra `test/reference/`. Comprobado que detecta una cabecera invertida,
+      folios en páginas en blanco, líneas solapadas y un cambio de interlineado.
+  - **Falta:** aserciones sobre las entradas del índice a cada `depth` (pendiente de `tocs`),
+    pruebas de `report` y `article` con `page-style` (hoy solo `book` tiene fixture de
+    estructura) y fixtures con las fuentes que no incluye Typst (`dropcaps`, `fonts_roles`
+    salen con fallback).
+  - No he visto el CI correr: el workflow está sin probar en GitHub, y las referencias pueden
+    diferir si la versión de `pdftotext` del runner da otro texto.
+- [x] **CI** (`.github/workflows/test.yml`) ejecuta ese script con Typst 0.15.1.
 - [ ] **Changelog** y **etiquetas de versión** (sin urgencia: es una versión de desarrollo,
       se sube cuando convenga; subir obliga a renombrar el enlace simbólico
       `@local/documentclass:0.1.0` o a cambiar los imports). Cambios incompatibles desde `0.1.0`:

@@ -339,3 +339,11 @@ for f in test/*.typ; do typst compile --root . "$f" /tmp/out.pdf; done
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Tests
+
+```bash
+python3 test/structure.py
+```
+
+Compiles every file in `test/` and `demos/` and checks the PDFs: no page with only a folio, folios in order, no overlapping text lines, the `classic` running heads and blank pages of `test/structure_book.typ`, and the text and line positions of a few files against `test/reference/`. Run it with `--update` after an intended change to regenerate the references, `--no-reference` to skip that comparison and `-k name` for one file. It needs `typst` and `pdftotext` (poppler-utils), and compiles with `--ignore-system-fonts` so the result does not depend on installed fonts. CI runs it with Typst 0.15.1 (`.github/workflows/test.yml`).

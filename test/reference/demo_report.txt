@@ -1,0 +1,33 @@
+Informe Técnico
+
+   Ingeniero Demo
+                                            Resumen
+El resumen en la clase report aparece en su propia página.
+
+
+
+
+                                                 2
+Capítulo 1
+
+
+Introducción
+
+La clase report es ideal para tesis, informes técnicos y documentos largos que requieren división por capítulos
+pero no necesariamente «partes».
+
+
+
+
+                                                      3
+Capítulo 2
+
+
+Análisis
+
+Cada capítulo comienza en una página nueva.
+
+
+
+
+                                              4

@@ -1,0 +1,59 @@
+Libro de Ejemplo
+Demostración de la clase book
+
+
+       Autor Demo
+
+
+      Editor i al Ty ps t
+
+             2026
+Para todos los usuarios de Typst
+                  PREFACIO
+
+Este es un libro de demostración creado con la clase book.
+
+
+
+
+                             ii
+   PA R T E I
+
+CAPÍTULO UNO
+                                                              Capítulo Uno
+
+
+
+                              El viaje de mil millas comienza con un paso.
+                                                                ⁠— Lao Tzu
+
+Este es el primer capítulo.
+
+
+
+
+                                    3
+                   CAPÍTULO 1
+
+
+                   Sección 1.1
+
+
+Texto de prueba.
+
+
+
+
+                        5
+                  APÉNDICE A
+
+
+                 Apéndice A
+
+
+Apéndice de ejemplo.
+
+
+
+
+                       7
