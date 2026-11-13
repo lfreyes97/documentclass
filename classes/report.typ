@@ -113,7 +113,9 @@
 
   // Estilo de párrafo (sangría) y marcas de páginas en blanco, como en book
   show: layout.setup
-  show heading: set par(first-line-indent: 0pt)
+  // Salvo los títulos en línea, que son parte del párrafo
+  let blocks = openings.block-headings(heading-style, "report")
+  show blocks: set par(first-line-indent: 0pt) if blocks != none
 
   // Abstract en página separada (común en reportes)
   if abstract != none {

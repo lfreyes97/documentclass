@@ -66,15 +66,32 @@
 #assert.eq(leaf(resolve("classic"), "chapter", "back").label, none)
 #assert.eq(leaf(resolve("classic"), "chapter", "back").number-format, none)
 
+// `run-in` y `format` son solo del rol que los fija; un rol puede ser directamente su `format`
+#let inline = resolve((subsection: (run-in: true, format: ctx => [x]), paragraph: ctx => [y]))
+#assert.eq(run-leaf(inline, "subsection").run-in, true)
+#assert.eq(run-leaf(inline, "subsubsection").run-in, false)
+#assert.eq(run-leaf(inline, "subsubsection").format, none)
+#assert.eq(type(run-leaf(inline, "paragraph").format), function)
+#assert.eq(run-leaf(inline, "section").role, "section")
+#assert.eq(type(leaf(resolve((chapter: ctx => [c])), "chapter", "front").format), function)
+
 #show: book.with(
   title: "Libro",
   heading-style: (
     preset: "modern",
     part: (label-text: (fill: red)),
     chapter: (align: center, rule: none, label: none, number-format: n => [Cap. #n]),
+    // Un título en línea con su párrafo, con punto, y otro hecho a mano con `format`
+    subsection: (run-in: true, run-in-sep: [. ], title-text: (weight: "bold")),
+    subsubsection: ctx => block(stroke: (left: 2pt + red), inset: (left: 6pt))[#ctx.number · #emph(ctx.body)],
   ),
 )
 #show: main
 = Parte
 == Un capítulo
 #lorem(40)
+=== Una sección
+==== En línea
+TEXTO-EN-LINEA #lorem(30)
+===== Con formato
+#lorem(30)

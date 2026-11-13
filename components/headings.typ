@@ -138,7 +138,16 @@
     text(..(font: font) + s.title-text, if s.title-upper { upper(body) } else { body })
   }
   let ornament = if s.ornament == auto { part-ornament } else { s.ornament }
-  let content = align(s.align)[
+  let content = if s.format != none {
+    let number = if numbered and s.number-format != none { (s.number-format)(counter(heading).display(it.numbering)) }
+    let body = if s.title-smallcaps { smallcaps(it.body) } else { it.body }
+    let body = if s.title-upper { upper(body) } else { body }
+    (s.format)((heading: it, body: body, number: number, label: label, role: s.role, style: s))
+    if extra != none {
+      v(2em)
+      extra
+    }
+  } else { align(s.align)[
     #if numbered and (label != none or s.number-format != none) {
       let number = (s.number-format)(counter(heading).display(it.numbering))
       text(..s.label-text)[#if label != none [#label #number] else [#number]]
@@ -157,7 +166,7 @@
       v(2em)
       extra
     }
-  ]
+  ] }
   // En un bloque, el párrafo que sigue no se sangra como si siguiera a otro párrafo
   if in-block {
     block(width: 100%, above: 0pt, below: s.below, {
@@ -180,10 +189,21 @@
     let n = (s.number-format)(counter(heading).display(it.numbering))
     if s.number-text.len() > 0 { text(..s.number-text, n) } else { n }
   }
-  let line = text(..(font: font) + s.title-text)[
-    #if number != none [#number#s.number-sep]
-    #body
-  ]
+  let line = if s.format != none {
+    (s.format)((heading: it, body: body, number: number, label: none, role: s.role, style: s))
+  } else {
+    text(..(font: font) + s.title-text)[
+      #if number != none [#number#s.number-sep]
+      #body
+    ]
+  }
+  // En línea: el título es texto suelto, que se une al párrafo que sigue
+  if s.run-in {
+    v(s.above)
+    if s.format != none { line } else { box(line) }
+    s.run-in-sep
+    return
+  }
   let line = if s.align == left { line } else { align(s.align, line) }
   // `sticky`: el título no se queda solo al pie de la página o la columna, pasa a la siguiente con su
   // párrafo. Fuera de un bloque el título era un párrafo; ahora es un bloque con el mismo espaciado de
@@ -223,7 +243,6 @@
   // Typst aplica su tamaño por defecto (1.4em, 1.2em...) también dentro de las
   // reglas show propias; se fija la base para que los tamaños del estilo (`title-text: (size: …)`) sean exactos.
   show heading: set text(size: font-size)
-  show heading: set par(justify: false, first-line-indent: 0pt, linebreaks: "simple")
 
   // Nombre que acompaña a `@ref`; matter.appendix cambia el del nivel 2
   show heading: set heading(supplement: i18n.term("section"))
@@ -231,6 +250,9 @@
   show heading.where(level: 2): set heading(supplement: i18n.term("chapter"))
 
   let style = openings.resolve(heading-style, class: "book")
+  // Sin sangría ni justificación, salvo en los títulos en línea, que son parte del párrafo
+  let blocks = openings.block-headings(style, "book")
+  show blocks: set par(justify: false, first-line-indent: 0pt, linebreaks: "simple") if blocks != none
 
   // NIVEL 1: PARTES. En mainmatter y backmatter, con su página; en frontmatter, simples
   show heading.where(level: 1): it => context {

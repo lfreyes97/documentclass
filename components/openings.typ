@@ -34,10 +34,24 @@
 // valen para todas las variantes; las de una variante, solo para ella.
 //
 // Títulos de sección (`section` y los inferiores): start (solo debate), above, below, align, number-format,
-// number-text, number-sep, title-text, title-upper, title-smallcaps. Cada uno hereda del
+// number-text, number-sep, title-text, title-upper, title-smallcaps, run-in y run-in-sep. Cada uno hereda del
 // anterior solo lo que no fija; `section` hereda del texto del cuerpo. Así `section:
 // (title-smallcaps: true)` pone en versalitas las secciones y las inferiores, y
 // `subsection: (title-smallcaps: false)` las quita en las subsecciones.
+//   run-in        true: el título va en línea con el párrafo que sigue, como el `\paragraph` de LaTeX
+//                 (no se hereda)
+//   run-in-sep    Lo que separa el título en línea del texto (`h(1em)`; p. ej. `[. ]`)
+//
+// Todos los roles aceptan además `format: ctx => contenido`, que sustituye el título entero (en las
+// aperturas, también la etiqueta, el filete y el adorno; no se hereda); los saltos de página y los
+// espacios `above` y `below` se mantienen. Un rol puede ser
+// directamente esa función: `section: ctx => ...`. `ctx` tiene:
+//   heading   El título (el elemento `heading`, con su `body`, `level`, `location()`…)
+//   body      El texto del título, con `title-upper` y `title-smallcaps` aplicados
+//   number    El número con `number-format` aplicado, o none si no se muestra
+//   label     La etiqueta de una apertura («Capítulo»), o none
+//   role      El rol: "part", "chapter", "section"…
+//   style     El estilo resuelto del rol (el diccionario con todas sus claves)
 
 // Valor de cada clave si el preajuste no la fija
 #let base = (
@@ -58,6 +72,7 @@
   rule-length: 100%,
   rule-gap: 0.6em,
   ornament: none,
+  format: none,
 )
 
 // Valor de cada clave de un título de sección si el preajuste no la fija: el texto del cuerpo
@@ -72,7 +87,13 @@
   title-text: (:),
   title-upper: false,
   title-smallcaps: false,
+  run-in: false, // El título en línea con el párrafo que sigue; no se hereda
+  run-in-sep: h(1em),
+  format: none, // ctx => contenido: el título entero; no se hereda
 )
+
+// Claves de un título de sección que no pasan a los inferiores
+#let own-keys = ("run-in", "format")
 
 #import "themes.typ"
 
@@ -322,8 +343,14 @@
   debate: (section: 1, segment: 2, subsection: 3, subsubsection: 4, paragraph: 5),
 )
 
+// Un rol dado como función es su `format`
+#let as-spec(spec) = if type(spec) == function { (format: spec) } else { spec }
+
 #let check-role(name, spec) = {
-  assert(type(spec) == dictionary, message: "heading-style: " + name + " debe ser un diccionario")
+  assert(
+    type(spec) == dictionary,
+    message: "heading-style: " + name + " debe ser un diccionario o una función `ctx => contenido`",
+  )
   let valid = if name in openings { base } else { run-base }
   for (key, value) in spec {
     if name in openings and key in variants {
@@ -350,6 +377,15 @@
           + if name in openings { "; variantes: " + variants.join(", ") } else { "" },
       )
     }
+  }
+  if "run-in" in spec {
+    assert(type(spec.run-in) == bool, message: "heading-style: " + name + ".run-in debe ser true o false")
+  }
+  if "format" in spec {
+    assert(
+      spec.format == none or type(spec.format) == function,
+      message: "heading-style: " + name + ".format debe ser una función `ctx => contenido` o none",
+    )
   }
 }
 
@@ -391,7 +427,7 @@
   assert(name in presets, message: "heading-style: preajuste desconocido «" + str(name) + "». Preajustes: " + names.join(", ") + "." + themes.hint(name))
   let out = (:)
   for role in roles.filter(r => r in levels.at(class)) {
-    let own = user.at(role, default: (:))
+    let own = as-spec(user.at(role, default: (:)))
     check-role(role, own)
     out.insert(role, merge(presets.at(name).at(class).at(role), own))
   }
@@ -422,7 +458,8 @@
 #let leaf(style, role, variant) = {
   let own = style.at(role)
   let plain = own.pairs().filter(((k, _)) => k not in variants).to-dict()
-  scaled(merge(merge(base, plain), if variant != none { own.at(variant, default: (:)) } else { (:) }), style.scale)
+  let out = merge(merge(base, plain), if variant != none { own.at(variant, default: (:)) } else { (:) })
+  scaled(out, style.scale) + (role: role)
 }
 
 // Estilo de un título de sección: cada rol hereda del anterior, y el primero del cuerpo
@@ -430,8 +467,23 @@
   let out = run-base
   for name in runs {
     if name not in style { continue }
-    out = merge(out, style.at(name))
+    let own = style.at(name)
+    // `run-in` y `format` son solo del rol que los fija
+    if name != role { own = own.pairs().filter(((k, _)) => k not in own-keys).to-dict() }
+    out = merge(out, own)
     if name == role { break }
   }
-  scaled(out, style.scale)
+  scaled(out, style.scale) + (role: role)
+}
+
+// Selector de los títulos de `class` que no van en línea (`run-in`): solo a ellos se les quita la
+// sangría y la justificación, porque un título en línea se une al párrafo que sigue solo si tiene sus
+// mismos ajustes de párrafo. none si todos van en línea
+#let block-headings(style, class) = {
+  levels
+    .at(class)
+    .pairs()
+    .filter(((role, _)) => role in openings or not run-leaf(style, role).run-in)
+    .map(((_, level)) => heading.where(level: level))
+    .fold(none, (sel, h) => if sel == none { h } else { sel.or(h) })
 }
