@@ -29,6 +29,8 @@
     "recording": "Grabación",
     "transcript": "Transcripción",
     line: "l.",
+    "speakers-index": "Índice de oradores",
+    glossary: "Glosario",
   ),
   en: (
     part: "Part",
@@ -58,6 +60,8 @@
     "recording": "Recording",
     "transcript": "Transcript",
     line: "l.",
+    "speakers-index": "Index of speakers",
+    glossary: "Glossary",
   ),
   pt: (
     part: "Parte",
@@ -87,6 +91,8 @@
     "recording": "Gravação",
     "transcript": "Transcrição",
     line: "l.",
+    "speakers-index": "Índice de oradores",
+    glossary: "Glossário",
   ),
   fr: (
     part: "Partie",
@@ -116,6 +122,8 @@
     "recording": "Enregistrement",
     "transcript": "Transcription",
     line: "l.",
+    "speakers-index": "Index des orateurs",
+    glossary: "Glossaire",
   ),
   de: (
     part: "Teil",
@@ -145,6 +153,8 @@
     "recording": "Aufnahme",
     "transcript": "Transkript",
     line: "Z.",
+    "speakers-index": "Rednerverzeichnis",
+    glossary: "Glossar",
   ),
   it: (
     part: "Parte",
@@ -174,6 +184,8 @@
     "recording": "Registrazione",
     "transcript": "Trascrizione",
     line: "r.",
+    "speakers-index": "Indice degli oratori",
+    glossary: "Glossario",
   ),
 )
 

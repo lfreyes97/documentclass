@@ -48,7 +48,9 @@ por dentro, estas piezas:
       Hecho: `turn(id:)` y `cite-turn("id")` dan «Bahnsen, Pág. 3, l. 16», calculado al compilar (la línea sale de
       las marcas `<dc-line>` que deja `lines.setup(track: true)`, porque `counter(par.line)` siempre vale 0). La cita
       impresa solo vale para una edición: cambiar papel, márgenes o fuente mueve las líneas.
-- [ ] **Índice de oradores** y **glosario** (el libro actual ya termina con `= Glosario`, hoy a mano).
+- [x] **Índice de oradores** y **glosario** (el libro actual ya termina con `= Glosario`, hoy a mano).
+      Hecho: `speakers-index()` (páginas por orador, con tramos) y `glossary(entradas)` con `gloss("clave")[…]` para
+      marcar los términos y sus páginas; orden alfabético sin tildes por defecto.
 - [ ] **Texto paralelo** original y traducción en dos columnas (opcional; hay un proyecto `translation-harness`
       en `Proyectos`).
 - [ ] Diseñarla sobre el sistema común de temas (`style`), cabeceras, aperturas y el bloque común de título, no

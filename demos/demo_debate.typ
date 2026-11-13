@@ -1,7 +1,7 @@
 // Fixture de la clase debate: fragmento del Período de preguntas del debate Bahnsen–Sproul
 // (RTS, 1977), con interrupciones, un turno que continúa, preguntas del público y un orador sin
 // nombre, reacciones del público y marcas de la transcripción (`crowd`, `inaudible`, `at`, `tnote`).
-#import "../lib.typ": at, cite-turn, crowd, debate, inaudible, segment, tnote, turn
+#import "../lib.typ": at, cite-turn, crowd, debate, gloss, glossary, inaudible, segment, speakers-index, tnote, turn
 
 #show: debate.with(
   title: "El Debate sobre el Método Apologético",
@@ -37,7 +37,7 @@
 #turn("dewitt")[Algo así, me gustaría que lo explicaras un poco, lo que quisiste decir con eso.]
 #turn("sproul")[
   De acuerdo. Lo que originalmente había preparado para esta noche, pero el tiempo no me lo permitió,
-  fue dar un breve recuento histórico del surgimiento del fideísmo#footnote[Postura que sostiene que el
+  fue dar un breve recuento histórico del surgimiento del #gloss("fideismo")[fideísmo]#footnote[Postura que sostiene que el
   conocimiento de Dios se alcanza únicamente por la fe, sin apoyo de argumentos racionales.] como
   alternativa a la teología natural#tnote[En el original, _fideism_; no existe un término más común en español.].
 
@@ -111,7 +111,7 @@
 #turn("sproul")[
   En ese momento es un argumento de seres necesarios. Permítanme hacerle una pregunta que puede ayudar a
   todo el mundo: ¿estás diciendo, Greg, que lo que Van Til plantea es una reafirmación muy sofisticada del
-  argumento ontológico?
+  #gloss("ontologico")[argumento ontológico]?
 ]
 #turn("bahnsen")[
   En mis clases de apologética tengo lo que se llama una reconstrucción del argumento ontológico…
@@ -133,3 +133,16 @@
 #turn("dewitt")[
   Sobre la pregunta de Eva, véase #cite-turn("eva"); sobre la repetición de «inmediato», #cite-turn("repetir").
 ]
+
+#speakers-index()
+
+#glossary((
+  ontologico: (
+    term: "Argumento ontológico",
+    def: [Intenta demostrar la existencia de Dios a partir del concepto mismo de un ser perfecto o necesario.],
+  ),
+  fideismo: (
+    term: "Fideísmo",
+    def: [Postura que sostiene que el conocimiento de Dios se alcanza únicamente por la fe, sin apoyo de argumentos racionales.],
+  ),
+))

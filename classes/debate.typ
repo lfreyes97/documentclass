@@ -185,6 +185,87 @@
   [#found.first().value, #i18n.get("page") #page-text, #i18n.get("line") #line]
 }
 
+// Páginas de una lista de posiciones, sin repetir y con los tramos seguidos juntos («2–4, 7»), cada una
+// con un enlace (requiere `context`)
+#let page-list(locations) = {
+  let numbered(loc) = if page.numbering == none { str(loc.page()) } else { std.numbering(page.numbering, ..counter(page).at(loc)) }
+  let firsts = (:)
+  for loc in locations {
+    let n = loc.page()
+    if str(n) not in firsts { firsts.insert(str(n), loc) }
+  }
+  let pages = firsts.keys().map(int).sorted()
+  let runs = ()
+  for n in pages {
+    if runs.len() > 0 and runs.last().last() == n - 1 { runs.last().push(n) } else { runs.push((n,)) }
+  }
+  runs.map(run => {
+    let first = link(firsts.at(str(run.first())), numbered(firsts.at(str(run.first()))))
+    if run.len() == 1 { first } else {
+      [#first–#link(firsts.at(str(run.last())), numbered(firsts.at(str(run.last()))))]
+    }
+  }).join[, ]
+}
+
+/// Índice de oradores: cada orador declarado en `speakers` con las páginas en que habla, y después quienes
+/// solo salen con `label:` («Miembro del público»). Lo que se escribe con `#turn` es lo que cuenta.
+#let speakers-index(title: auto) = {
+  heading(level: 1, i18n.title-or(title, "speakers-index"))
+  lines.off(context {
+    let speakers = speakers-state.get()
+    let turns = query(<dc-turn>)
+    let by-short = (:)
+    for t in turns {
+      let name = t.value
+      if name not in by-short { by-short.insert(name, ()) }
+      by-short.at(name).push(t.location())
+    }
+    let declared = speakers.values().filter(s => s.short in by-short)
+    let entries = declared.map(s => (s.name, s.role, by-short.at(s.short)))
+    let others = by-short.keys().filter(k => k not in speakers.values().map(s => s.short))
+    entries += others.map(k => (k, none, by-short.at(k)))
+    for (name, role, locations) in entries {
+      block(above: 0.5em, below: 0.5em, breakable: false)[
+        #name#if role != none [ #text(fill: luma(110), style: "italic")[(#role)]]
+        #box(width: 1fr, repeat[.]) #page-list(locations)
+      ]
+    }
+  })
+}
+
+// Sin tildes ni mayúsculas, para ordenar el glosario como un diccionario
+#let sort-key(term) = lower(term).replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u").replace("ü", "u").replace("ñ", "n~")
+
+/// Marca en el texto un término del glosario: `#gloss("fideismo")[fideísmo]` lo deja como está y apunta la
+/// página para el glosario.
+#let gloss(key, body) = [#metadata(key) <dc-gloss>#body]
+
+/// Glosario: `#glossary((fideismo: (term: "Fideísmo", def: [Postura…]), …))`. Cada entrada lleva las páginas
+/// donde se marcó con `#gloss`. Por defecto va en orden alfabético; con `sort: false`, en el dado.
+#let glossary(entries, title: auto, sort: true) = {
+  assert(type(entries) == dictionary, message: "glossary: las entradas son un diccionario `(clave: (term:, def:), …)`")
+  for (key, entry) in entries {
+    assert(
+      type(entry) == dictionary and entry.keys().sorted() == ("def", "term"),
+      message: "glossary: «" + key + "» debe ser un diccionario con `term` y `def`",
+    )
+  }
+  heading(level: 1, i18n.title-or(title, "glossary"))
+  lines.off(context {
+    let marks = query(<dc-gloss>)
+    for m in marks {
+      assert(m.value in entries, message: "gloss: «" + m.value + "» no está en el glosario. Entradas: " + entries.keys().join(", "))
+    }
+    let keys = if sort { entries.keys().sorted(key: k => sort-key(entries.at(k).term)) } else { entries.keys() }
+    for key in keys {
+      let pages = marks.filter(m => m.value == key).map(m => m.location())
+      block(above: 0.7em, below: 0.7em, breakable: false)[
+        *#entries.at(key).term*#if pages.len() > 0 [ #text(fill: luma(110))[(#page-list(pages))]]. #entries.at(key).def
+      ]
+    }
+  })
+}
+
 /// Segmento del debate, un título ligero (nivel 2): `#segment("opening", speaker: "bahnsen", time: duration(minutes: 30))`.
 /// - `kind`: presentación (`opening`), réplica (`rebuttal`), contrainterrogatorio (`cross`), preguntas del
 ///   público (`questions`), conclusión (`closing`), introducción, ronda o tema; la plantilla fija cuáles
