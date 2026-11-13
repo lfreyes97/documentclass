@@ -1,6 +1,6 @@
 // Reparto de notas al margen con desborde (`overflow: "carry"`): las funciones puras de
 // components/glosa/logic.typ, sin compilar ninguna página.
-#import "../components/glosa/logic.typ": _carry-layout, _fit-page
+#import "../components/glosa/logic.typ": _carry-layout, _fit-page, _overflowing
 
 #let page = (height: 800pt, top: 100pt, bottom: 50pt)
 #let clearance = 10pt
@@ -46,5 +46,13 @@
 // … y no se carga aunque sobren notas: solo pasan las notas, no los bloques
 #let crowded = (wide,) + tall
 #assert(0 not in _fit-page(page, crowded, clearance, true).carried)
+
+// Lo que aún no cabe: sin carry, la nota que sube por encima del margen; con carry, nada (pasó a la siguiente)
+#assert.eq(_overflowing(page, tall, _fit-page(page, tall, clearance, false)).len(), 1)
+#assert.eq(_overflowing(page, tall, _fit-page(page, tall, clearance, true)), ())
+#assert.eq(_overflowing(page, small, _fit-page(page, small, clearance, true)), ())
+// Una nota fija a propósito fuera de la columna (el título en la cabecera) no es un desborde
+#let header-note = (natural: 20pt, height: 10pt, shift: false, keep-order: false, body: [t])
+#assert.eq(_overflowing(page, (header-note,), _fit-page(page, (header-note,), clearance, true)), ())
 
 Reparto de notas con desborde: correcto.

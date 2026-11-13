@@ -200,6 +200,35 @@
 }
 
 /// #internal[(mostly for internal use)]
+/// The notes of one page and side that still do not fit once placed (`fit` from @_fit-page): those that
+/// start above the top margin, end below the bottom margin, or overlap a fixed item (a wide block).
+/// Only the notes that may move count: carried ones and those placed on purpose outside the column
+/// (`shift: false`, like the title in the header) do not. Returns their indices in `items`.
+/// -> array
+#let _overflowing(page, items, fit) = {
+  let span(k) = {
+    let top = items.at(k).natural + fit.offsets.at(str(k), default: 0pt)
+    (top, top + items.at(k).height)
+  }
+  let placed = range(items.len()).filter(k => k not in fit.carried and str(k) in fit.offsets)
+  let notes = placed.filter(k => (
+    items.at(k).at("body", default: none) != none and items.at(k).shift not in (false, "ignore")
+  ))
+  let fixed = placed.filter(k => items.at(k).at("body", default: none) == none)
+  notes.filter(k => {
+    let (top, bottom) = span(k)
+    (
+      top < page.top - _overflow-eps
+        or bottom > page.height - page.bottom + _overflow-eps
+        or fixed.any(f => {
+          let (ft, fb) = span(f)
+          top < fb - _overflow-eps and ft < bottom - _overflow-eps
+        })
+    )
+  })
+}
+
+/// #internal[(mostly for internal use)]
 /// Lays out the notes of pages `1` to `upto`, carrying the ones that do not fit to the next page.
 /// `regs` has the form `(left: (<page>: items), right: (<page>: items))`. In a book the outer
 /// column alternates sides, so a note carried from the right column goes to the left one.
@@ -246,14 +275,28 @@
 }
 
 /// #internal[(mostly for internal use)]
-/// Draws on every page the notes carried over from the previous one, each marked with an arrow.
-/// Requires context.
+/// Draws on every page the notes carried over from the previous one, each marked with an arrow, and
+/// leaves a `<glosa-overflow>` mark, `(side:, notes:)`, for each column whose notes still do not fit
+/// (`query(<glosa-overflow>)` lists them; `show-frame` draws them). Requires context.
 /// -> content
 #let _draw-carried() = context {
   let st = _note-state()
-  if not st.carry { return }
   let n = here().page()
-  let layout = _carry-layout(st.regs, st.page, st.clearance, st.book, n, st.last, true).at(str(n))
+  let layout = if st.carry { _carry-layout(st.regs, st.page, st.clearance, st.book, n, st.last, true).at(str(n)) } else {
+    // Sin desborde basta con la página: nada llega de la anterior
+    ("left", "right")
+      .map(side => {
+        let items = st.regs.at(side).at(str(n), default: ()).map(it => (..it, carried: false))
+        (side, (items: items, .._fit-page(st.page, items, st.clearance, false)))
+      })
+      .to-dict()
+  }
+  for side in ("left", "right") {
+    let fit = layout.at(side)
+    let out = _overflowing(st.page, fit.items, fit)
+    if out.len() > 0 { [#metadata((side: side, notes: out.len()))<glosa-overflow>] }
+  }
+  if not st.carry { return }
   let pagewidth = if page.flipped { page.height } else { page.width }
   for side in ("left", "right") {
     let fit = layout.at(side)

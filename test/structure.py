@@ -53,6 +53,7 @@ REFERENCED = {
 # Variantes que se compilan además del archivo tal cual, con `--input clave=valor`
 VARIANTS = {
     "test/orphan_headings.typ": [("class", "article"), ("class", "report")],
+    "test/essay_overflow.typ": [("overflow", "none")],
     "test/titlepages.typ": [("class", "book"), ("class", "report"), ("class", "article"), ("titlepage", "none")],
 }
 
@@ -81,8 +82,8 @@ EXPECTED_ERRORS = [
     ('article.with(debug: (verify: "si"))', 'o "error"'),
 ]
 
-# La capitular es más alta que su línea y se solapa con ella por diseño
-NO_OVERLAP_CHECK = {"test/dropcaps.typ"}
+# La capitular es más alta que su línea y se solapa con ella por diseño; las notas que desbordan, también
+NO_OVERLAP_CHECK = {"test/dropcaps.typ", "test/essay_overflow.typ"}
 
 ROMAN = re.compile(r"^[ivxlcdm]+$")
 ARABIC = re.compile(r"^\d+$")

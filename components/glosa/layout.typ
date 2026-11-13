@@ -50,6 +50,21 @@
 
       place(right, dx: -rightm.far, rect(width: rightm.width, height: 100%, stroke: (x: stroke)))
       place(right, dx: -rightm.far - rightm.width - rightm.sep, line(length: 100%, stroke: stroke, angle: 90deg))
+
+      // Columnas cuyas notas aún no caben (`<glosa-overflow>`): en rojo, con el número de notas
+      for mark in query(<glosa-overflow>).filter(m => m.location().page() == here().page()) {
+        let (side, notes) = (mark.value.side, mark.value.notes)
+        let column = if side == "left" { leftm } else { rightm }
+        let warning = rect(width: column.width, height: 100%, fill: red.transparentize(88%), stroke: (x: 1pt + red))
+        let label = text(size: 7pt, fill: red, weight: "bold")[↯ #notes]
+        if side == "left" {
+          place(left, dx: column.far, warning)
+          place(top + left, dx: column.far + 2pt, dy: topm + 2pt, label)
+        } else {
+          place(right, dx: -column.far, warning)
+          place(top + right, dx: -column.far - 2pt, dy: topm + 2pt, label)
+        }
+      }
     },
   )
 
