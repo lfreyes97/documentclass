@@ -40,7 +40,9 @@ por dentro, estas piezas:
       originales, y una portadilla "A frente a B". Depende del bloque común de título.
       Hecho: `venue`, `original: (title:, series:, recording:, transcript:)`, el moderador (`moderator: true`) y
       `titlepage: true` para la portadilla; la cabecera es propia de `debate` hasta que exista el bloque común.
-- [ ] **Cabecera con el segmento actual o el orador:** `page-style` necesita `speaker` y `segment` en `ctx`.
+- [x] **Cabecera con el segmento actual o el orador:** `page-style` necesita `speaker` y `segment` en `ctx`.
+      Hecho: `ctx.segment`, `ctx.speaker` y `ctx.speakers` (los que hablan en la página) y la variante
+      `running-segment`, que es la de `debate` por defecto.
 - [ ] **Líneas numeradas para citar** ("Bahnsen, p. 12, l. 4"): ya existe `line-numbers`; falta fijar cómo se
       cita y que el número de línea sea estable.
 - [ ] **Índice de oradores** y **glosario** (el libro actual ya termina con `= Glosario`, hoy a mano).

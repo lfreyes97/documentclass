@@ -89,20 +89,23 @@
 /// Turno de palabra de un orador declarado en `speakers`: `#turn("sproul")[…]`.
 /// - `cont: true`: el mismo orador sigue tras una interrupción, sin repetir el rótulo.
 /// - `label`: rótulo de alguien que no está declarado («Miembro del público»); con él, `who` es `none`.
-#let turn(who, cont: false, label: none, body) = context {
-  let speakers = speakers-state.get()
-  let style = turn-style-state.get()
-  let mark = if cont { none } else if who == none {
-    assert(label != none, message: "turn: da la clave de un orador o `label:` con el rótulo")
-    label-of(style, label, none)
-  } else {
-    assert(
-      who in speakers,
-      message: "turn: orador desconocido «" + repr(who) + "». Oradores declarados: " + speakers.keys().join(", "),
-    )
-    assert(label == none, message: "turn: `label:` solo va con `none` como orador")
-    let speaker = speakers.at(who)
-    label-of(style, speaker.short, speaker.role)
+#let turn(who, cont: false, label: none, body) = {
+  // Solo el rótulo lleva `context`: el bloque queda fuera para que el título de un segmento pegue con él
+  let mark = context {
+    let speakers = speakers-state.get()
+    let style = turn-style-state.get()
+    if who == none {
+      assert(label != none, message: "turn: da la clave de un orador o `label:` con el rótulo")
+    } else {
+      assert(
+        who in speakers,
+        message: "turn: orador desconocido «" + repr(who) + "». Oradores declarados: " + speakers.keys().join(", "),
+      )
+      assert(label == none, message: "turn: `label:` solo va con `none` como orador")
+    }
+    let (short, role) = if who == none { (label, none) } else { (speakers.at(who).short, speakers.at(who).role) }
+    [#metadata(short) <dc-turn>]
+    if not cont { label-of(style, short, role) }
   }
   block(above: 1.1em, below: 1.1em, breakable: true, {
     set par(first-line-indent: 0pt)
@@ -184,6 +187,7 @@
   let name = if title != auto { title } else { i18n.get(kind) }
   let shown = if speaker != none { [#name — #speakers.at(speaker).short] } else { name }
   let duration = if type(time) == duration { [#calc.round(time.minutes()) min] } else { time }
+  [#metadata((title: shown, speaker: if speaker != none { speakers.at(speaker).short })) <dc-segment>]
   heading(level: 2, shown)
   if duration != none {
     v(-0.3em)
@@ -244,7 +248,8 @@
   let speakers = check-speakers(speakers)
   debates.check-speakers(template, speakers)
   let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "article")
-  let page-style = themes.pick(page-style, style, none)
+  // Por defecto la cabecera lleva los oradores de la página y el segmento vigente (ver components/pagestyle.typ)
+  let page-style = themes.pick(page-style, style, "running-segment")
   speakers-state.update(speakers)
   template-state.update(template)
   turn-style-state.update(turn-style)
@@ -287,8 +292,9 @@
   show heading.where(level: 1): it => context {
     headings.run-heading(it, openings.run-leaf(heading-style, "section"), fonts.h1)
   }
+  // Los segmentos (nivel 2) van pegados al turno que sigue: `run-heading` no deja un bloque
   show heading.where(level: 2): it => context {
-    headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h2)
+    block(sticky: true, headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h2, in-block: true))
   }
 
   show footnote.entry: it => {

@@ -5,7 +5,7 @@
 
 // Todos los preajustes se resuelven con cabecera y pie (o none) y sus claves son válidas
 #for name in names { assert(resolve(name) != none, message: name) }
-#assert.eq(names, ("classic", "modern", "elegant", "plain", "folio-outer", "running-outer"))
+#assert.eq(names, ("classic", "modern", "elegant", "plain", "folio-outer", "running-outer", "running-segment"))
 #assert.eq(resolve("plain").header, none)
 
 // none desactiva; un nombre o `auto`-preset da el preajuste

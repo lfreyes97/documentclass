@@ -26,6 +26,10 @@
 //   blank                   Página en blanco intencional (reverso antes de una parte)
 //   numbered                false si la página no lleva numeración
 //   matter                  "front", "main" o "back" en book; none en otras clases
+//   segment, speaker        En debate: título del segmento vigente (contenido) y el orador que
+//                           le dio `#segment(speaker:)`; none fuera de un segmento o sin orador
+//   speakers                En debate: los oradores que hablan en la página, sin repetir, en orden
+//                           (lista de textos; vacía en las demás clases)
 
 #import "headings.typ"
 #import "tocs/bridge.typ"
@@ -67,6 +71,19 @@
     text: (size: 10pt),
     when: folio-shown,
   ),
+)
+
+// `running-segment` (debate): a la izquierda los oradores que hablan en la página, a la derecha el segmento
+// vigente, con un filete gris. Sin cabecera en la primera página, donde va el título del debate
+#let running-segment = (
+  header: (
+    // Un solo espacio, de ancho completo: con tres columnas, una lista larga de oradores se partiría
+    left: ctx => [#ctx.speakers.join(" · ")#h(1fr)#emph(ctx.segment)],
+    rule: 0.5pt + gray,
+    text: (size: 9pt, weight: "regular"),
+    when: ctx => visible(ctx) and ctx.page > 1 and (ctx.segment != none or ctx.speakers.len() > 0),
+  ),
+  footer: classic.footer,
 )
 
 // `plain`: solo el folio al centro, como el `plain` de LaTeX
@@ -142,6 +159,7 @@
   plain: plain,
   folio-outer: folio-outer,
   running-outer: running-outer,
+  running-segment: running-segment,
 )
 #let names = presets.keys()
 
@@ -239,7 +257,13 @@
     if is-book and headings.matter-state.at(current.part.location()) != "front" { "part" } else { "chapter" }
   } else if on-page(current.chapter) { "chapter" }
   let body(h) = if h != none { h.body }
+  // Segmentos y turnos de un debate (`#segment` y `#turn` dejan una marca invisible)
+  let segments = query(<dc-segment>).filter(m => m.location().page() <= n)
+  let speakers = query(<dc-turn>).filter(m => m.location().page() == n).map(m => m.value).dedup()
   (
+    segment: if segments.len() > 0 { segments.last().value.title },
+    speaker: if segments.len() > 0 { segments.last().value.speaker },
+    speakers: speakers,
     part: body(current.part),
     chapter: body(current.chapter),
     section: body(current.section),

@@ -38,7 +38,7 @@
   De acuerdo. Lo que originalmente había preparado para esta noche, pero el tiempo no me lo permitió,
   fue dar un breve recuento histórico del surgimiento del fideísmo#footnote[Postura que sostiene que el
   conocimiento de Dios se alcanza únicamente por la fe, sin apoyo de argumentos racionales.] como
-  alternativa a la teología natural#tnote[En el original, *fideism*; no existe un término más común en español.].
+  alternativa a la teología natural#tnote[En el original, _fideism_; no existe un término más común en español.].
 
   Tengo mucho miedo de la implicación más amplia de ese método.
 ]

@@ -1,11 +1,11 @@
 // Temas de las clases (parámetro `style`): una familia visual que comparten los títulos
 // (`heading-style`), las cabeceras y pies (`page-style`) y el índice (`tocs`). Cada parte
 // tiene además sus propios nombres, que no son temas:
-//   page-style  variantes de cabecera y pie: plain, folio-outer, running-outer
+//   page-style  variantes de cabecera y pie: plain, folio-outer, running-outer, running-segment
 //   tocs        compact
 
 #let themes = ("classic", "modern", "elegant")
-#let page-variants = ("plain", "folio-outer", "running-outer")
+#let page-variants = ("plain", "folio-outer", "running-outer", "running-segment")
 
 // Pista para un nombre de preajuste que no es de `target` ("heading-style", "tocs"…)
 #let hint(name) = if name in page-variants {
