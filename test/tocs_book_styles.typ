@@ -2,7 +2,7 @@
 
 #show: book.with(title: "Índices", author: "Autor", fonts: (toc: "Libertinus Serif"))
 
-#show: front
+#show: frontmatter
 == Prefacio
 Texto.
 #tocs.toc()
@@ -12,7 +12,7 @@ Texto.
 #tocs.lof()
 #tocs.lot()
 
-#show: main
+#show: mainmatter
 = Fundamentos
 == Introducción a un tema con un título deliberadamente largo para que ocupe más de una línea en el índice #tocs.short[Introducción]
 #tocs.partial()
@@ -29,7 +29,7 @@ Texto.
 #tocs.add-entry(role: "section")[Entrada manual]
 === Caso A
 #figure(circle(radius: 5pt), caption: [Un círculo])
-#show: back
+#show: backmatter
 #show: appendix
 == Tablas auxiliares
 === Detalle

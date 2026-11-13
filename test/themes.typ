@@ -12,9 +12,9 @@
 #assert.eq(pick(none, "modern", "classic"), none)
 
 #show: book.with(title: "Tema", style: "elegant", page-style: "plain")
-#show: front
+#show: frontmatter
 #tableofcontents()
-#show: main
+#show: mainmatter
 = Parte
 == Capítulo
 #lorem(80)

@@ -3,12 +3,12 @@
 
 #show: book.with(title: "Prueba", author: "A", equation-numbering: true)
 
-#show: front
+#show: frontmatter
 = Prefacio <pref>
 #tableofcontents()
 #listoffigures()
 
-#show: main
+#show: mainmatter
 = Primera parte <p1>
 == Uno <c1>
 === Sección <s11>
@@ -24,7 +24,7 @@ $ a = b $ <e11>
 
 REFS: @p1 | @p2 | @c1 | @c2 | @c3 | @s11 | @ss | @f11 | @f21 | @t21 | @f31 | @e11 | @a1 | @a1s | @fa1 FIN
 
-#show: back
+#show: backmatter
 #show: appendix
 == Tablas <a1>
 === Datos <a1s>

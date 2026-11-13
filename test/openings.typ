@@ -86,7 +86,7 @@
     subsubsection: ctx => block(stroke: (left: 2pt + red), inset: (left: 6pt))[#ctx.number · #emph(ctx.body)],
   ),
 )
-#show: main
+#show: mainmatter
 = Parte
 == Un capítulo
 #lorem(40)

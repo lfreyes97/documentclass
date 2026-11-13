@@ -2,7 +2,7 @@
 //   typst compile --root . --input style=modern demos/demo_book.typ modern.pdf
 // (classic, modern o elegant; sin `style`, classic). Ver también demo_pagestyle.typ.
 #import "../lib.typ": (
-  appendix, back, book, dedication, epigraph, front, main, tableofcontents, verse,
+  appendix, backmatter, book, dedication, epigraph, frontmatter, mainmatter, tableofcontents, verse,
 )
 
 #let style = sys.inputs.at("style", default: "classic")
@@ -23,7 +23,7 @@
   minitoc: true,
 )
 
-#show: front
+#show: frontmatter
 #dedication[
   _Para todos los usuarios de Typst_
 ]
@@ -35,7 +35,7 @@ Cambia el aspecto con `style`, un tema que elige a la vez los títulos (`heading
 
 #tableofcontents()
 
-#show: main
+#show: mainmatter
 = Primera parte
 == Capítulo uno
 #epigraph[El viaje de mil millas comienza con un paso.][Lao Tzu]
@@ -70,7 +70,7 @@ Texto del segundo capítulo. #lorem(120)
 == Capítulo tres
 Cada parte abre en su propia página, con su minitoc de capítulos. #lorem(100)
 
-#show: back
+#show: backmatter
 #show: appendix
 == Apéndice A
 Apéndice de ejemplo. Los apéndices llevan letra en lugar de número. #lorem(40)

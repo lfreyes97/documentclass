@@ -12,14 +12,14 @@
   levels: (chapter: (appendix-label: true)),
 )
 
-#show: front
+#show: frontmatter
 == Prefacio
 Este libro reúne…
 
 #tocs.toc(depth: 2)
 #tocs.lof()
 
-#show: main
+#show: mainmatter
 = Fundamentos
 == Sobre el conocimiento y sus condiciones previas #tocs.short[Sobre el conocimiento]
 #tocs.partial()
@@ -33,7 +33,7 @@ Este libro reúne…
 == La historia
 === Fuentes
 
-#show: back
+#show: backmatter
 #show: appendix
 == Cronología
 #show: end-appendix

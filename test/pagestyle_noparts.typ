@@ -2,9 +2,9 @@
 // lleva cabecera; en el verso, sin parte, el título del libro (structure.py lo comprueba)
 #import "../lib.typ": *
 #show: book.with(title: "LibroSinPartes", use-parts: false)
-#show: front
+#show: frontmatter
 #tableofcontents()
-#show: main
+#show: mainmatter
 = CapituloUno
 #lorem(700)
 = CapituloDos

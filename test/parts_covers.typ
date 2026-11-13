@@ -8,10 +8,10 @@
   minitoc: (levels: (chapter: (number: true))),
 )
 
-#show: front
+#show: frontmatter
 #tableofcontents(levels: (section: (text: (font: "DejaVu Sans Mono"))))
 
-#show: main
+#show: mainmatter
 #blank-page()
 = Capítulo uno <c1>
 == Sección <s1>

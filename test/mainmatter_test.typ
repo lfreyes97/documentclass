@@ -1,5 +1,6 @@
 #import "../lib.typ": (
-  appendix, back, blockquote, book, colophon, dedication, end-appendix, epigraph, front, half-title, main,
+  appendix, backmatter, blockquote, book, colophon, dedication, end-appendix, epigraph, frontmatter, half-title,
+  mainmatter,
   tableofcontents, verse,
 )
 
@@ -25,7 +26,7 @@
   Compuesto con Typst.
 ]
 
-#show: front
+#show: frontmatter
 
 // --- Dedicatoria
 #dedication[
@@ -46,7 +47,7 @@ Este libro trata sobre el arte de escribir buenos programas...
 #tableofcontents()
 
 // --- MAINMATTER ---
-#show: main
+#show: mainmatter
 
 = Parte I
 
@@ -88,7 +89,7 @@ Contenido de la sección 2.1...
 Algo más detallado aquí...
 
 // --- BACKMATTER ---
-#show: back
+#show: backmatter
 
 #show: appendix
 

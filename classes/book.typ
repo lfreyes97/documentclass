@@ -179,11 +179,3 @@
   body
   back-cover
 }
-
-#let front = matter.frontmatter
-#let main = matter.mainmatter
-#let back = matter.backmatter
-#let appendix = matter.appendix
-#let end-appendix = matter.end-appendix
-#let dedication = matter.dedication
-#let abstract = matter.abstract

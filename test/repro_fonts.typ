@@ -1,4 +1,5 @@
 
+// Usa los alias obsoletos `front`, `main` y `back`, que siguen funcionando
 #import "../lib.typ": back, book, front, main
 
 #show: book.with(

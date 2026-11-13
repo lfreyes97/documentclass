@@ -1,5 +1,5 @@
 // Cada rol tipográfico con una fuente distinta, para comprobar la herencia
-#import "../lib.typ": back, book, dropcap, front, main, tableofcontents
+#import "../lib.typ": backmatter, book, dropcap, frontmatter, mainmatter, tableofcontents
 
 #show: book.with(
   title: "Prueba de fuentes",
@@ -17,10 +17,10 @@
   ),
 )
 
-#show: front
+#show: frontmatter
 #tableofcontents()
 
-#show: main
+#show: mainmatter
 = Parte
 == Capítulo
 #dropcap[E][ste párrafo empieza con letra capital.]

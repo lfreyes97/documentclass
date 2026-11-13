@@ -7,7 +7,7 @@
 #show: if class == "article" { article.with(title: "Huérfanos", cols: 2) } else if class == "report" {
   report.with(title: "Huérfanos")
 } else { book.with(title: "Huérfanos", facing-pages: false, use-parts: false) }
-#show: if class == "book" { main } else { it => it }
+#show: if class == "book" { mainmatter } else { it => it }
 
 = Capítulo
 #for i in range(36) [

@@ -15,10 +15,10 @@
   page-style: if is-theme { auto } else { name },
 )
 
-#show: front
+#show: frontmatter
 #tableofcontents()
 
-#show: main
+#show: mainmatter
 = Primera parte
 == Un capítulo con título largo
 === Una sección

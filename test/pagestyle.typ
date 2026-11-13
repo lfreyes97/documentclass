@@ -34,7 +34,7 @@
     footer: (left: ctx => ctx.folio, right: ctx => ctx.title, rule: 0.4pt),
   ),
 )
-#show: main
+#show: mainmatter
 = Parte uno
 == Primer capítulo
 === Una sección

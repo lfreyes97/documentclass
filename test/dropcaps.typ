@@ -2,7 +2,7 @@
 #import "../lib.typ": *
 
 #show: book.with(title: "Capitulares", fonts: (body: "EB Garamond", initials: "DM Serif Display"))
-#show: main
+#show: mainmatter
 == Capitulares
 
 #dropcap[Este párrafo empieza con una letra capital de dos líneas. #lorem(60)]

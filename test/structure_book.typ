@@ -7,9 +7,9 @@
   author: "Autor",
   cover: page(margin: 0pt, numbering: none)[PORTADA],
 )
-#show: front
+#show: frontmatter
 #tableofcontents()
-#show: main
+#show: mainmatter
 = ParteUno
 == CapituloAlfa
 === SeccionUno
@@ -21,6 +21,6 @@
 = ParteDos
 == CapituloGamma
 #lorem(500)
-#show: back
+#show: backmatter
 == Bibliografia
 #lorem(40)

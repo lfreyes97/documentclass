@@ -2,7 +2,7 @@
 #import "../lib.typ": *
 
 #show: book.with(title: "Saltos propios", author: "A")
-#show: main
+#show: mainmatter
 
 = Parte
 == Capítulo uno

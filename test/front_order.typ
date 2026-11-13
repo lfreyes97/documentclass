@@ -6,9 +6,9 @@
   title: "Con portada", author: "A",
   cover: page(margin: 0pt, numbering: none, fill: teal)[#align(center + horizon)[PORTADA]],
 )
-#show: front
+#show: frontmatter
 #tableofcontents()
-#show: main
+#show: mainmatter
 = Parte
 == Capítulo
 Texto.

@@ -53,17 +53,17 @@ You can also clone it anywhere next to your project and import `lib.typ` by its 
   fonts: (body: ("EB Garamond", "Libertinus Serif")),
 )
 
-#show: front
+#show: frontmatter
 #dedication[To the reader.]
 #tableofcontents()
 
-#show: main
+#show: mainmatter
 = Chapter One
 #epigraph[A quote][Author]
 
 Content goes here...
 
-#show: back
+#show: backmatter
 #show: appendix
 == Appendix A
 ```
@@ -263,11 +263,11 @@ The LaTeX names are the `tocs` functions: `tableofcontents` is `tocs.toc`, `mini
 In `book`, `minitoc: true` puts a table of the part's chapters on each part page, without numbers and with dot leaders. Pass a dictionary of `tocs.partial` options to change it, for example `minitoc: (depth: 2, size: 1em)`. A `levels` entry replaces the default one, so repeat `number: false` if you still want chapters without numbers.
 
 ```typst
-#show: front
+#show: frontmatter
 #tableofcontents(style: "elegant", depth: 2) // "classic", "modern", "elegant" or "compact"
 #listoffigures()                            // also listoftables() and listoflistings()
 
-#show: main
+#show: mainmatter
 = Foundations
 == A chapter title too long for the table #tocs.short[Short title]
 #minitoc()                            // sections of this chapter
