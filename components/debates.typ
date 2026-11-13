@@ -118,7 +118,7 @@
   program
 }
 
-// Dónde salta la página: "turn" (cada turno, además de cada segmento y sección), "segment" (cada segmento y sección),
+// Dónde salta la página: "turn" (cada turno de discurso, además de cada segmento y sección), "segment" (cada segmento y sección),
 // "section" (solo las secciones `=`) o none. Por plantilla; el formato libre va por segmentos
 #let breaks = ("turn", "segment", "section")
 #let default-breaks = (
@@ -135,3 +135,7 @@
   )
   breaks-option
 }
+
+// Segmentos de intercambio: con `breaks: "turn"` sus turnos, que suelen ser cortos, van de corrido; solo los
+// discursos (introduction, opening, rebuttal, closing) abren página
+#let exchange-kinds = ("cross", "questions", "round", "topic")

@@ -112,7 +112,8 @@
     if id != none [#metadata(short) #std.label(id)]
     if not cont { label-of(style, short, role) }
   }
-  // Con `breaks: "turn"`, cada turno abre página, salvo el primero tras un título o el que continúa a otro
+  // Con `breaks: "turn"`, cada turno abre página, salvo el primero tras un título, el que continúa a otro y los de un
+  // segmento de intercambio (preguntas, contrainterrogatorio, ronda, tema)
   let page-break = context {
     if not cont and breaks-state.get() == "turn" {
       let before = selector(heading).before(here(), inclusive: false)
@@ -121,7 +122,9 @@
         selector(<dc-turn>).after(last-heading.location()).before(here(), inclusive: false),
       ).len() == 0
       let first-turn = query(selector(<dc-turn>).before(here(), inclusive: false)).len() == 0
-      if not first-after-heading and not first-turn { pagebreak(weak: true) }
+      let segment = query(selector(<dc-segment>).before(here(), inclusive: false)).at(-1, default: none)
+      let exchange = segment != none and segment.value.kind in debates.exchange-kinds
+      if not first-after-heading and not first-turn and not exchange { pagebreak(weak: true) }
     }
   }
   page-break
@@ -335,7 +338,7 @@
     let shown = if speaker != none { [#name — #speakers.at(speaker).short] } else { name }
     let duration = if type(time) == duration { [#calc.round(time.minutes()) min] } else { time }
     if args.pos().len() == 0 { counter.step() }
-    [#metadata((title: shown, speaker: if speaker != none { speakers.at(speaker).short })) <dc-segment>]
+    [#metadata((title: shown, speaker: if speaker != none { speakers.at(speaker).short }, kind: kind)) <dc-segment>]
     heading(level: 2, shown)
     if duration != none {
       v(-0.3em)
