@@ -111,7 +111,7 @@
     title-text: (size: 1.8em, weight: 700, tracking: 0.05em),
     title-upper: true,
     ornament: auto,
-    front: (above: 2em, below: 2em, start: "page", end: none, label: none, number-format: none),
+    front: (above: 2em, below: 2em, start: "facing", end: none, label: none, number-format: none),
   ),
   chapter: (
     label: "chapter",
@@ -141,7 +141,7 @@
     rule-length: 4em,
     rule-gap: 0.8em,
     ornament: auto,
-    front: (above: 2em, below: 2em, start: "page", end: none, label: none, number-format: none, rule: none),
+    front: (above: 2em, below: 2em, start: "facing", end: none, label: none, number-format: none, rule: none),
   ),
   chapter: (
     align: left,
@@ -175,7 +175,7 @@
     title-text: (size: 1.7em, weight: 400, tracking: 0.12em),
     title-smallcaps: true,
     ornament: auto,
-    front: (above: 2em, below: 2em, start: "page", end: none, label: none, number-format: none),
+    front: (above: 2em, below: 2em, start: "facing", end: none, label: none, number-format: none),
   ),
   chapter: (
     label: "chapter",
