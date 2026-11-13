@@ -117,23 +117,13 @@ El ensayo real ya está revisado y migrado (ver `HECHO.md`). Queda la clase:
 - [ ] `chapter-label` de Warfield y Propaganda quedó como `label: "chapter"`; mirar a ojo que el aspecto es el
       deseado. Los índices extra de `Bahnsen-DebateSproul.typ` (`depth: 4`) también.
 
-## Pruebas, CI y versión
+## Pruebas
 
-- [ ] **Subir los 18 commits a GitHub y ver el CI correr** (`.github/workflows/test.yml`): nunca se ha ejecutado
-      allí. Las referencias pueden diferir si la versión de `pdftotext` del runner da otro texto.
 - [ ] Aserciones sobre las entradas del índice que aparecen a cada `depth` (hoy solo se comprobó a mano), en
       `test/structure.py`.
 - [ ] Fixtures de estructura para `report` y `article` con `page-style` y `heading-style` (hoy solo `book` tiene
       fixture), y para `essay` con notas al margen desbordadas.
 - [ ] Fixtures con las fuentes que no incluye Typst (`dropcaps`, `fonts_roles` salen con fallback).
-- [ ] **Changelog** y **etiquetas de versión** (sin urgencia: es una versión de desarrollo, se sube cuando
-      convenga; subir obliga a renombrar el enlace simbólico `@local/documentclass:0.1.0` o a cambiar los
-      imports). `HECHO.md` es la base. Cambios incompatibles desde `0.1.0`: `logo`, `part-ornament` y
-      `custom-titlepage` ahora son contenido; `fonts` sustituyó a las fuentes sueltas; `microtype` y `facing-pages`
-      cambian la maquetación por defecto; `margin-inside`, `margin-outside`, `margin-x` y `margin-y` son `margin`;
-      `book` en `essay` es `facing-pages`; `outer`/`minimal` de `page-style` son `running-outer`/`folio-outer`;
-      `heading-style` sustituye a `h1-size`…; el `date` de `essay` es `none`; las notas al pie de `essay`
-      empiezan en `†`.
 - [ ] **README:** enlaza a `demos/`, pero `typst.toml` los excluye del paquete publicado.
 
 ## Clases y revisión pendiente
@@ -152,3 +142,19 @@ El ensayo real ya está revisado y migrado (ver `HECHO.md`). Queda la clase:
       contraportada; `back-cover` solo se rellena si `cover` es función.
 - [ ] **`#dedication`** va en recto, pero un `= Dedicatoria` suelto usa salto simple. Decidir si el front matter
       debe tratarlo igual.
+
+## Al final
+
+Esto solo tiene sentido cuando la API esté estable; hacerlo antes obliga a repetirlo.
+
+- [ ] **CI:** subir los commits a GitHub y ver correr `.github/workflows/test.yml`, que nunca se ha ejecutado allí.
+      Las referencias de `test/reference/` pueden diferir si la versión de `pdftotext` del runner da otro texto, y
+      habrá que regenerarlas o fijar esa versión.
+- [ ] **Changelog** y **etiquetas de versión** (sin urgencia: es una versión de desarrollo, se sube cuando
+      convenga; subir obliga a renombrar el enlace simbólico `@local/documentclass:0.1.0` o a cambiar los
+      imports). `HECHO.md` es la base. Cambios incompatibles desde `0.1.0`: `logo`, `part-ornament` y
+      `custom-titlepage` ahora son contenido; `fonts` sustituyó a las fuentes sueltas; `microtype` y `facing-pages`
+      cambian la maquetación por defecto; `margin-inside`, `margin-outside`, `margin-x` y `margin-y` son `margin`;
+      `book` en `essay` es `facing-pages`; `outer`/`minimal` de `page-style` son `running-outer`/`folio-outer`;
+      `heading-style` sustituye a `h1-size`…; el `date` de `essay` es `none`; las notas al pie de `essay`
+      empiezan en `†`.
