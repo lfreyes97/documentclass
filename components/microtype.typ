@@ -91,7 +91,7 @@
 
   // La raya pegada a una palabra no abre línea: se une a ella con un WORD JOINER
   // («la ética— y», «word—word»). Tras ella se puede cortar
-  show regex("\\S—"): it => {
+  show regex("[^\\s\\u{2060}]—"): it => {
     let chars = it.text.clusters()
     [#chars.slice(0, -1).join()#sym.wj#chars.last()]
   }
@@ -101,6 +101,12 @@
   show regex("\\s—\\p{L}"): it => {
     let chars = it.text.clusters()
     [#chars.slice(0, -1).join()#sym.wj#chars.last()]
+  }
+  // La raya exenta, con espacio a los dos lados («Réplica — Bahnsen»), tampoco abre línea:
+  // se une al espacio anterior y el corte queda tras ella
+  show regex("\\s—\\s"): it => {
+    let chars = it.text.clusters()
+    [#chars.first()#sym.wj#chars.slice(1).join()]
   }
   body
 }

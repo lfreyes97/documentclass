@@ -374,10 +374,10 @@ def check_dashes(name: str, pages: list[str]) -> None:
     """En test/microtype.typ ninguna línea acaba en una raya de apertura ni empieza con una de cierre."""
     for line in (line for page in pages for line in lines_of(page)):
         bare = line.replace("\u2060", "")
-        if bare.endswith(" —") or bare == "—":
+        if bare.endswith("inteligible —") or bare == "—":
             fail(name, f"una línea acaba en raya de apertura: «{line}»")
-        if bare.startswith("— y"):
-            fail(name, f"una línea empieza con la raya de cierre: «{line}»")
+        if bare.startswith("— y") or bare.startswith("— exento"):
+            fail(name, f"una línea empieza con una raya de cierre o exenta: «{line}»")
 
 
 def check_no_date(name: str, pages: list[str]) -> None:

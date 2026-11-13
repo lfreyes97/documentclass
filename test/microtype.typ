@@ -22,6 +22,8 @@
 #show: glue-setup
 #for width in (2cm, 2.2cm, 2.6cm, 3cm) {
   block(width: width, par(justify: false)[RAYA palabras inteligible —la lógica— y fin])
+  // La raya exenta, con espacio a los dos lados, tampoco empieza línea
+  block(width: width, par(justify: false)[EXENTA palabras largas — exento fin])
 }
 
 OK
