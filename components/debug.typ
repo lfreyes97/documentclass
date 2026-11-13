@@ -13,7 +13,7 @@
 // `verify[…]` marca algo pendiente de comprobar: no imprime nada, pero deja un dato consultable
 // desde la línea de comandos, con su página, aunque la depuración esté apagada:
 //
-//   typst eval 'query(<dc-verify>).map(it => it.value)' --in ensayo.typ
+//   typst eval 'query(<dc-verify>).map(it => (page: it.location().page(), text: it.value.text))' --in ensayo.typ
 
 #import "tocs/bridge.typ"
 
@@ -54,8 +54,12 @@
 
 /// Marca algo pendiente de comprobar. No se imprime; con `debug: (verify: true)` sale resaltado.
 #let verify(body, kind: "VERIFICAR") = context {
-  [#metadata((text: plain(body), kind: kind, page: here().page()))<dc-verify>]
+  // La página no se guarda en el valor: dentro de una nota al margen movida por `carry`, `here()` cambia entre
+  // pasadas y el documento no converge. La da `item.location().page()`
+  [#metadata((text: plain(body), kind: kind))<dc-verify>]
   if state-debug.get().verify {
+    // La marca no deja hueco en el texto final; en depuración se separa de la palabra anterior
+    h(0.3em, weak: true)
     highlight(fill: rgb("#ffe58a"), extent: 1pt, [#text(size: 0.8em, weight: "bold", kind)~#body])
   }
 }
@@ -69,7 +73,7 @@
     #text(weight: "bold", title) (#items.len())
     #if items.len() > 0 {
       for item in items [
-        - #link(item.location(), [pág. #bridge.page-label(item.location())]): #item.value.text
+        - #link(item.location(), [pág. #bridge.page-label(item.location())]): #if item.value.text == "" [_(sin nota)_] else [#item.value.text]
       ]
     } else [ Ninguno.]
   ]

@@ -231,7 +231,7 @@ def check_verify(name: str, pages: list[str], visible: bool) -> None:
     if not visible and "VERIFICAR" in text:
         fail(name, "sin debug las marcas verify son visibles para el lector")
     run = subprocess.run(
-        ["typst", "eval", "--root", str(ROOT), "query(<dc-verify>).map(it => it.value.page)", "--in", str(ROOT / name)],
+        ["typst", "eval", "--root", str(ROOT), "query(<dc-verify>).map(it => it.location().page())", "--in", str(ROOT / name)],
         capture_output=True,
         text=True,
     )
