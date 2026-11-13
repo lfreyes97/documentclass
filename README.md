@@ -155,6 +155,8 @@ With `use-parts: false`, `=` is a chapter and `==` a section; parts are created 
 
 `style` picks a theme (`"classic"`, `"modern"` or `"elegant"`) for headings, running heads and footers, and the `tocs` contents at once: `book(style: "modern")`. `heading-style`, `page-style` and a later `tocs.setup` replace it for one part, so `book(style: "modern", page-style: "plain")` is all modern with a plain footer. Without `style`, each part keeps its class default (`report` and `article` use `"plain"` for `page-style`). Passing a page-style variant where a theme is expected fails with a message that says so.
 
+Small caps (`"elegant"` headings and running heads, and any `title-smallcaps: true`) use the font's own small caps (the OpenType `smcp` feature): Typst does not synthesize them. The Libertinus Serif that ships with Typst has them, but another build of the same family may not (the copy some systems install lacks them), and then the text comes out in lowercase. Check one page, or pick a font that has them, such as EB Garamond.
+
 `heading-style` sets how every heading level looks in `book`, `report` and `article` (LaTeX's fncychap and titlesec): `"classic"` (the "CHAPTER N" label over a centred title, small-caps sections), `"modern"` (left-aligned, a small grey label, a short rule) and `"elegant"` (italic label, small-caps title), the same names as the `tocs` and `page-style` presets. A dictionary changes the preset. Each level is addressed by its role (`part`, `chapter`, `section`, `subsection`, `subsubsection`, `paragraph`) or by its level, `h1`…`h6`, which is the role that level has in the class (in `book`, `h1` is `part` and `h3` is `section`):
 
 ```typst

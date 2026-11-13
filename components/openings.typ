@@ -141,7 +141,8 @@
 )
 
 // Centrado, etiqueta en cursiva, título en versalitas espaciadas y un filete corto como
-// adorno; con el índice y las cabeceras `elegant`
+// adorno; con el índice y las cabeceras `elegant`. Las versalitas son las de la fuente (`smcp`), que Typst no
+// sintetiza: sin ellas el título sale en minúsculas (ver el README)
 #let elegant = (
   part: (
     above: 1.5fr,
