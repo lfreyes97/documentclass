@@ -12,6 +12,7 @@
 //   size, fill Tamaño y color del número
 //   clearance  Distancia entre el número y el texto
 //   side       `start` (a la izquierda) o `end`
+// `setup(…, track: true)` deja además una marca `<dc-line>` por línea (ver abajo); la usa `cite-turn` de debate.
 
 #let defaults = (scope: "page", every: 1, size: 7pt, fill: luma(55%), clearance: 8pt, side: start)
 
@@ -36,12 +37,17 @@
   options
 }
 
-#let setup(options, body) = {
+// Con `track: true` cada línea numerada deja una marca invisible `<dc-line>` con su número (aunque no lo muestre,
+// por `every`): así se puede saber en qué línea está un punto del texto, que `counter(par.line)` no dice
+#let setup(options, body, track: false) = {
   let options = check(options)
   if options == false or options == none { return body }
   let o = defaults + if type(options) == dictionary { options } else { (:) }
   set par.line(
-    numbering: n => if calc.rem(n, o.every) == 0 { text(size: o.size, fill: o.fill, str(n)) },
+    numbering: n => {
+      if track [#metadata(n) <dc-line>]
+      if calc.rem(n, o.every) == 0 { text(size: o.size, fill: o.fill, str(n)) }
+    },
     numbering-scope: o.scope,
     number-clearance: o.clearance,
     number-margin: o.side,

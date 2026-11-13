@@ -3,7 +3,7 @@
 #import "classes/article.typ": article
 #import "classes/report.typ": report
 #import "classes/essay.typ": essay
-#import "classes/debate.typ": at, crowd, debate, inaudible, segment, tnote, turn
+#import "classes/debate.typ": at, cite-turn, crowd, debate, inaudible, segment, tnote, turn
 #import "components/glosa/glosa.typ"
 #import "components/glosa/glosa.typ": note, notefigure, wideblock
 #import "components/tocs/tocs.typ"

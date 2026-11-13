@@ -43,8 +43,11 @@ por dentro, estas piezas:
 - [x] **Cabecera con el segmento actual o el orador:** `page-style` necesita `speaker` y `segment` en `ctx`.
       Hecho: `ctx.segment`, `ctx.speaker` y `ctx.speakers` (los que hablan en la página) y la variante
       `running-segment`, que es la de `debate` por defecto.
-- [ ] **Líneas numeradas para citar** ("Bahnsen, p. 12, l. 4"): ya existe `line-numbers`; falta fijar cómo se
+- [x] **Líneas numeradas para citar** ("Bahnsen, p. 12, l. 4"): ya existe `line-numbers`; falta fijar cómo se
       cita y que el número de línea sea estable.
+      Hecho: `turn(id:)` y `cite-turn("id")` dan «Bahnsen, Pág. 3, l. 16», calculado al compilar (la línea sale de
+      las marcas `<dc-line>` que deja `lines.setup(track: true)`, porque `counter(par.line)` siempre vale 0). La cita
+      impresa solo vale para una edición: cambiar papel, márgenes o fuente mueve las líneas.
 - [ ] **Índice de oradores** y **glosario** (el libro actual ya termina con `= Glosario`, hoy a mano).
 - [ ] **Texto paralelo** original y traducción en dos columnas (opcional; hay un proyecto `translation-harness`
       en `Proyectos`).

@@ -1,7 +1,7 @@
 // Fixture de la clase debate: fragmento del Período de preguntas del debate Bahnsen–Sproul
 // (RTS, 1977), con interrupciones, un turno que continúa, preguntas del público y un orador sin
 // nombre, reacciones del público y marcas de la transcripción (`crowd`, `inaudible`, `at`, `tnote`).
-#import "../lib.typ": at, crowd, debate, inaudible, segment, tnote, turn
+#import "../lib.typ": at, cite-turn, crowd, debate, inaudible, segment, tnote, turn
 
 #show: debate.with(
   title: "El Debate sobre el Método Apologético",
@@ -17,6 +17,7 @@
   ),
   template: "two-speakers",
   marks: (timecodes: true),
+  line-numbers: (every: 5),
   speakers: (
     bahnsen: (name: "Greg L. Bahnsen", short: "Bahnsen", role: "presuposicionalista"),
     sproul: (name: "R. C. Sproul", short: "Sproul", role: "clásico"),
@@ -47,7 +48,7 @@
   El conocimiento que todos los hombres tienen es una clara, perspicaz y cierta revelación de Dios que
   llega a todos a través de la naturaleza.
 ]
-#turn("sproul")[¿Podría repetirlo al final? #inaudible No oí si dijiste «mediato» o «inmediato».]
+#turn("sproul", id: "repetir")[¿Podría repetirlo al final? #inaudible No oí si dijiste «mediato» o «inmediato».]
 #turn("bahnsen")[El conocimiento que todos los hombres tienen es inmediato.]
 #turn("sproul")[¿Y no mediato?]
 #turn("bahnsen")[Y no mediato.]
@@ -74,7 +75,7 @@
 #turn("sproul")[¿Lo hiciste? ¿Podrías ayudarme un poco?]
 #turn("sproul", cont: true)[Te daré algo a lo que disparar. Te daré una respuesta y luego…]
 #turn("sproul")[Vamos a escucharlo primero, y luego tal vez eso aclare las preguntas en mi mente…]
-#turn("bahnsen")[
+#turn("bahnsen", id: "eva")[
   Según tengo entendido, Greg está preguntando sobre los fundamentos morales de la epistemología. Verás,
   Eva se enfrenta a una situación. Satanás dice: «Toma el fruto». Dios dice: «No tomes el fruto». Tiene
   que tomar una decisión. ¿Sobre qué base debe tomar la decisión?
@@ -128,3 +129,7 @@
 #turn("sproul")[Si mis premisas son ciertas, entonces te he dado una conclusión cierta.]
 #turn("bahnsen")[A menos que Dios le haya dicho antes que usted…]
 #turn("sproul")[A menos que Dios me lo haya dicho. ¿Ok?]
+
+#turn("dewitt")[
+  Sobre la pregunta de Eva, véase #cite-turn("eva"); sobre la repetición de «inmediato», #cite-turn("repetir").
+]

@@ -28,6 +28,7 @@
     "series": "Serie original",
     "recording": "Grabación",
     "transcript": "Transcripción",
+    line: "l.",
   ),
   en: (
     part: "Part",
@@ -56,6 +57,7 @@
     "series": "Original series",
     "recording": "Recording",
     "transcript": "Transcript",
+    line: "l.",
   ),
   pt: (
     part: "Parte",
@@ -84,6 +86,7 @@
     "series": "Série original",
     "recording": "Gravação",
     "transcript": "Transcrição",
+    line: "l.",
   ),
   fr: (
     part: "Partie",
@@ -112,6 +115,7 @@
     "series": "Série originale",
     "recording": "Enregistrement",
     "transcript": "Transcription",
+    line: "l.",
   ),
   de: (
     part: "Teil",
@@ -140,6 +144,7 @@
     "series": "Originalreihe",
     "recording": "Aufnahme",
     "transcript": "Transkript",
+    line: "Z.",
   ),
   it: (
     part: "Parte",
@@ -168,6 +173,7 @@
     "series": "Serie originale",
     "recording": "Registrazione",
     "transcript": "Trascrizione",
+    line: "r.",
   ),
 )
 

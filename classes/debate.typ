@@ -88,8 +88,9 @@
 
 /// Turno de palabra de un orador declarado en `speakers`: `#turn("sproul")[…]`.
 /// - `cont: true`: el mismo orador sigue tras una interrupción, sin repetir el rótulo.
+/// - `id`: nombre del turno, para citarlo con `#cite-turn("id")`.
 /// - `label`: rótulo de alguien que no está declarado («Miembro del público»); con él, `who` es `none`.
-#let turn(who, cont: false, label: none, body) = {
+#let turn(who, cont: false, label: none, id: none, body) = {
   // Solo el rótulo lleva `context`: el bloque queda fuera para que el título de un segmento pegue con él
   let mark = context {
     let speakers = speakers-state.get()
@@ -105,6 +106,7 @@
     }
     let (short, role) = if who == none { (label, none) } else { (speakers.at(who).short, speakers.at(who).role) }
     [#metadata(short) <dc-turn>]
+    if id != none [#metadata(short) #std.label(id)]
     if not cont { label-of(style, short, role) }
   }
   block(above: 1.1em, below: 1.1em, breakable: true, {
@@ -164,6 +166,23 @@
     content
     v(1.5em)
   }
+}
+
+/// Cita de un turno por orador, página y línea: `#cite-turn("t12")` sale «Bahnsen, p. 12, l. 4» (la primera
+/// línea del turno `#turn(…, id: "t12")`). Se calcula al compilar, así que no se desactualiza al cambiar el
+/// papel, los márgenes o la fuente, pero la cita impresa solo vale para esa edición. Pide `line-numbers`.
+#let cite-turn(id) = context {
+  let found = query(label(id))
+  assert(found.len() > 0, message: "cite-turn: no hay ningún turno con id «" + id + "»")
+  let at = found.first().location()
+  let page-text = std.numbering(page.numbering, ..counter(page).at(at))
+  // `counter(par.line)` no sirve: cada línea numerada deja la marca <dc-line> con su número (ver lines.typ) y la
+  // del turno es la de la misma página con la posición vertical más cercana
+  let pos = at.position()
+  let lines = query(<dc-line>).filter(m => m.location().page() == pos.page)
+  assert(lines.len() > 0, message: "cite-turn: el documento no numera las líneas; pide `line-numbers`")
+  let line = lines.sorted(key: m => calc.abs(m.location().position().y - pos.y)).first().value
+  [#found.first().value, #i18n.get("page") #page-text, #i18n.get("line") #line]
 }
 
 /// Segmento del debate, un título ligero (nivel 2): `#segment("opening", speaker: "bahnsen", time: duration(minutes: 30))`.
@@ -265,7 +284,7 @@
   show: microtype-mod.setup.with(microtype)
   let debug = debug-mod.resolve(debug)
   show: debug-mod.setup.with(debug)
-  show: lines.setup.with(if debug.lines and line-numbers == false { true } else { line-numbers })
+  show: lines.setup.with(if debug.lines and line-numbers == false { true } else { line-numbers }, track: true)
 
   set page(
     paper: paper,
