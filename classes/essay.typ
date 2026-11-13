@@ -339,7 +339,12 @@
         if el != none and is-note(el) {
           let dest = query(selector(<_glosa_note>).after(el.location()))
           assert(dest.len() > 0, message: "Could not find referenced note")
-          let n = glosa.notecounter.at(dest.first().location()).last()
+          // Con `notes: "footnote"` la nota es una nota al pie más: su número es el de la serie de notas al
+          // pie, que cuenta también las corrientes, no el de las notas al margen
+          let n = if footnote-mode {
+            let fn = query(selector(footnote).after(dest.first().location())).first()
+            numbering(fn.numbering, ..counter(footnote).at(fn.location()))
+          } else { glosa.notecounter.at(dest.first().location()).last() }
           let word = if it.supplement == auto { ref-word("note") } else { it.supplement }
           show link: l => {
             show underline: u => u.body

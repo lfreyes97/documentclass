@@ -286,6 +286,14 @@ def check_covers(name: str, pages: list[str]) -> None:
         fail(name, f"la última página no es la contraportada: «{last[:60]}»")
 
 
+def check_footnote_refs(name: str, pages: list[str]) -> None:
+    """Con `notes: "footnote"`, `@nota` da el número de la nota al pie, que cuenta también las corrientes."""
+    text = " ".join(" ".join(lines_of(page)) for page in pages)
+    if "remisión a nota 2," not in text:
+        found = re.search(r"remisión a [^,]*,", text)
+        fail(name, f"la remisión a la nota debía ser «nota 2»: «{found.group(0) if found else '?'}»")
+
+
 def check_no_date(name: str, pages: list[str]) -> None:
     """Un ensayo sin `date` no lleva fecha en la cabecera: ningún año en las primeras líneas."""
     for n, page in enumerate(pages, 1):
@@ -391,6 +399,8 @@ def main() -> int:
                 check_noparts(rel, pages)
             if source.name == "covers.typ":
                 check_covers(rel, pages)
+            if source.name == "essay_footnotes.typ":
+                check_footnote_refs(rel, pages)
             if source.name == "titlepages.typ":
                 check_titlepage(rel, pages)
             if source.name == "essay_default.typ":
