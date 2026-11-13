@@ -348,6 +348,14 @@
   font-size: 11pt,
   margin: auto,
   facing-pages: false,
+  // Portada y contraportada, compatibles con coverbook, como en book. `cover` es contenido ya armado (p. ej. de
+  // `cover-pages`) o una función de estilo (`bahnsen-cover`…), que se llama con title, subtitle y author más
+  // `cover-data`; `back-cover` es auto (la de `cover` si es una función), contenido o none
+  cover: none,
+  back-cover: auto,
+  cover-data: (:), // Datos extra para la función de portada: isbn, back-text, volume…
+  cover-options: (:), // Opciones de la función de portada: trim, spine, colores…
+
   style: auto,
   // Estilo de los títulos: un tema o un diccionario (ver components/openings.typ). En debate, `section` es `=`,
   // `segment` es `#segment` y `subsection` es `===`
@@ -403,6 +411,17 @@
     number-align: center,
     margin: margins.resolve(margin, facing-pages, margin-defaults),
   )
+  // Portada, antes de la cabecera y el pie: la función de portada recibe los datos del libro
+  let cover-book = (title: title, subtitle: subtitle, author: author)
+    .pairs()
+    .filter(((_, value)) => value != none)
+    .to-dict() + cover-data
+  let make-cover(side) = cover(cover-book, side: side, ..cover-options)
+  let back-cover = if back-cover != auto { back-cover } else if type(cover) == function { make-cover("back") }
+  if type(cover) == function { make-cover("front") } else { cover }
+  // El cuerpo empieza en la página 1, no tras la portada
+  if cover != none { counter(page).update(1) }
+
   show: pagestyle.setup.with(
     page-style,
     class: "article",
@@ -447,4 +466,5 @@
   lines.off(fonts-mod.use("title", title-block(title, subtitle, proposition, venue, date, original, speakers, template, titlepage)))
 
   body
+  back-cover
 }

@@ -74,14 +74,14 @@
 )
 
 // `running-segment` (debate): a la izquierda los oradores que hablan en la página, a la derecha el segmento
-// vigente, con un filete gris. Sin cabecera en la primera página, donde va el título del debate
+// vigente, con un filete gris. Sin cabecera en la primera página numerada, donde va el título del debate
 #let running-segment = (
   header: (
     // Un solo espacio, de ancho completo: con tres columnas, una lista larga de oradores se partiría
     left: ctx => [#ctx.speakers.join(" · ")#h(1fr)#emph(ctx.segment)],
     rule: 0.5pt + gray,
     text: (size: 9pt, weight: "regular"),
-    when: ctx => visible(ctx) and ctx.page > 1 and (ctx.segment != none or ctx.speakers.len() > 0),
+    when: ctx => visible(ctx) and counter(page).get().first() > 1 and (ctx.segment != none or ctx.speakers.len() > 0),
   ),
   footer: classic.footer,
 )
