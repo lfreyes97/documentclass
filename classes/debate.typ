@@ -430,6 +430,9 @@
   show heading.where(level: 3): it => context {
     headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h3)
   }
+  show heading.where(level: 4): it => context {
+    headings.run-heading(it, openings.run-leaf(heading-style, "subsubsection"), fonts.h4)
+  }
 
   show footnote.entry: it => {
     let loc = it.note.location()
