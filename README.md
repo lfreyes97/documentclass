@@ -185,7 +185,7 @@ With `use-parts: false`, `=` is a chapter and `==` a section; parts are created 
 
 `header` and `footer` each take `left`, `center`, `right` (content or `ctx => content`), `odd`/`even` for rectos and versos (used with `facing-pages: true`; otherwise every page is `odd`), `rule`, `text` and `when` (`ctx => bool`). Spaces you give replace the preset's; `rule`, `text` and `when` merge with them. `ctx` has `part`, `chapter`, `section` (the title in force on the page, like `\markboth`), `folio`, `page`, `title`, `author`, `started`, `opening`, `blank`, `numbered` and `matter`. Unknown keys fail with the list of valid ones.
 
-`logo`, `part-ornament` and `custom-titlepage` take content, not file paths. Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
+`logo`, `part-ornament` and `custom-titlepage` take content, not file paths (`part-ornament` also takes the name of an ornament, see [Ornaments](#ornaments)). Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
 
 ```typst
 #show: book.with(
@@ -194,6 +194,10 @@ With `use-parts: false`, `=` is a chapter and `==` a section; parts are created 
   custom-titlepage: include "my-titlepage.typ",
 )
 ```
+
+### Ornaments
+
+`ornament` draws a separator with strokes and shapes, not font glyphs, so it does not depend on the body font having them: `#ornament("asterism")` (three asterisks in a triangle), `"fleuron"` (a four-petal flower), `"rule"` (a rule with a diamond in the middle), `"dots"` and `"diamond"`; any content works too, centred as is: `#ornament[❦]`. It takes `size` (1em), `fill` (the text colour), `width` (of the rule), `above` and `below`. Use it between sections or to close a chapter. The name of an ornament also works wherever an ornament is expected: `part-ornament: "fleuron"` and `heading-style: (chapter: (ornament: "rule"))`, without the spaces `ornament()` adds on its own. It does not interfere with drop caps.
 
 ### Drop caps
 

@@ -5,6 +5,7 @@
 #import "i18n.typ"
 #import "numbering.typ" as numbering-mod
 #import "openings.typ"
+#import "ornaments.typ"
 
 #let matter-state = state("matter-section", "front")
 #let appendix-state = state("appendix-mode", false)
@@ -137,7 +138,7 @@
     let body = if s.title-smallcaps { smallcaps(it.body) } else { it.body }
     text(..(font: font) + s.title-text, if s.title-upper { upper(body) } else { body })
   }
-  let ornament = if s.ornament == auto { part-ornament } else { s.ornament }
+  let ornament = ornaments.resolve(if s.ornament == auto { part-ornament } else { s.ornament })
   let content = align(s.align)[
     #if numbered and (label != none or s.number-format != none) {
       let number = (s.number-format)(counter(heading).display(it.numbering))
@@ -202,7 +203,8 @@
   minitoc-options: (:), // Opciones de `tocs.partial`, sobre `minitoc-defaults`
   body,
 ) = {
-  titlepage.check-content("part-ornament", part-ornament)
+  // Un nombre de adorno ("fleuron"…) vale; otro texto es probablemente una ruta, que no se resuelve aquí
+  if part-ornament not in ornaments.kinds { titlepage.check-content("part-ornament", part-ornament) }
 
   // Estilos globaloes pre-establecidos para los encabezados.
   show heading.where(level: 1): set text(font: fonts.h1, weight: 700, hyphenate: false)

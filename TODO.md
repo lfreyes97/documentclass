@@ -82,9 +82,12 @@ temas, y el `part-ornament` es contenido suelto. Nada de esto sigue `style`.
       Hecho: `blockquote(attribution:)` (contenido o diccionario), `marks` y `quote(block: true)` con su estilo.
 - [x] **Comillas anidadas** en español: la cita interna con “…” dentro de «…» sin escribirla a mano.
       Hecho: `quote` en línea con las comillas del idioma y las de segundo nivel dentro (es, en, pt, fr, de, it).
-- [ ] **Adornos:** separadores de sección (`#ornament()`: asterismo ⁂, florón ❦, filete con glifo central),
+- [x] **Adornos:** separadores de sección (`#ornament()`: asterismo ⁂, florón ❦, filete con glifo central),
       remate de capítulo, presets para `part-ornament`, y su relación con la clave `ornament` de `heading-style`.
-- [ ] Revisar cómo se llevan con las capitulares (`dropcap`, `ornate-dropcap`), que ya existen.
+      Hecho: `ornament` (asterism, fleuron, rule, dots, diamond, dibujados con trazos), y su nombre vale en
+      `part-ornament` y en la clave `ornament` de `heading-style`. El remate de capítulo se escribe con `#ornament`;
+      no hay clave automática.
+- [x] Revisar cómo se llevan con las capitulares (`dropcap`, `ornate-dropcap`), que ya existen.
 
 ## API
 
