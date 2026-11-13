@@ -251,6 +251,15 @@ def check_titlepage(name: str, pages: list[str]) -> None:
             fail(name, f"la portada no lleva «{word}»")
 
 
+def check_covers(name: str, pages: list[str]) -> None:
+    """La portada de `cover` es la primera página y su contraportada la última."""
+    first, last = " ".join(lines_of(pages[0])), " ".join(lines_of(pages[-1]))
+    if "FRONT-LibroConCubierta-978-1-azul" not in first:
+        fail(name, f"la primera página no es la portada: «{first[:60]}»")
+    if "BACK-LibroConCubierta-978-1-azul" not in last:
+        fail(name, f"la última página no es la contraportada: «{last[:60]}»")
+
+
 def check_no_date(name: str, pages: list[str]) -> None:
     """Un ensayo sin `date` no lleva fecha en la cabecera: ningún año en las primeras líneas."""
     for n, page in enumerate(pages, 1):
@@ -338,6 +347,8 @@ def main() -> int:
                 check_structure_book(rel, pages)
             if source.name == "pagestyle_noparts.typ":
                 check_noparts(rel, pages)
+            if source.name == "covers.typ":
+                check_covers(rel, pages)
             if source.name == "titlepages.typ":
                 check_titlepage(rel, pages)
             if source.name == "essay_default.typ":

@@ -1,4 +1,5 @@
 #import "../components/titlepage.typ" as titlepage-mod
+#import "../components/covers.typ"
 #import "../components/matter.typ"
 #import "../components/footer.typ"
 #import "../components/headings.typ"
@@ -46,13 +47,14 @@
   // contents, abstract, figures, tables (ver components/i18n.typ)
   labels: (:),
   equation-numbering: false, // Numerar ecuaciones en bloque: (2.1)
-  // Portada y contraportada, compatibles con coverbook. `cover` es contenido ya
-  // armado (p. ej. de `cover-pages`) o una función de estilo (`minimal-cover`…),
-  // que se llama con title, subtitle, author y publisher más `cover-data`.
+  // Portada y contraportada, compatibles con coverbook: none, contenido, (portada, contraportada), una
+  // función de estilo (`minimal-cover`…) o un diccionario con front, back, data y options (ver
+  // components/covers.typ)
   cover: none,
-  back-cover: auto, // auto = la de `cover` si es una función; o contenido; none = sin ella
-  cover-data: (:), // Datos extra para la función de portada: isbn, back-text, volume…
-  cover-options: (:), // Opciones de la función de portada: trim, spine, colores…
+  // Obsoletos: ahora son las claves `back`, `data` y `options` de `cover`
+  back-cover: auto,
+  cover-data: (:),
+  cover-options: (:),
   // true: `=` es parte y `==` capítulo. false: `=` es capítulo y las partes se
   // crean con `#part[...]`
   use-parts: true,
@@ -84,6 +86,7 @@
   body,
 ) = {
   titlepage-mod.check-old(custom-titlepage, "book")
+  covers.check-old(back-cover, cover-data, cover-options)
   let style = themes.check(style)
   let page-style = themes.pick(page-style, style, "classic")
   let heading-style = themes.pick(heading-style, style, "classic")
@@ -113,16 +116,12 @@
     margin: margins.resolve(margin, facing-pages, margin-defaults),
   )
 
-  // Datos del libro para una función de portada de coverbook
-  let cover-book = (title: title, subtitle: subtitle, author: author, publisher: publisher)
-    .pairs()
-    .filter(((_, value)) => value != none)
-    .to-dict() + cover-data
-  let make-cover(side) = cover(cover-book, side: side, ..cover-options)
-  let back-cover = if back-cover != auto { back-cover } else if type(cover) == function {
-    make-cover("back")
-  }
-  if type(cover) == function { make-cover("front") } else { cover }
+  // Portada y contraportada; una función de portada de coverbook recibe los datos del libro
+  let (front-cover, back-cover) = covers.resolve(
+    cover,
+    (title: title, subtitle: subtitle, author: author, publisher: publisher),
+  )
+  front-cover
 
   headings.facing-pages-state.update(facing-pages)
   if facing-pages { context headings.blank-verso() }

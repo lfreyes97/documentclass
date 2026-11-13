@@ -218,24 +218,27 @@ A section heading (`section` and below) is kept with the paragraph that follows 
 
 ### Covers
 
-`book` places a cover before the title page and a back cover at the end. It is compatible with coverbook, a separate cover package, but any content works:
+`book` places a cover before the title page and a back cover at the end, both from `cover`. It is compatible with coverbook, a separate cover package, but any content works:
 
 ```typst
 // A coverbook style function: the class calls it with title, subtitle, author
-// and publisher, plus `cover-data`, and adds the back cover automatically
+// and publisher, plus `data`, once for the front and once for the back
 #show: book.with(
   title: "Essays", author: "Author Name",
-  cover: minimal-cover,
-  cover-data: (isbn: "978-1-000-00000-0", back-text: [...]),
-  cover-options: (trim: "6x9"),
+  cover: (
+    front: minimal-cover,
+    data: (isbn: "978-1-000-00000-0", back-text: [...]),
+    options: (trim: "6x9"),
+  ),
 )
 
-// Or covers already built, e.g. with coverbook's cover-pages
-#let (front-cover, back-cover) = cover-pages(minimal-cover, data)
-#show: book.with(cover: front-cover, back-cover: back-cover)
+// Or both covers already built, e.g. with coverbook's cover-pages
+#show: book.with(cover: cover-pages(minimal-cover, data))
+// Or each one as content
+#show: book.with(cover: (front: image("front.pdf"), back: image("back.pdf")))
 ```
 
-`back-cover: none` leaves the back cover out.
+`cover` takes `none` (the default), content (a front cover alone), a pair `(front, back)`, a style function (`cover: minimal-cover`, both covers) or a dictionary with `front` (content or a style function), `back` (`auto`, the function's back cover; `none`; or content), `data` and `options`. A front cover given as content gets no back cover unless you pass `back`. The old `back-cover`, `cover-data` and `cover-options` are now `back`, `data` and `options`, and fail with a message that says so.
 
 ### Numbering and cross-references
 
