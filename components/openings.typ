@@ -33,7 +33,7 @@
 // `back` (back matter) y, en `chapter`, `appendix`. Las claves de `part` o `chapter`
 // valen para todas las variantes; las de una variante, solo para ella.
 //
-// Títulos de sección (`section` y los inferiores): above, below, align, number-format,
+// Títulos de sección (`section` y los inferiores): start (solo debate), above, below, align, number-format,
 // number-text, number-sep, title-text, title-upper, title-smallcaps. Cada uno hereda del
 // anterior solo lo que no fija; `section` hereda del texto del cuerpo. Así `section:
 // (title-smallcaps: true)` pone en versalitas las secciones y las inferiores, y
@@ -62,6 +62,7 @@
 
 // Valor de cada clave de un título de sección si el preajuste no la fija: el texto del cuerpo
 #let run-base = (
+  start: none, // En debate: "page" o "odd" abren página nueva (o impar) antes del título; none, sigue de corrido
   above: 1em,
   below: 1em,
   align: left,
@@ -223,8 +224,9 @@
 
 // Debate: la sección (`=`) y, más ligero, el segmento del debate; el resto, como en book
 #let for-debate(theme, section, segment) = (
-  section: merge(theme.section, section),
-  segment: segment,
+  // Las secciones y los segmentos abren página nueva; `start: none` los deja de corrido
+  section: merge(theme.section, section + (start: "page")),
+  segment: segment + (start: "page"),
   subsection: theme.subsection,
   subsubsection: theme.subsubsection,
   paragraph: theme.paragraph,

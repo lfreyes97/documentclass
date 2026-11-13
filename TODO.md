@@ -52,6 +52,9 @@ por dentro, estas piezas:
 - [x] **Índice de oradores** y **glosario** (el libro actual ya termina con `= Glosario`, hoy a mano).
       Hecho: `speakers-index()` (páginas por orador, con tramos) y `glossary(entradas)` con `gloss("clave")[…]` para
       marcar los términos y sus páginas; orden alfabético sin tildes por defecto.
+      Saltos de página: `breaks` ("turn", "segment", "section", none; por plantilla, hoy "turn" en las tres) y
+      `start` en `heading-style`. Pendiente decidir si en los segmentos de intercambio (preguntas, contrainterrogatorio)
+      los turnos cortos deben ir de corrido.
 - [ ] **Texto paralelo** original y traducción en dos columnas (opcional; hay un proyecto `translation-harness`
       en `Proyectos`).
 - [ ] Diseñarla sobre el sistema común de temas (`style`), cabeceras, aperturas y el bloque común de título, no

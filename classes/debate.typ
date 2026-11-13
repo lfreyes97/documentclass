@@ -25,6 +25,8 @@
 
 // Oradores y plantilla declarados en la clase (requieren `context`)
 #let template-state = state("dc-debate-template", none)
+#let segment-start-state = state("dc-debate-segment-start", none)
+#let breaks-state = state("dc-debate-breaks", none)
 #let program-state = state("dc-debate-program", ())
 #let marks-state = state("dc-debate-marks", mark-defaults)
 #let speakers-state = state("dc-debate-speakers", (:))
@@ -110,6 +112,19 @@
     if id != none [#metadata(short) #std.label(id)]
     if not cont { label-of(style, short, role) }
   }
+  // Con `breaks: "turn"`, cada turno abre página, salvo el primero tras un título o el que continúa a otro
+  let page-break = context {
+    if not cont and breaks-state.get() == "turn" {
+      let before = selector(heading).before(here(), inclusive: false)
+      let last-heading = query(before).at(-1, default: none)
+      let first-after-heading = last-heading != none and query(
+        selector(<dc-turn>).after(last-heading.location()).before(here(), inclusive: false),
+      ).len() == 0
+      let first-turn = query(selector(<dc-turn>).before(here(), inclusive: false)).len() == 0
+      if not first-after-heading and not first-turn { pagebreak(weak: true) }
+    }
+  }
+  page-break
   block(above: 1.1em, below: 1.1em, breakable: true, {
     set par(first-line-indent: 0pt)
     mark
@@ -268,6 +283,14 @@
   })
 }
 
+// Salto de página antes de un título (`start` de `heading-style`): "page" o "odd". El primer título del documento no
+// salta, para que el título del debate no se quede solo en su página (requiere `context`)
+#let break-before(start) = context {
+  if start != none and query(selector(heading).before(here(), inclusive: false)).len() > 0 {
+    pagebreak(weak: true, to: if start == "odd" { "odd" })
+  }
+}
+
 /// Segmento del debate, un título ligero (nivel 2): `#segment("opening", speaker: "bahnsen", time: duration(minutes: 30))`.
 /// Sin tipo, `#segment()` abre el siguiente del programa (`program`, por defecto el de la plantilla), con su
 /// orador y su tiempo; lo que se dé con nombre lo sustituye.
@@ -282,6 +305,8 @@
   if args.named().len() > 0 { panic("segment: argumento desconocido «" + args.named().keys().first() + "»") }
   let kind = args.pos().at(0, default: auto)
   let counter = counter("dc-segment-program")
+  // El salto va fuera del `context` del segmento: dentro, el contador del programa no converge
+  context break-before(segment-start-state.get())
   context {
     let speakers = speakers-state.get()
     let step = if kind == auto {
@@ -342,6 +367,9 @@
   // Segmentos que `#segment()` abre uno tras otro: auto (los de la plantilla, con los oradores en el orden de
   // `speakers`), none, o una lista de diccionarios `(kind:, speaker:, time:, title:)`
   program: auto,
+  // Dónde salta la página: auto (según la plantilla: "turn" en todas; "segment" en formato libre), "turn" (cada turno,
+  // segmento y sección), "segment", "section" (solo las secciones `=`) o none
+  breaks: auto,
   // Estilo de los turnos: "classic" (rótulo en línea) o "modern" (rótulo en su línea). auto = el del tema
   turn-style: auto,
   paper: "a5",
@@ -389,6 +417,10 @@
   let page-style = themes.pick(page-style, style, "running-segment")
   speakers-state.update(speakers)
   template-state.update(template)
+  let breaks = debates.check-breaks(breaks, template)
+  breaks-state.update(breaks)
+  // `heading-style` dice cómo salta (page, odd) y `breaks` dónde
+  segment-start-state.update(if breaks in ("turn", "segment") { openings.run-leaf(heading-style, "segment").start })
   program-state.update(debates.resolve-program(program, template, speakers))
   turn-style-state.update(turn-style)
   marks-state.update(check-marks(marks))
@@ -440,7 +472,9 @@
   show heading.where(level: 2): set text(font: fonts.h2, hyphenate: true)
   show heading.where(level: 3): set text(font: fonts.h3, hyphenate: true)
   show heading.where(level: 1): it => context {
-    headings.run-heading(it, openings.run-leaf(heading-style, "section"), fonts.h1)
+    let leaf = openings.run-leaf(heading-style, "section")
+    break-before(if breaks != none { leaf.start })
+    headings.run-heading(it, leaf, fonts.h1)
   }
   // Los segmentos (nivel 2) van pegados al turno que sigue: `run-heading` no deja un bloque
   show heading.where(level: 2): it => context {

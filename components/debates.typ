@@ -117,3 +117,21 @@
   }
   program
 }
+
+// Dónde salta la página: "turn" (cada turno, además de cada segmento y sección), "segment" (cada segmento y sección),
+// "section" (solo las secciones `=`) o none. Por plantilla; el formato libre va por segmentos
+#let breaks = ("turn", "segment", "section")
+#let default-breaks = (
+  "two-speakers": "turn",
+  panel: "turn",
+  interview: "turn",
+)
+
+#let check-breaks(breaks-option, template) = {
+  if breaks-option == auto { return if template == none { "segment" } else { default-breaks.at(template) } }
+  assert(
+    breaks-option == none or breaks-option in breaks,
+    message: "breaks: «" + repr(breaks-option) + "» no es válido. Valores: auto, none, " + breaks.join(", "),
+  )
+  breaks-option
+}
