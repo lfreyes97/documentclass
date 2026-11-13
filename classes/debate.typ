@@ -111,6 +111,58 @@
   })
 }
 
+#let original-keys = ("title", "series", "recording", "transcript")
+
+// Cabecera del debate: título, «A frente a B», proposición, lugar y fecha, moderador y datos de la edición
+// original. Con `titlepage: true` ocupa una página propia, centrada; si no, va sobre el texto.
+#let title-block(
+  title,
+  subtitle,
+  proposition,
+  venue,
+  date,
+  original,
+  speakers,
+  template,
+  titlepage,
+) = {
+  let debaters = speakers.values().filter(s => not s.moderator).map(s => s.name)
+  let moderators = speakers.values().filter(s => s.moderator).map(s => s.name)
+  let size = if titlepage { 1.3 } else { 1 }
+  let content = align(center)[
+    #text(size: 18pt * size, weight: "bold")[#title]
+    #if subtitle != none { v(0.4em); text(size: 11pt * size, style: "italic")[#subtitle] }
+    #if debaters.len() > 0 {
+      v(0.9em)
+      let versus = debaters.len() == 2 and template in (none, "two-speakers")
+      text(size: 12pt * size)[#if versus [#debaters.first() #i18n.term("versus") #debaters.last()] else { debaters.join(", ", last: " · ") }]
+    }
+    #if proposition != none { v(0.7em); text(size: 11pt * size)[#proposition] }
+    #if venue != none or date != none {
+      v(0.5em)
+      text(size: 10pt * size)[#(venue, date).filter(x => x != none).join(", ")]
+    }
+    #if moderators.len() > 0 {
+      v(0.5em)
+      text(size: 10pt * size)[#i18n.term("moderator"): #moderators.join(", ")]
+    }
+    #if original != none {
+      v(1.1em)
+      set text(size: 9pt * size, fill: luma(90))
+      for (key, label) in (("title", "original-title"), ("series", "series"), ("recording", "recording"), ("transcript", "transcript")) {
+        if key in original [#i18n.term(label): #original.at(key)\ ]
+      }
+    }
+  ]
+  if titlepage {
+    page(numbering: none, header: none, footer: none, { v(1fr); content; v(1fr) })
+  } else {
+    v(1.5em)
+    content
+    v(1.5em)
+  }
+}
+
 /// Segmento del debate, un título ligero (nivel 2): `#segment("opening", speaker: "bahnsen", time: duration(minutes: 30))`.
 /// - `kind`: presentación (`opening`), réplica (`rebuttal`), contrainterrogatorio (`cross`), preguntas del
 ///   público (`questions`), conclusión (`closing`), introducción, ronda o tema; la plantilla fija cuáles
@@ -142,10 +194,16 @@
 #let debate(
   title: none,
   subtitle: none,
-  // Tema del debate o proposición, bajo el título
+  // Tema o proposición del debate, bajo los nombres de los oradores
   proposition: none,
   author: none,
   date: none,
+  // Lugar del debate («Reformed Theological Seminary, Jackson»)
+  venue: none,
+  // Datos de la edición original, todos opcionales: (title:, series:, recording:, transcript:)
+  original: none,
+  // true: cabecera del debate en una página propia (la portadilla «A frente a B»)
+  titlepage: false,
   // Oradores por clave: (sproul: (name: "R. C. Sproul", short: "Sproul", role: "clásico"), …)
   speakers: (:),
   // Formato del debate: "two-speakers", "panel" o "interview" fijan los segmentos admitidos y cuántos
@@ -177,6 +235,12 @@
     message: "turn-style: «" + repr(turn-style) + "» no es un estilo de turno. Estilos: " + turn-styles.join(", "),
   )
   let template = debates.check(template)
+  if original != none {
+    assert(type(original) == dictionary, message: "original debe ser un diccionario con " + original-keys.join(", "))
+    for key in original.keys() {
+      assert(key in original-keys, message: "original: clave desconocida «" + key + "». Claves válidas: " + original-keys.join(", "))
+    }
+  }
   let speakers = check-speakers(speakers)
   debates.check-speakers(template, speakers)
   let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "article")
@@ -237,17 +301,7 @@
     }
   }
 
-  // Cabecera de título: título, proposición, y fecha
-  lines.off(fonts-mod.use("title", {
-    v(1.5em)
-    align(center)[
-      #text(size: 18pt, weight: "bold")[#title]
-      #if subtitle != none { v(0.4em); text(size: 11pt, style: "italic")[#subtitle] }
-      #if proposition != none { v(0.9em); text(size: 11pt)[#proposition] }
-      #if date != none { v(0.5em); text(size: 10pt)[#date] }
-    ]
-    v(1.5em)
-  }))
+  lines.off(fonts-mod.use("title", title-block(title, subtitle, proposition, venue, date, original, speakers, template, titlepage)))
 
   body
 }

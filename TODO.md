@@ -36,8 +36,10 @@ por dentro, estas piezas:
       opcionales (`#at("12:30")`) y notas del traductor distintas de las notas del editor.
       Hecho: `crowd`, `inaudible`, `at` y `tnote`, con `marks:` para quitarlas o mostrar los tiempos; una
       interrupción es un `turn` con `cont: true`, sin marca propia.
-- [ ] **Datos del debate en la clase:** proposición o tema, oradores, moderador, lugar, fecha, título y serie
+- [x] **Datos del debate en la clase:** proposición o tema, oradores, moderador, lugar, fecha, título y serie
       originales, y una portadilla "A frente a B". Depende del bloque común de título.
+      Hecho: `venue`, `original: (title:, series:, recording:, transcript:)`, el moderador (`moderator: true`) y
+      `titlepage: true` para la portadilla; la cabecera es propia de `debate` hasta que exista el bloque común.
 - [ ] **Cabecera con el segmento actual o el orador:** `page-style` necesita `speaker` y `segment` en `ctx`.
 - [ ] **Líneas numeradas para citar** ("Bahnsen, p. 12, l. 4"): ya existe `line-numbers`; falta fijar cómo se
       cita y que el número de línea sea estable.

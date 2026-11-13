@@ -5,15 +5,22 @@
 
 #show: debate.with(
   title: "El Debate sobre el Método Apologético",
-  subtitle: "Reformed Theological Seminary, Jackson, Mississippi",
+  subtitle: "Reformed Theological Seminary",
   proposition: [Período de preguntas],
+  venue: "Jackson, Mississippi",
   date: "1977",
+  original: (
+    title: "Bahnsen–Sproul Debate on Apologetic Method",
+    series: "The Bahnsen-Sproul Debate Over Apologetic Method",
+    recording: "1977",
+    transcript: "Archivo Bahnsen",
+  ),
   template: "two-speakers",
   marks: (timecodes: true),
   speakers: (
-    bahnsen: (name: "Bahnsen", role: "presuposicionalista"),
-    sproul: (name: "Sproul", role: "clásico"),
-    dewitt: (name: "Dewitt", role: "moderador", moderator: true),
+    bahnsen: (name: "Greg L. Bahnsen", short: "Bahnsen", role: "presuposicionalista"),
+    sproul: (name: "R. C. Sproul", short: "Sproul", role: "clásico"),
+    dewitt: (name: "Richard Dewitt", short: "Dewitt", role: "moderador", moderator: true),
   ),
 )
 
