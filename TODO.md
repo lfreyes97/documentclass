@@ -165,8 +165,7 @@ El ensayo real ya está revisado y migrado (ver `HECHO.md`). Queda la clase:
 Esto solo tiene sentido cuando la API esté estable; hacerlo antes obliga a repetirlo.
 
 - [ ] **CI:** subir los commits a GitHub y ver correr `.github/workflows/test.yml`, que nunca se ha ejecutado allí.
-      Las referencias de `test/reference/` pueden diferir si la versión de `pdftotext` del runner da otro texto, y
-      habrá que regenerarlas o fijar esa versión.
+      Las referencias de `test/reference/` ya no se versionan, así que el CI salta esa comparación.
 - [ ] **Changelog** y **etiquetas de versión** (sin urgencia: es una versión de desarrollo, se sube cuando
       convenga; subir obliga a renombrar el enlace simbólico `@local/documentclass:0.1.0` o a cambiar los
       imports). `HECHO.md` es la base. Cambios incompatibles desde `0.1.0`: `logo`, `part-ornament` y

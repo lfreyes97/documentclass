@@ -1,36 +1,0 @@
-Saltos propios
-
-      A
-PA R T E I
-
-PARTE
-                        CAPÍTULO 1
-
-
-                     Capítulo uno
-
-
-    Texto del capítulo uno, con bastante contenido para llenar un poco
-la página y que tenga cabecera.
-
-
-
-
-                                  3
-                                                        Capítulo uno
-
-Texto tras un salto propio: la página anterior queda en blanco, sin
-cabecera ni folio.
-
-
-
-
-                                5
-                                                         Capítulo uno
-
-Dos saltos seguidos dejan una página en blanco intencional.
-
-
-
-
-                                 7

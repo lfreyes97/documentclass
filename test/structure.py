@@ -10,7 +10,8 @@ Compila cada archivo de test/ y demos/ y revisa el PDF resultante:
   - en `structure_book.typ`: las páginas vacías son versos, cada verso lleva la parte y cada
     recto el capítulo vigentes, las aperturas no llevan cabecera y el índice lista los capítulos;
   - el texto de cada página coincide con el de test/reference/ (solo los archivos con
-    referencia; hay que regenerarlas con --update tras un cambio intencionado).
+    referencia, que no se versionan: se crean con --update y sirven para comparar cambios en
+    la propia máquina; sin ellas se salta la comparación).
 
 Se compila con --ignore-system-fonts: así el resultado no depende de las fuentes instaladas.
 Los archivos que piden otras fuentes salen con su fallback; no tienen referencia.
@@ -251,7 +252,8 @@ def check_reference(name: str, source: str, pages: list[str], pdf: Path, update:
     for suffix, content in current.items():
         reference = stem.with_suffix(suffix)
         if not reference.exists():
-            fail(name, f"falta la referencia {reference.relative_to(ROOT)} (usa --update)")
+            # Las referencias no se versionan (son de cada máquina): sin ellas solo se salta la comparación
+            print(f"  sin referencia {reference.relative_to(ROOT)} (--update la crea)")
             continue
         expected = reference.read_text()
         if expected == content:

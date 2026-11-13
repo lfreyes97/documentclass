@@ -4,6 +4,9 @@
 *.svg
 !components/assets/**/*.svg
 
+# Referencias de las pruebas (se crean con `python3 test/structure.py --update`)
+test/reference/
+
 # Typst cache (if local)
 # .typst/
 
