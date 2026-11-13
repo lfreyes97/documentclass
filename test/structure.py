@@ -7,6 +7,8 @@ Compila cada archivo de test/ y demos/ y revisa el PDF resultante:
   - ninguna página lleva solo un folio (una página en blanco que debía quedar vacía);
   - los folios crecen: romanos en el front matter, arábigos después;
   - ninguna línea de texto se solapa con otra (índices pegados a la línea anterior);
+  - en `structure_report.typ` y `structure_article.typ`: las cabeceras de un tema y de un `page-style` propio;
+  - en `tocs_depth.typ`: cada índice lista las entradas de su `depth`, ni más ni menos;
   - en `pagestyle_noparts.typ`: un libro sin partes lleva cabeceras desde el primer capítulo;
   - en `structure_book.typ`: las páginas vacías son versos, cada verso lleva la parte y cada
     recto el capítulo vigentes, las aperturas no llevan cabecera y el índice lista los capítulos;
@@ -48,6 +50,8 @@ REFERENCED = {
     "test/front_order.typ",
     "test/blank_pagebreaks.typ",
     "test/structure_book.typ",
+    "test/structure_report.typ",
+    "test/structure_article.typ",
 }
 
 # Variantes que se compilan además del archivo tal cual, con `--input clave=valor`
@@ -307,6 +311,65 @@ def check_page_multiple(name: str, pages: list[str]) -> None:
         fail(name, "no se añadió ninguna página en blanco (la prueba debía necesitarlas)")
 
 
+def check_toc_depth(name: str, pages: list[str]) -> None:
+    """Entradas del índice a cada `depth` de test/tocs_depth.typ: cada índice tiene las suyas y ninguna más."""
+    expected = {
+        "Indice1": {"ParteA", "CapA"},
+        "Indice2": {"ParteA", "CapA", "SecA"},
+        "Indice3": {"ParteA", "CapA", "SecA", "SubA"},
+        "Indice2SinPartes": {"CapA", "SecA"},
+    }
+    all_entries = {"ParteA", "CapA", "SecA", "SubA", "SubsubA"}
+    found = set()
+    for page in pages:
+        lines = lines_of(page)
+        title = next((line for line in lines if line in expected), None)
+        if title is None:
+            continue
+        found.add(title)
+        words = set(" ".join(lines).replace(".", " ").split())
+        present = all_entries & words
+        if present != expected[title]:
+            fail(name, f"{title} lista {sorted(present)} y debía listar {sorted(expected[title])}")
+    for title in expected.keys() - found:
+        fail(name, f"no se encontró el índice {title}")
+
+
+def check_structure_report(name: str, pages: list[str]) -> None:
+    """`modern` en report a doble cara: el título en los versos, el capítulo vigente en los rectos, nada en las
+    aperturas. El texto con espaciado sale con huecos: se comparan sin espacios."""
+    chapter, versos = None, 0
+    for n, page in enumerate(pages[1:], 2):
+        lines = lines_of(page)
+        if not lines:
+            continue
+        if lines[0].startswith("CAPÍTULO"):
+            chapter = next(line for line in lines[1:3] if line.startswith("Capitulo")).upper()
+            continue
+        expected = "INFORMEESTRUCTURA" if n % 2 == 0 else chapter
+        versos += n % 2 == 0
+        if lines[0].replace(" ", "") != expected:
+            fail(name, f"página {n}: la cabecera es «{lines[0]}» y debía ser «{expected}»")
+    if versos == 0:
+        fail(name, "ningún verso con cabecera: la prueba debía tener alguno")
+
+
+def check_structure_article(name: str, pages: list[str]) -> None:
+    """La cabecera propia de article: la sección vigente (la última que empieza en la página o antes), salvo
+    en la primera página."""
+    current = None
+    for n, page in enumerate(pages, 1):
+        lines = lines_of(page)
+        starts = [m.group(1) for line in lines if (m := re.match(r"^\d+\.? (Seccion\w+)$", line))]
+        current = starts[-1] if starts else current
+        if n == 1:
+            if lines and lines[0] != "ArticuloEstructura":
+                fail(name, f"la primera página lleva cabecera: «{lines[0]}»")
+            continue
+        if lines and lines[0] != current:
+            fail(name, f"página {n}: la cabecera es «{lines[0]}» y debía ser «{current}»")
+
+
 def check_no_date(name: str, pages: list[str]) -> None:
     """Un ensayo sin `date` no lleva fecha en la cabecera: ningún año en las primeras líneas."""
     for n, page in enumerate(pages, 1):
@@ -416,6 +479,12 @@ def main() -> int:
                 check_footnote_refs(rel, pages)
             if source.name == "page_multiple.typ":
                 check_page_multiple(rel, pages)
+            if source.name == "structure_report.typ":
+                check_structure_report(rel, pages)
+            if source.name == "structure_article.typ":
+                check_structure_article(rel, pages)
+            if source.name == "tocs_depth.typ":
+                check_toc_depth(rel, pages)
             if source.name == "titlepages.typ":
                 check_titlepage(rel, pages)
             if source.name == "essay_default.typ":
