@@ -5,6 +5,7 @@
 #import "../components/fonts.typ" as fonts-mod
 #import "../components/microtype.typ" as microtype-mod
 #import "../components/i18n.typ"
+#import "../components/lines.typ"
 #import "../components/margins.typ"
 
 /// Numeral arábigo volado para las notas al margen, continuo en todo el documento (el
@@ -98,6 +99,9 @@
   // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
   // true, false o un diccionario con spacing, tracking, hyphenation y glue
   microtype: true,
+  // Líneas numeradas para citar por página y línea o para revisar: false, true o un diccionario
+  // (ver components/lines.typ)
+  line-numbers: false,
   body,
 ) = {
   let fonts = fonts-mod.resolve(fonts)
@@ -119,6 +123,7 @@
   set text(font: fonts.body, lang: lang)
   show raw: set text(font: fonts.mono)
   show: microtype-mod.setup.with(microtype)
+  show: lines.setup.with(line-numbers)
   set page(paper: paper)
 
   let number-style = (font: fonts.title, ..chapter-number-style)
@@ -254,7 +259,7 @@
     overflow-mark: overflow-mark,
     mode: notes,
     {
-      titlepage-content
+      lines.off(titlepage-content)
       // Las notas al margen llevan los numerales; las notas al pie van con †, ‡, §…
       // Con notas al pie todas van en una sola serie numérica: las notas al margen son notas al pie
       set footnote(numbering: if footnote-mode { "1" } else { n => footnote-mark(n, footnote-symbols) })

@@ -142,6 +142,7 @@ All classes accept the following common parameters:
 - `labels`: Labels that replace the translated ones.
 - `microtype`: Justification and no-break-space adjustments (see [Microtypography](#microtypography)).
 - `margin`: Page margins: `auto` (the class default), a length, or a dictionary. With `facing-pages: true` (the default in `book`; `false` in `report` and `article`, like LaTeX's `twoside`) the horizontal margins are `inside` and `outside`, which alternate on each page, e.g. `margin: (inside: 3cm, outside: 2cm, y: 2cm)`; with `false` they are `x`, or `left` and `right`. Keys you leave out keep the class default, and a key of the wrong kind for `facing-pages` fails with a message.
+- `line-numbers`: Numbered lines, to quote by page and line or to review with someone (`book`, `report`, `article`, `essay`). `false` by default; `true` numbers every line of the body text, restarting on each page; a dictionary changes it: `line-numbers: (every: 5, scope: "document", size: 7pt, fill: gray, clearance: 8pt, side: start)`. Headings, footnotes, figure captions, title blocks, title pages and margin notes are not numbered.
 
 ### Specific Parameters
 - **Book**: `part-ornament`, `logo`, `custom-titlepage`, `equation-numbering`, `use-parts`, `cover` (see [Covers](#covers)), and `minitoc` (`true`, or a dictionary of `tocs.partial` options; see [Tables of contents](#tables-of-contents-tocs)).

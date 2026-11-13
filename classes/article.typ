@@ -2,6 +2,7 @@
 
 #import "../components/matter.typ"
 #import "../components/i18n.typ"
+#import "../components/lines.typ"
 #import "../components/fonts.typ" as fonts-mod
 #import "../components/microtype.typ" as microtype-mod
 #import "../components/margins.typ"
@@ -73,6 +74,9 @@
   // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
   // true, false o un diccionario con spacing, tracking, hyphenation y glue
   microtype: true,
+  // Líneas numeradas para citar por página y línea o para revisar: false, true o un diccionario
+  // (ver components/lines.typ)
+  line-numbers: false,
   body,
 ) = {
   let style = themes.check(style)
@@ -92,6 +96,7 @@
   )
   show raw: set text(font: fonts.mono)
   show: microtype-mod.setup.with(microtype)
+  show: lines.setup.with(line-numbers)
 
   // Por defecto, una sola cara: márgenes simétricos, numeración desde pág. 1
   set page(
@@ -148,16 +153,16 @@
   }
 
   // Título inline
-  fonts-mod.use("title", titleblock(
+  lines.off(fonts-mod.use("title", titleblock(
     title: title,
     subtitle: subtitle,
     author: author,
     date: date,
-  ))
+  )))
 
   // Abstract
   if abstract != none {
-    matter.abstract(title: abstract-title, abstract)
+    lines.off(matter.abstract(title: abstract-title, abstract))
   }
 
   // Aplicar columnas si se pidieron

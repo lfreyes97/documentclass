@@ -85,6 +85,12 @@ bien: no hizo falta tocarlos.
 - Fecha fija (`913f520`): `date` es `none` por defecto, sin fecha en la cabecera ni en los metadatos del PDF.
   Una `datetime` o un texto la ponen; `datetime.today()` devuelve la de hoy.
 
+## Líneas numeradas
+
+- `line-numbers` en `book`, `report`, `article` y `essay` (`components/lines.typ`, `test/line_numbers.typ`): usa `par.line` de
+  Typst, reinicia por página, se puede mostrar cada N líneas y no numera títulos, notas al pie, pies de figura,
+  portadas ni bloques de título.
+
 ## Decisiones tomadas
 
 - `tocs` canónico, `margin` único con `facing-pages`, `report` con `plain`, `style` como tema común, `overflow:

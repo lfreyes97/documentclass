@@ -5,6 +5,7 @@
 #import "../components/fonts.typ" as fonts-mod
 #import "../components/microtype.typ" as microtype-mod
 #import "../components/i18n.typ"
+#import "../components/lines.typ"
 #import "../components/numbering.typ" as numbering-mod
 
 #import "../components/layout.typ"
@@ -70,6 +71,9 @@
   // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
   // true, false o un diccionario con spacing, tracking, hyphenation y glue
   microtype: true,
+  // Líneas numeradas para citar por página y línea o para revisar: false, true o un diccionario
+  // (ver components/lines.typ)
+  line-numbers: false,
   body,
 ) = {
   let style = themes.check(style)
@@ -90,6 +94,7 @@
   )
   show raw: set text(font: fonts.mono)
   show: microtype-mod.setup.with(microtype)
+  show: lines.setup.with(line-numbers)
 
   // Configuración de página base (márgenes para todo el documento, incluida la portada)
   set page(
@@ -112,7 +117,7 @@
   headings.facing-pages-state.update(facing-pages)
   if facing-pages { context headings.blank-verso() }
 
-  titlepage.render(
+  lines.off(titlepage.render(
     custom: custom-titlepage,
     title: title,
     subtitle: subtitle,
@@ -120,7 +125,7 @@
     date: date,
     publisher: publisher,
     logo: logo,
-  )
+  ))
 
   // Aplicar Layout (Headers, Footers, Párrafos)
   // Envuelve el resto del documento — márgenes ya están configurados arriba
