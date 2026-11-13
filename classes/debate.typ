@@ -11,6 +11,8 @@
 #import "../components/headings.typ"
 #import "../components/openings.typ"
 #import "../components/themes.typ"
+#import "../components/quotes.typ"
+#import "../components/environments.typ"
 #import "../components/pagestyle.typ"
 #import "../components/debates.typ" as debates
 
@@ -391,6 +393,8 @@
   // Estilo de los títulos: un tema o un diccionario (ver components/openings.typ). En debate, `section` es `=`,
   // `segment` es `#segment` y `subsection` es `===`
   heading-style: auto,
+  // Estilo de epígrafes, citas largas y versos: un tema o un diccionario (ver components/quotes.typ)
+  quote-style: auto,
   page-style: auto,
   fonts: (:),
   lang: "es",
@@ -416,6 +420,9 @@
   let speakers = check-speakers(speakers)
   debates.check-speakers(template, speakers)
   let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "debate")
+  quotes.current.update(quotes.resolve(themes.pick(quote-style, style, "classic")))
+  headings.facing-pages-state.update(facing-pages)
+  show: environments.setup
   // Por defecto la cabecera lleva los oradores de la página y el segmento vigente (ver components/pagestyle.typ)
   let page-style = themes.pick(page-style, style, "running-segment")
   speakers-state.update(speakers)

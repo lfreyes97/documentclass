@@ -14,6 +14,8 @@
 #import "../components/pagestyle.typ"
 #import "../components/margins.typ"
 #import "../components/themes.typ"
+#import "../components/quotes.typ"
+#import "../components/environments.typ"
 #import "../components/tocs/toc.typ" as tocs-mod
 
 #let margin-defaults = (
@@ -71,6 +73,8 @@
   style: auto,
   // Estilo de los títulos: un tema o un diccionario (ver components/openings.typ)
   heading-style: auto,
+  // Estilo de epígrafes, citas largas y versos: un tema o un diccionario (ver components/quotes.typ)
+  quote-style: auto,
   // Minitoc en la página de cada parte: false, true (sus capítulos, sin número) o
   // un diccionario con opciones de `tocs.partial`, p. ej. `(depth: 2, size: 1em)`
   minitoc: false,
@@ -105,6 +109,8 @@
   let style = themes.check(style)
   let page-style = themes.pick(page-style, style, "classic")
   let heading-style = themes.pick(heading-style, style, "classic")
+  quotes.current.update(quotes.resolve(themes.pick(quote-style, style, "classic")))
+  show: environments.setup
   // El tema también fija el estilo de los índices; un `tocs.setup` posterior lo sustituye
   show: body => if style != auto { tocs-mod.setup(style: style, body) } else { body }
   // Configuración base

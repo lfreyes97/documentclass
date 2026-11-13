@@ -4,80 +4,31 @@ Estado al 2026-11-13. Lo ya hecho está en `HECHO.md`.
 Meta: madurez del paquete antes de congelar la API. No hay libros cerrados, así que
 los cambios incompatibles salen baratos ahora.
 
-## Prioridad 1: plantillas de debates
+## Prioridad 1: `debate` (lo que queda)
 
-Hoy los debates (`Presup/bahnsen-debate/Bahnsen-DebateSproul.typ`, unas 2.000 líneas) usan `book` y todo se
-resuelve a mano. Lo que ese libro hace, y lo que le falta:
+La clase `debate`, el `quote-style`, el epígrafe global, la cita larga con comillas anidadas y los adornos están
+hechos (ver `HECHO.md`). Queda, sobre todo, lo que enseñe el uso al maquetar el libro de Bahnsen:
 
-- Los turnos son `*Sproul:*` escritos a mano: 120 etiquetas (Sproul 44, Bahnsen 38, Dewitt 16, el resto "Hombre
-  no identificado", "Miembro del público"…). Entre ellas hay dos que no son oradores (`*Sola Scriptura:*`,
-  `*Revelación mediata / inmediata:*`), así que nada distingue un turno de otra etiqueta en negrita. No hay
-  estilo ni orden común.
-- Las divisiones del debate (`= Presentaciones iniciales`, `= Período de preguntas`) son partes de `book`, con
-  página de parte y capítulos "CAPÍTULO N" que en un debate de 80 páginas sobran. Las reacciones del público van
-  como texto entre paréntesis.
-- Los datos del debate (rival, serie original, grabación, transcripción) viven en la portada de `coverbook`
-  (`bahnsen-cover`), no en la clase.
-
-Una clase `debate` con plantillas (formatos de debate: dos oradores con moderador, mesa redonda, entrevista) y,
-por dentro, estas piezas:
-
-- [x] **Diseño y fixture.** Extraer un fragmento del libro actual (30–50 turnos, con una interrupción, una
-      reacción del público y una pregunta) como demo y prueba, antes de escribir la clase.
-- [x] **Turnos como elemento.** `#turn[Sproul][...]` (o `#speaker`), con los oradores declarados en la clase:
-      `speakers: (bahnsen: (name:, short:, role:), ...)`. Estilo uniforme del nombre, turno que continúa tras una
-      interrupción sin repetir la etiqueta, y oradores no identificados o del público como casos propios.
-- [x] **Estructura del debate.** Segmentos con nombre (presentación, réplica, contrainterrogatorio, preguntas del
-      público, conclusión), cada uno con su orador y su tiempo, y encabezados ligeros: sin página de parte ni
-      apertura de capítulo (un `heading-style` propio). Hecho: `segment`, las plantillas `two-speakers`, `panel` e
-      `interview` y su validación. `heading-style` propio: la clase `debate` tiene el rol `segment` (entre `section` y `subsection`) en los tres
-      temas. `#segment()` sin tipo abre el siguiente de `program` (por defecto el de la
-      plantilla, con los oradores en el orden de `speakers`; los tiempos se dan en `program`).
-- [x] **Marcas de la transcripción.** Reacciones del público, `[inaudible]`, interrupciones, códigos de tiempo
-      opcionales (`#at("12:30")`) y notas del traductor distintas de las notas del editor.
-      Hecho: `crowd`, `inaudible`, `at` y `tnote`, con `marks:` para quitarlas o mostrar los tiempos; una
-      interrupción es un `turn` con `cont: true`, sin marca propia.
-- [x] **Datos del debate en la clase:** proposición o tema, oradores, moderador, lugar, fecha, título y serie
-      originales, y una portadilla "A frente a B". Depende del bloque común de título.
-      Hecho: `venue`, `original: (title:, series:, recording:, transcript:)`, el moderador (`moderator: true`) y
-      `titlepage: true` para la portadilla; la cabecera es propia de `debate` hasta que exista el bloque común.
-- [x] **Cabecera con el segmento actual o el orador:** `page-style` necesita `speaker` y `segment` en `ctx`.
-      Hecho: `ctx.segment`, `ctx.speaker` y `ctx.speakers` (los que hablan en la página) y la variante
-      `running-segment`, que es la de `debate` por defecto.
-- [x] **Líneas numeradas para citar** ("Bahnsen, p. 12, l. 4"): ya existe `line-numbers`; falta fijar cómo se
-      cita y que el número de línea sea estable.
-      Hecho: `turn(id:)` y `cite-turn("id")` dan «Bahnsen, Pág. 3, l. 16», calculado al compilar (la línea sale de
-      las marcas `<dc-line>` que deja `lines.setup(track: true)`, porque `counter(par.line)` siempre vale 0). La cita
-      impresa solo vale para una edición: cambiar papel, márgenes o fuente mueve las líneas.
-- [x] **Índice de oradores** y **glosario** (el libro actual ya termina con `= Glosario`, hoy a mano).
-      Hecho: `speakers-index()` (páginas por orador, con tramos) y `glossary(entradas)` con `gloss("clave")[…]` para
-      marcar los términos y sus páginas; orden alfabético sin tildes por defecto.
-      Saltos de página: `breaks` ("turn", "segment", "section", none; por plantilla, hoy "turn" en las tres) y
-      `start` en `heading-style`. En los segmentos de intercambio (introducción, preguntas, contrainterrogatorio, ronda, tema)
-      los turnos van de corrido; solo los discursos (apertura, réplica, conclusión) abren página.
+- [ ] **Documentar `debate` en el README:** plantillas (`two-speakers`, `panel`, `interview`), `speakers`, `turn`,
+      `segment` y `program`, marcas, `breaks`, `cite-turn`, índice de oradores y glosario, `cover`. Hoy el README
+      no la menciona, y `typst.toml` tampoco (descripción y palabras clave).
+- [ ] **Probar a fondo `debate`:** `facing-pages: true`, los temas `modern` y `elegant` más allá de la primera
+      página, y `tableofcontents` con esta clase (compila, pero no se ha mirado el resultado).
+- [ ] **Estilo de turno `elegant`** (el nombre en el margen, como un guion); hoy solo `classic` y `modern`.
+- [ ] **Ajustar `exchange-kinds` y `breaks` por plantilla** según el uso: ahora los turnos de introducción,
+      preguntas, contrainterrogatorio, ronda y tema van de corrido y los de apertura, réplica y conclusión abren
+      página. `closing` sigue el orden de `speakers`; en muchos debates se invierte (hay que dar `program`).
+- [ ] **Libro de Bahnsen:** decidir si la copia `Bahnsen-DebateSproul-debate.typ` (clase `debate`, 70 páginas)
+      reemplaza al original (`book`, 80). Su lomo quedó en `spine-width(64)`; el original decía 176, sin que se
+      sepa por qué. En `Iapocalipsis` el epígrafe de «Moloch…» sigue armado a mano y se puede pasar a `#epigraph`.
+- [ ] **`essay` y `epigraph-page`:** `essay` no fija el estado de `facing-pages`, así que la página propia del
+      epígrafe saltaría siempre a página impar.
+- [ ] **Remate de capítulo automático:** `ornament` se escribe a mano al final del capítulo; no hay clave en
+      `heading-style` que lo ponga solo.
 - [ ] **Texto paralelo** original y traducción en dos columnas (opcional; hay un proyecto `translation-harness`
       en `Proyectos`).
-- [ ] Diseñarla sobre el sistema común de temas (`style`), cabeceras, aperturas y el bloque común de título, no
-      como una copia de `book`.
-
-## Prioridad 2: citas, epígrafes y adornos
-
-Hoy hay `epigraph`, `blockquote` y `verse` (`components/environments.typ`), sin estilos ni integración con los
-temas, y el `part-ornament` es contenido suelto. Nada de esto sigue `style`.
-
-- [ ] **Estilos de cita con los temas** (`classic`, `modern`, `elegant`): un parámetro como `quote-style` o que
-      cuelguen de `style`, para `epigraph`, `blockquote` y `verse`, con el mismo mecanismo de preajuste y
-      diccionario que `heading-style`.
-- [ ] **Epígrafe como componente global**, en todas las clases: posición (apertura de capítulo, inicio de sección,
-      página propia del libro), formato de la atribución (— Autor, *Obra*, año), alineación con la columna en
-      `essay`, varios epígrafes seguidos. El de `essay` que hoy se arma a mano (bloque al 78 %, cursiva de
-      9.5 pt, atribución a la derecha) sería su `classic`.
-- [ ] **Cita larga** (`blockquote`): sangría, filete lateral, comillas, atribución con fuente; integrar con el
-      `quote` nativo de Typst (`show quote.where(block: true)`).
-- [ ] **Comillas anidadas** en español: la cita interna con “…” dentro de «…» sin escribirla a mano.
-- [ ] **Adornos:** separadores de sección (`#ornament()`: asterismo ⁂, florón ❦, filete con glifo central),
-      remate de capítulo, presets para `part-ornament`, y su relación con la clave `ornament` de `heading-style`.
-- [ ] Revisar cómo se llevan con las capitulares (`dropcap`, `ornate-dropcap`), que ya existen.
+- [ ] Pasar la cabecera propia de `debate` (título, oradores, portadilla) al **bloque común de título** cuando
+      exista (ya existe en las cuatro clases; falta pasar `debate`, ver «API»).
 
 ## API
 
@@ -91,6 +42,8 @@ La ronda de API está en `HECHO.md`. Queda:
 - [ ] **Título de `essay` con `notes: "footnote"`.** Sigue saliendo donde esté el `= …`: en el ensayo el título
       es su heading de nivel 1, no `title`. Decidir si `title` pone un bloque de título al principio, como en
       `article`; cambia cómo se escribe un ensayo, así que no se hizo sin decidirlo.
+- [ ] **Nombres genéricos de `debate` en la superficie pública:** `lib.typ` sigue exportando `at`, `turn`,
+      `segment`, `crowd` y `gloss`, que chocan con `import "lib.typ": *` (la exportación del resto ya es explícita).
 
 ## Revisión de `essay`
 
@@ -120,6 +73,9 @@ La ronda de API está en `HECHO.md`. Queda:
 - [ ] Fixtures con las fuentes que no incluye Typst (`dropcaps`, `fonts_roles` salen con fallback). Pide meter
       las fuentes (OFL) en el repositorio y compilar con `--font-path`, o una referencia que solo se compare en
       la máquina que las tiene.
+- [ ] **Pruebas de `debate`:** sus demos solo comprueban que compilen. Faltan aserciones sobre turnos, `program`,
+      `cite-turn` y el índice de oradores. Las referencias de `test/reference/` no se versionan, así que el CI no
+      compara texto ni posición de líneas de ningún documento.
 
 ## Clases y revisión pendiente
 

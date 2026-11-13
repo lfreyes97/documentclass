@@ -11,10 +11,11 @@
 // Partes del libro, como en LaTeX (`\frontmatter`…), y páginas especiales
 #import "components/matter.typ": abstract, appendix, backmatter, dedication, end-appendix, frontmatter, mainmatter
 #import "components/titlepage.typ": colophon, half-title
+#import "components/ornaments.typ": ornament
 #import "components/headings.typ": blank-page, part
 
 // Entornos, capitulares y marcas de revisión
-#import "components/environments.typ": blockquote, epigraph, verse
+#import "components/environments.typ": blockquote, epigraph, epigraph-page, epigraphs, verse
 #import "components/dropcap.typ": dropcap, ornate-dropcap, ornate-initial
 #import "components/debug.typ": verify, verify-list
 

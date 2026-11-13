@@ -9,6 +9,8 @@
 #import "../components/debug.typ" as debug-mod
 #import "../components/margins.typ"
 #import "../components/titlepage.typ" as titlepage-mod
+#import "../components/quotes.typ"
+#import "../components/environments.typ"
 
 /// Numeral arábigo volado para las notas al margen, continuo en todo el documento (el
 /// contador nunca se reinicia), para poder citarlas como «nota 42».
@@ -140,6 +142,9 @@
   // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
   // true, false o un diccionario con spacing, tracking, hyphenation y glue
   microtype: true,
+  // Estilo de epígrafes, citas largas y versos: un tema o un diccionario (ver components/quotes.typ)
+  // El epígrafe del ensayo: bloque al 78 %, texto justificado a la izquierda y la atribución algo mayor
+  quote-style: (epigraph: (width: 78%, text-align: start, justify: true, attribution-text: (size: 0.9em))),
   // Líneas numeradas para citar por página y línea o para revisar: false, true o un diccionario
   // (ver components/lines.typ)
   line-numbers: false,
@@ -160,6 +165,8 @@
   let _ = block(..section-block-style)
   let fonts = fonts-mod.resolve(fonts)
   fonts-mod.current.update(fonts)
+  quotes.current.update(quotes.resolve(quote-style))
+  show: environments.setup
   i18n.check(labels)
   i18n.overrides.update(labels)
   glosa.note-defaults.update((

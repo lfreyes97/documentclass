@@ -242,6 +242,8 @@ Small caps (`"elegant"` headings and running heads, and any `title-smallcaps: tr
 
 A section heading (`section` and below) is kept with the paragraph that follows it: it never stays alone at the foot of a page or column. The paragraph after it is not indented, as after a heading in LaTeX.
 
+`quote-style` sets how `epigraph`, `blockquote` and `verse` look in every class (`style` picks it too): `"classic"` (the epigraph in italic, flush right; the long quote indented on both sides; verse in italic), `"modern"` (flush left, the attribution in small grey capitals, a side rule on the long quote and the verse) and `"elegant"` (centred, in italic). A dictionary changes the theme by role (`epigraph`, `blockquote`, `verse`): `quote-style: (preset: "modern", epigraph: (align: center, width: 60%))`. `epigraph` takes `width`, `align` (where the block sits), `text-align`, `size`, `text`, `attribution-text`, `attribution-align`, `attribution-upper`, `above` and `below`; `blockquote` and `verse` take `indent`, `size`, `text`, `text-align`, `rule`, `rule-gap`, `above` and `below`. The arguments of one call (`#epigraph(width: 50%)[…]`, `#blockquote(indent: 3em)[…]`) replace the style there. The attribution of an epigraph is content or a dictionary built as «— Author, *Work* (year), note»: `#epigraph[…][(author: "Calvin", work: "Institutes", year: 1559)]`, with `article` (between «») instead of `work` for a paper or a poem and `note` for what follows (`trad. propia`). `blockquote` takes an `attribution` too (content or the same dictionary), shown under the quote according to `attribution-text`, `attribution-align` and `attribution-upper` of the style, and `marks: true` puts the language's quotation marks around it. `#quote(block: true, attribution: […])[…]` uses the same style, and an inline `#quote[…]` gets the language's marks and, inside it, the second-level ones: in Spanish, «a quote with “this one” inside», without typing them by hand (Typst alone gives «this one» again). `#epigraphs(([First.], [Author]), ([Second.], [Author]), gap: 1em)` sets several in a row without adding their spaces, and `#epigraph-page[…][…]` puts one alone on a page, centred, without folio or header (on an odd page with `facing-pages`). Unknown keys fail with the list of valid ones. `essay` takes `quote-style` too, without `style`.
+
 `page-style` sets the running header and the footer (LaTeX's fancyhdr). The presets are `"classic"`, `"plain"` (folio only), `"running-outer"` (folio at the outer edge beside the running title, folio at the foot of chapter openings), `"folio-outer"` (a small grey folio at the outer foot), `"modern"` and `"elegant"`; `classic`, `modern` and `elegant` are themes shared with `heading-style` and `tocs`, while `plain`, `folio-outer` and `running-outer` are variants that exist only in `page-style` (`demos/demo_pagestyle.typ` makes one PDF per name with `--input style=…`). `book` uses `"classic"` (the part on versos, the chapter on rectos, a grey rule, the folio centred in the footer; none of it on opening pages, blank pages or before the first part or chapter) and `"plain"` in `report` and `article`. A `book` without parts (`use-parts: false`) gets its running heads from the first chapter on: the chapter on rectos and, with no part, the book title on versos. It also takes a dictionary that changes the preset, or `none`:
 
 ```typst
@@ -257,7 +259,7 @@ A section heading (`section` and below) is kept with the paragraph that follows 
 
 `header` and `footer` each take `left`, `center`, `right` (content or `ctx => content`), `odd`/`even` for rectos and versos (used with `facing-pages: true`; otherwise every page is `odd`), `rule`, `text` and `when` (`ctx => bool`). Spaces you give replace the preset's; `rule`, `text` and `when` merge with them. `ctx` has `part`, `chapter`, `section` (the title in force on the page, like `\markboth`), `folio`, `page`, `title`, `author`, `started`, `opening`, `blank`, `numbered` and `matter`. Unknown keys fail with the list of valid ones.
 
-`logo`, `part-ornament` and `titlepage` take content, not file paths. Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
+`logo`, `part-ornament` and `titlepage` take content, not file paths (`part-ornament` also takes the name of an ornament, see [Ornaments](#ornaments)). Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
 
 ```typst
 #show: book.with(
@@ -266,6 +268,10 @@ A section heading (`section` and below) is kept with the paragraph that follows 
   titlepage: include "my-titlepage.typ",
 )
 ```
+
+### Ornaments
+
+`ornament` draws a separator with strokes and shapes, not font glyphs, so it does not depend on the body font having them: `#ornament("asterism")` (three asterisks in a triangle), `"fleuron"` (a four-petal flower), `"rule"` (a rule with a diamond in the middle), `"dots"` and `"diamond"`; any content works too, centred as is: `#ornament[❦]`. It takes `size` (1em), `fill` (the text colour), `width` (of the rule), `above` and `below`. Use it between sections or to close a chapter. The name of an ornament also works wherever an ornament is expected: `part-ornament: "fleuron"` and `heading-style: (chapter: (ornament: "rule"))`, without the spaces `ornament()` adds on its own. It does not interfere with drop caps.
 
 ### Drop caps
 
