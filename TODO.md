@@ -65,9 +65,11 @@ por dentro, estas piezas:
 Hoy hay `epigraph`, `blockquote` y `verse` (`components/environments.typ`), sin estilos ni integración con los
 temas, y el `part-ornament` es contenido suelto. Nada de esto sigue `style`.
 
-- [ ] **Estilos de cita con los temas** (`classic`, `modern`, `elegant`): un parámetro como `quote-style` o que
+- [x] **Estilos de cita con los temas** (`classic`, `modern`, `elegant`): un parámetro como `quote-style` o que
       cuelguen de `style`, para `epigraph`, `blockquote` y `verse`, con el mismo mecanismo de preajuste y
       diccionario que `heading-style`.
+      Hecho: `quote-style` (`components/quotes.typ`) en las cinco clases, con los tres roles y los tres temas. El
+      `classic` de `epigraph` conserva el aspecto de antes (texto a la derecha).
 - [ ] **Epígrafe como componente global**, en todas las clases: posición (apertura de capítulo, inicio de sección,
       página propia del libro), formato de la atribución (— Autor, *Obra*, año), alineación con la columna en
       `essay`, varios epígrafes seguidos. El de `essay` que hoy se arma a mano (bloque al 78 %, cursiva de

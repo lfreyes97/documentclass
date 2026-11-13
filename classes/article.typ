@@ -10,6 +10,7 @@
 #import "../components/headings.typ"
 #import "../components/openings.typ"
 #import "../components/themes.typ"
+#import "../components/quotes.typ"
 #import "../components/tocs/toc.typ" as tocs-mod
 #import "../components/pagestyle.typ"
 
@@ -61,6 +62,8 @@
   style: auto,
   // Estilo de los títulos: un tema o un diccionario (ver components/openings.typ)
   heading-style: auto,
+  // Estilo de epígrafes, citas largas y versos: un tema o un diccionario (ver components/quotes.typ)
+  quote-style: auto,
   // Cabeceras y pies: un tema o variante ("classic", "plain"…), none (los de Typst) o un
   // diccionario con header y footer (ver components/pagestyle.typ)
   page-style: auto,
@@ -85,6 +88,7 @@
 ) = {
   let style = themes.check(style)
   let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "article")
+  quotes.current.update(quotes.resolve(themes.pick(quote-style, style, "classic")))
   let page-style = themes.pick(page-style, style, none)
   // El tema también fija el estilo de los índices; un `tocs.setup` posterior lo sustituye
   show: body => if style != auto { tocs-mod.setup(style: style, body) } else { body }

@@ -8,6 +8,7 @@
 #import "../components/lines.typ"
 #import "../components/debug.typ" as debug-mod
 #import "../components/margins.typ"
+#import "../components/quotes.typ"
 
 /// Numeral arábigo volado para las notas al margen, continuo en todo el documento (el
 /// contador nunca se reinicia), para poder citarlas como «nota 42».
@@ -100,6 +101,8 @@
   // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
   // true, false o un diccionario con spacing, tracking, hyphenation y glue
   microtype: true,
+  // Estilo de epígrafes, citas largas y versos: un tema o un diccionario (ver components/quotes.typ)
+  quote-style: "classic",
   // Líneas numeradas para citar por página y línea o para revisar: false, true o un diccionario
   // (ver components/lines.typ)
   line-numbers: false,
@@ -110,6 +113,7 @@
 ) = {
   let fonts = fonts-mod.resolve(fonts)
   fonts-mod.current.update(fonts)
+  quotes.current.update(quotes.resolve(quote-style))
   i18n.check(labels)
   i18n.overrides.update(labels)
   glosa.note-defaults.update((
