@@ -137,5 +137,6 @@
 }
 
 // Segmentos de intercambio: con `breaks: "turn"` sus turnos, que suelen ser cortos, van de corrido; solo los
-// discursos (introduction, opening, rebuttal, closing) abren página
-#let exchange-kinds = ("cross", "questions", "round", "topic")
+// discursos (opening, rebuttal, closing) abren página. La introducción es una sección propia del formato, a menudo
+// una charla corta entre el moderador y los oradores, y también va de corrido
+#let exchange-kinds = ("introduction", "cross", "questions", "round", "topic")

@@ -113,7 +113,7 @@
     if not cont { label-of(style, short, role) }
   }
   // Con `breaks: "turn"`, cada turno abre página, salvo el primero tras un título, el que continúa a otro y los de un
-  // segmento de intercambio (preguntas, contrainterrogatorio, ronda, tema)
+  // segmento de intercambio (introducción, preguntas, contrainterrogatorio, ronda, tema)
   let page-break = context {
     if not cont and breaks-state.get() == "turn" {
       let before = selector(heading).before(here(), inclusive: false)

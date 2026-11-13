@@ -53,8 +53,8 @@ por dentro, estas piezas:
       Hecho: `speakers-index()` (páginas por orador, con tramos) y `glossary(entradas)` con `gloss("clave")[…]` para
       marcar los términos y sus páginas; orden alfabético sin tildes por defecto.
       Saltos de página: `breaks` ("turn", "segment", "section", none; por plantilla, hoy "turn" en las tres) y
-      `start` en `heading-style`. En los segmentos de intercambio (preguntas, contrainterrogatorio, ronda, tema) los
-      turnos van de corrido; solo los discursos abren página.
+      `start` en `heading-style`. En los segmentos de intercambio (introducción, preguntas, contrainterrogatorio, ronda, tema)
+      los turnos van de corrido; solo los discursos (apertura, réplica, conclusión) abren página.
 - [ ] **Texto paralelo** original y traducción en dos columnas (opcional; hay un proyecto `translation-harness`
       en `Proyectos`).
 - [ ] Diseñarla sobre el sistema común de temas (`style`), cabeceras, aperturas y el bloque común de título, no
