@@ -1,6 +1,6 @@
 // Clase debate — transcripción de un debate, entrevista o mesa redonda.
 // Los turnos son `#turn("clave")[…]` y los oradores se declaran en la clase (`speakers`).
-// Los segmentos (`#segment`) son títulos de nivel 2, más ligeros que `=`; los títulos (`=`, `==`) siguen el preajuste de `article` hasta que haya segmentos propios.
+// Títulos: `=` es `section`, `#segment` (nivel 2) es `segment` y `===` es `subsection` en `heading-style`.
 
 #import "../components/i18n.typ"
 #import "../components/lines.typ"
@@ -135,6 +135,7 @@
   let moderators = speakers.values().filter(s => s.moderator).map(s => s.name)
   let size = if titlepage { 1.3 } else { 1 }
   let content = align(center)[
+    #set par(justify: false)
     #text(size: 18pt * size, weight: "bold", hyphenate: false)[#title]
     #if subtitle != none { v(0.4em); text(size: 11pt * size, style: "italic")[#subtitle] }
     #if debaters.len() > 0 {
@@ -322,6 +323,8 @@
   margin: auto,
   facing-pages: false,
   style: auto,
+  // Estilo de los títulos: un tema o un diccionario (ver components/openings.typ). En debate, `section` es `=`,
+  // `segment` es `#segment` y `subsection` es `===`
   heading-style: auto,
   page-style: auto,
   fonts: (:),
@@ -347,7 +350,7 @@
   }
   let speakers = check-speakers(speakers)
   debates.check-speakers(template, speakers)
-  let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "article")
+  let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "debate")
   // Por defecto la cabecera lleva los oradores de la página y el segmento vigente (ver components/pagestyle.typ)
   let page-style = themes.pick(page-style, style, "running-segment")
   speakers-state.update(speakers)
@@ -387,14 +390,18 @@
   set heading(numbering: none)
   show heading: set heading(supplement: i18n.term("section"))
   show heading: set text(size: font-size)
-  show heading.where(level: 1): set text(font: fonts.h1, weight: "bold", hyphenate: true)
-  show heading.where(level: 2): set text(font: fonts.h2, weight: "bold", hyphenate: true)
+  show heading.where(level: 1): set text(font: fonts.h1, hyphenate: true)
+  show heading.where(level: 2): set text(font: fonts.h2, hyphenate: true)
+  show heading.where(level: 3): set text(font: fonts.h3, hyphenate: true)
   show heading.where(level: 1): it => context {
     headings.run-heading(it, openings.run-leaf(heading-style, "section"), fonts.h1)
   }
   // Los segmentos (nivel 2) van pegados al turno que sigue: `run-heading` no deja un bloque
   show heading.where(level: 2): it => context {
-    block(sticky: true, headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h2, in-block: true))
+    block(sticky: true, headings.run-heading(it, openings.run-leaf(heading-style, "segment"), fonts.h2, in-block: true))
+  }
+  show heading.where(level: 3): it => context {
+    headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h3)
   }
 
   show footnote.entry: it => {

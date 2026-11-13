@@ -30,8 +30,8 @@ por dentro, estas piezas:
 - [~] **Estructura del debate.** Segmentos con nombre (presentación, réplica, contrainterrogatorio, preguntas del
       público, conclusión), cada uno con su orador y su tiempo, y encabezados ligeros: sin página de parte ni
       apertura de capítulo (un `heading-style` propio). Hecho: `segment`, las plantillas `two-speakers`, `panel` e
-      `interview` y su validación. Falta el `heading-style` propio (hoy son títulos de nivel 2 con el preajuste de
-      `article`) y un segmento que se abra solo con el orador y el tiempo de la plantilla.
+      `interview` y su validación. `heading-style` propio: la clase `debate` tiene el rol `segment` (entre `section` y `subsection`) en los tres
+      temas. Falta un segmento que se abra solo con el orador y el tiempo de la plantilla.
 - [x] **Marcas de la transcripción.** Reacciones del público, `[inaudible]`, interrupciones, códigos de tiempo
       opcionales (`#at("12:30")`) y notas del traductor distintas de las notas del editor.
       Hecho: `crowd`, `inaudible`, `at` y `tnote`, con `marks:` para quitarlas o mostrar los tiempos; una

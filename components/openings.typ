@@ -11,7 +11,8 @@
 //
 // Cada rol (part, chapter, section, subsection, subsubsection, paragraph) es un diccionario.
 // El rol de cada nivel depende de la clase: en book `part` es el nivel 1 y `chapter` el 2. `h1`…`h6`
-// son alias del rol que tiene ese nivel en la clase.
+// son alias del rol que tiene ese nivel en la clase. En debate el nivel 1 es `section` y el 2 es
+// `segment`, el título ligero de cada segmento del debate (entre `section` y `subsection`).
 //
 // Aperturas (`part`, `chapter`):
 //   start         "odd" (página impar), "page" (página nueva), "facing" (impar solo con
@@ -220,6 +221,15 @@
   out
 }
 
+// Debate: la sección (`=`) y, más ligero, el segmento del debate; el resto, como en book
+#let for-debate(theme, section, segment) = (
+  section: merge(theme.section, section),
+  segment: segment,
+  subsection: theme.subsection,
+  subsubsection: theme.subsubsection,
+  paragraph: theme.paragraph,
+)
+
 // Los preajustes de report y article reutilizan los de book con los niveles que les tocan: el
 // capítulo de report abre en página nueva, y en article la sección es el primer nivel y sobresale
 // como lo hacía el capítulo
@@ -264,22 +274,41 @@
 )
 
 #let presets = (
-  classic: (book: classic + classic-run, report: classic-report, article: classic-article),
+  classic: (
+    book: classic + classic-run,
+    report: classic-report,
+    article: classic-article,
+    debate: for-debate(
+      classic-run,
+      (above: 2em, below: 1em, title-text: (size: 16 / 11 * 1em, weight: "bold"), title-smallcaps: false),
+      (above: 1.6em, below: 0.6em, title-text: (size: 1.1em, weight: "bold", tracking: 0pt)),
+    ),
+  ),
   modern: (
     book: modern + modern-run,
     report: for-report(modern + modern-run),
     article: for-article(modern + modern-run, 1.45em),
+    debate: for-debate(
+      modern-run,
+      (above: 2em, below: 1em, title-text: (size: 1.45em)),
+      (above: 1.6em, below: 0.6em, title-text: (size: 0.8em, weight: 600, tracking: 0.14em, fill: soft), title-upper: true),
+    ),
   ),
   elegant: (
     book: elegant + elegant-run,
     report: for-report(elegant + elegant-run),
     article: for-article(elegant + elegant-run, 1.45em),
+    debate: for-debate(
+      elegant-run,
+      (above: 2em, below: 1em, title-text: (size: 1.45em)),
+      (above: 1.6em, below: 0.7em, align: center, title-text: (size: 1.05em, weight: 400, tracking: 0.08em), title-smallcaps: true),
+    ),
   ),
 )
 #let names = presets.keys()
 
 #let openings = ("part", "chapter")
-#let runs = ("section", "subsection", "subsubsection", "paragraph")
+#let runs = ("section", "segment", "subsection", "subsubsection", "paragraph")
 #let roles = openings + runs
 
 // Nivel de cada rol según la clase
@@ -287,6 +316,7 @@
   book: (part: 1, chapter: 2, section: 3, subsection: 4, subsubsection: 5, paragraph: 6),
   report: (chapter: 1, section: 2, subsection: 3, subsubsection: 4, paragraph: 5),
   article: (section: 1, subsection: 2, subsubsection: 3, paragraph: 4),
+  debate: (section: 1, segment: 2, subsection: 3, subsubsection: 4, paragraph: 5),
 )
 
 #let check-role(name, spec) = {

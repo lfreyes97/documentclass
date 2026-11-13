@@ -6,7 +6,8 @@
 #assert.eq(names, ("classic", "modern", "elegant"))
 #for name in names {
   let style = resolve(name)
-  assert.eq(style.keys(), roles + ("scale",))
+  // `segment` solo existe en debate
+  assert.eq(style.keys(), roles.filter(r => r != "segment") + ("scale",))
   // Cada variante se resuelve con todas las claves
   for (role, variants) in (part: (none, "front", "back"), chapter: (none, "front", "back", "appendix")) {
     for variant in variants { assert(leaf(style, role, variant).keys().contains("start"), message: name) }
@@ -42,7 +43,11 @@
   assert.eq(leaf(report, "chapter", none).start, "page")
   let article = resolve(name, class: "article")
   assert.eq(article.keys(), ("section", "subsection", "subsubsection", "paragraph", "scale"))
+  // debate: `=` es la sección y el segmento va entre la sección y la subsección
+  let debate = resolve(name, class: "debate")
+  assert.eq(debate.keys(), ("section", "segment", "subsection", "subsubsection", "paragraph", "scale"))
 }
+#assert.eq(run-leaf(resolve((h2: (above: 7em)), class: "debate"), "segment").above, 7em)
 #assert.eq(run-leaf(resolve((h1: (above: 7em)), class: "article"), "section").above, 7em)
 #assert.eq(leaf(resolve((h1: (above: 7em)), class: "report"), "chapter", none).above, 7em)
 // Los tamaños de classic son los de un cuerpo de 11 pt: 24 pt de capítulo, 16 pt de sección
