@@ -83,10 +83,17 @@
   // Ayudas de depuración: false, true o un diccionario con `verify`, `lines` y `frame` (ver
   // components/debug.typ). Con `verify` se ven las marcas `#verify[…]`, que si no son invisibles
   debug: false,
+  // Imprenta: none o un número (2, 4, 8, 16…). Añade páginas en blanco al final, antes de la contraportada,
+  // hasta que el total de páginas del PDF, cubiertas incluidas, sea múltiplo de él
+  page-multiple: none,
   body,
 ) = {
   titlepage-mod.check-old(custom-titlepage, "book")
   covers.check-old(back-cover, cover-data, cover-options)
+  assert(
+    page-multiple == none or (type(page-multiple) == int and page-multiple > 0),
+    message: "book: page-multiple debe ser none o un número positivo, p. ej. `page-multiple: 4`",
+  )
   assert(
     type(minitoc) in (bool, dictionary) or minitoc == none,
     message: "book: minitoc debe ser true, false o un diccionario de opciones de `tocs.partial`",
@@ -189,5 +196,17 @@
   headings.use-parts-state.update(use-parts)
 
   body
+  // Páginas en blanco hasta un total múltiplo de `page-multiple`, antes de la contraportada. El total sale
+  // de una marca al final del documento, en su última página, menos los blancos que se añadieron en la
+  // pasada anterior: así no depende de ellos y la cuenta converge
+  if page-multiple != none {
+    context {
+      let added = query(<dc-pad-page>).len()
+      let total = query(<dc-end>).last().location().page() - added
+      let missing = calc.rem(page-multiple - calc.rem(total, page-multiple), page-multiple)
+      for _ in range(missing) [#metadata(none)<dc-pad-page>#headings.blank-page()]
+    }
+  }
   back-cover
+  if page-multiple != none [#metadata(none)<dc-end>]
 }

@@ -54,6 +54,7 @@ REFERENCED = {
 VARIANTS = {
     "test/orphan_headings.typ": [("class", "article"), ("class", "report")],
     "test/essay_overflow.typ": [("overflow", "none")],
+    "test/page_multiple.typ": [("multiple", "16"), ("back", "no")],
     "test/titlepages.typ": [("class", "book"), ("class", "report"), ("class", "article"), ("titlepage", "none")],
 }
 
@@ -295,6 +296,17 @@ def check_footnote_refs(name: str, pages: list[str]) -> None:
         fail(name, f"la remisión a la nota debía ser «nota 2»: «{found.group(0) if found else '?'}»")
 
 
+def check_page_multiple(name: str, pages: list[str]) -> None:
+    """`page-multiple: 4`: el total es múltiplo de 4, la contraportada va la última y lo añadido, en blanco."""
+    if len(pages) % 4:
+        fail(name, f"tiene {len(pages)} páginas, que no es múltiplo de 4")
+    if "CONTRAPORTADA" not in pages[-1]:
+        fail(name, "la contraportada no es la última página")
+    body_end = max(n for n, page in enumerate(pages[:-1]) if lines_of(page))
+    if body_end == len(pages) - 2:
+        fail(name, "no se añadió ninguna página en blanco (la prueba debía necesitarlas)")
+
+
 def check_no_date(name: str, pages: list[str]) -> None:
     """Un ensayo sin `date` no lleva fecha en la cabecera: ningún año en las primeras líneas."""
     for n, page in enumerate(pages, 1):
@@ -402,6 +414,8 @@ def main() -> int:
                 check_covers(rel, pages)
             if source.name == "essay_footnotes.typ":
                 check_footnote_refs(rel, pages)
+            if source.name == "page_multiple.typ":
+                check_page_multiple(rel, pages)
             if source.name == "titlepages.typ":
                 check_titlepage(rel, pages)
             if source.name == "essay_default.typ":

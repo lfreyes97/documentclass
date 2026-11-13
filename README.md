@@ -209,7 +209,7 @@ All classes accept the following common parameters:
 Every option that takes a dictionary (`fonts`, `labels`, `microtype`, `margin`, `page-style`, `heading-style`, `line-numbers`, `debug`, `cover`, `minitoc`, `note-columns`) fails on an unknown key with a message that lists the valid ones, and an option that was renamed fails with a message that gives its new form.
 
 ### Specific Parameters
-- **Book**: `part-ornament`, `logo`, `use-parts`, `cover` (see [Covers](#covers)), and `minitoc` (`true`, or a dictionary of `tocs.partial` options; see [Tables of contents](#tables-of-contents-tocs)).
+- **Book**: `part-ornament`, `logo`, `use-parts`, `page-multiple` (for the printer: blank pages before the back cover until the PDF's page count, covers included, is a multiple of it, e.g. `page-multiple: 4`; they carry no header or folio), `cover` (see [Covers](#covers)), and `minitoc` (`true`, or a dictionary of `tocs.partial` options; see [Tables of contents](#tables-of-contents-tocs)).
 - **Report**: `abstract`, `abstract-title`, `logo`.
 - **Article**: `cols` (column count), `abstract`, `abstract-title`.
 - **Essay**: see [Essay Class](#essay-class).
