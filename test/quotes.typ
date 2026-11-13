@@ -9,6 +9,7 @@
 }
 #assert.eq(resolve("classic").epigraph.align, right)
 #assert.eq(resolve("elegant").epigraph.align, center)
+#assert.eq(resolve("elegant").blockquote.attribution-align, center)
 #assert.eq(resolve("modern").blockquote.rule, 1.5pt + luma(45%))
 // Un cambio suelto va sobre el tema, y `text` se combina con el del tema en lugar de reemplazarlo
 #assert.eq(resolve((preset: "elegant", epigraph: (width: 80%))).epigraph.width, 80%)
@@ -19,7 +20,7 @@
 #assert.eq(format-attribution("Lao Tzu"), "Lao Tzu")
 #assert.eq(format-attribution((author: "Bach")), "Bach")
 
-#show: article.with(title: "Citas", paper: "a5", style: "modern", quote-style: (epigraph: (align: center)))
+#show: article.with(title: "Citas", paper: "a5", lang: "es", quote-style: (preset: "modern", epigraph: (align: center)))
 #epigraph[Soli Deo gloria.][J. S. Bach]
 #blockquote[#lorem(30)]
 #verse[Una línea del poema \ y otra línea.]
@@ -34,3 +35,11 @@ Un párrafo tras los dos epígrafes.
 #epigraph-page[Soli Deo gloria.][J. S. Bach]
 
 Texto tras la página del epígrafe.
+
+// `quote` nativo: en línea con comillas anidadas, en bloque con el estilo de `blockquote` y su atribución
+Dice #quote[la cita con "otra" dentro] y sigue, y #quote(attribution: [Calvino])[otra].
+
+#quote(block: true, attribution: [Calvino, _Institución_ (1559)])[#lorem(25)]
+
+// `blockquote` admite además el diccionario de `epigraph`
+#blockquote(attribution: (author: "Calvino", work: "Institución", year: 1559))[#lorem(12)]

@@ -14,6 +14,7 @@
 #import "../components/openings.typ"
 #import "../components/themes.typ"
 #import "../components/quotes.typ"
+#import "../components/environments.typ"
 #import "../components/tocs/toc.typ" as tocs-mod
 #import "../components/pagestyle.typ"
 
@@ -72,6 +73,7 @@
   let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "report")
   quotes.current.update(quotes.resolve(themes.pick(quote-style, style, "classic")))
   headings.facing-pages-state.update(facing-pages)
+  show: environments.setup
   let page-style = themes.pick(page-style, style, "plain")
   // El tema también fija el estilo de los índices; un `tocs.setup` posterior lo sustituye
   show: body => if style != auto { tocs-mod.setup(style: style, body) } else { body }

@@ -89,11 +89,12 @@
 }
 
 // Cuerpo de una cita larga o un verso: con filete lateral si el estilo lo pide. La cita larga se sangra a los dos
-// lados; el verso, solo a la izquierda
-#let indented(style, indent, body, both: true) = {
+// lados; el verso, solo a la izquierda. `footer` (la atribución) va bajo el cuerpo, sin la alineación del texto
+#let indented(style, indent, body, both: true, footer: none) = {
   let content = {
     set text(..(size: style.size) + style.text)
     align(style.text-align, body)
+    footer
   }
   v(style.above)
   pad(left: indent, right: if style.rule == none and both { indent } else { 0pt }, if style.rule == none { content } else {
@@ -103,16 +104,34 @@
 }
 
 /// Cita en bloque — texto indentado para citas largas.
-/// Equivalente a `\begin{quote}` o `\begin{quotation}` de LaTeX.
+/// Equivalente a `\begin{quote}` o `\begin{quotation}` de LaTeX. También se usa para `#quote(block: true)`.
 ///
 /// - body: Contenido de la cita
+/// - attribution: La fuente: contenido, o un diccionario como el de `epigraph` (`author`, `work`, `article`,
+///   `year`, `note`); va bajo la cita según `attribution-*` del estilo
 /// - indent: Indentación lateral
 /// - size: Tamaño de fuente relativo
-#let blockquote(body, indent: auto, size: auto) = context {
+#let blockquote(body, attribution: none, indent: auto, size: auto) = context {
   let style = quotes.current.get().blockquote
   if size != auto { style.insert("size", size) }
+  let attribution = format-attribution(attribution)
+  // Con comillas, las del idioma y, dentro, las de segundo nivel
+  let body = if style.marks {
+    let marks = quotes.marks.at(text.lang, default: quotes.marks.en)
+    [#marks.outer.first()#{
+      set smartquote(quotes: (double: marks.inner, single: marks.third))
+      body
+    }#marks.outer.last()]
+  } else { body }
+  let footer = if attribution != none {
+    v(0.3em)
+    align(style.attribution-align, {
+      set text(..style.attribution-text)
+      [— #if style.attribution-upper { upper(attribution) } else { attribution }]
+    })
+  }
   set par(leading: 0.6em)
-  indented(style, if indent == auto { style.indent } else { indent }, body)
+  indented(style, if indent == auto { style.indent } else { indent }, body, footer: footer)
 }
 
 /// Verso — entorno para poesía con interlineado especial.
@@ -129,4 +148,11 @@
   if style != auto { look.text += (style: style) }
   set par(leading: 0.7em, justify: false, first-line-indent: 0pt)
   indented(look, if indent == auto { look.indent } else { indent }, body, both: false)
+}
+
+// Las citas de la clase: en línea con comillas anidadas y en bloque con el estilo de `blockquote`
+#let setup(body) = {
+  show quote.where(block: false): quotes.inline-quote
+  show quote.where(block: true): it => blockquote(it.body, attribution: it.attribution)
+  body
 }

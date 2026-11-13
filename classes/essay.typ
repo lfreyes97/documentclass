@@ -9,6 +9,7 @@
 #import "../components/debug.typ" as debug-mod
 #import "../components/margins.typ"
 #import "../components/quotes.typ"
+#import "../components/environments.typ"
 
 /// Numeral arábigo volado para las notas al margen, continuo en todo el documento (el
 /// contador nunca se reinicia), para poder citarlas como «nota 42».
@@ -115,6 +116,7 @@
   let fonts = fonts-mod.resolve(fonts)
   fonts-mod.current.update(fonts)
   quotes.current.update(quotes.resolve(quote-style))
+  show: environments.setup
   i18n.check(labels)
   i18n.overrides.update(labels)
   glosa.note-defaults.update((

@@ -77,9 +77,11 @@ temas, y el `part-ornament` es contenido suelto. Nada de esto sigue `style`.
       Hecho: atribución estructurada (`author`, `work`, `article`, `year`, `note`), `epigraphs` (varios seguidos),
       `epigraph-page` y el epígrafe de `essay` como su estilo por defecto (78 %, justificado, 9.5 pt). La posición
       (apertura de capítulo, sección) la da dónde se escribe; no hay parámetro.
-- [ ] **Cita larga** (`blockquote`): sangría, filete lateral, comillas, atribución con fuente; integrar con el
+- [x] **Cita larga** (`blockquote`): sangría, filete lateral, comillas, atribución con fuente; integrar con el
       `quote` nativo de Typst (`show quote.where(block: true)`).
-- [ ] **Comillas anidadas** en español: la cita interna con “…” dentro de «…» sin escribirla a mano.
+      Hecho: `blockquote(attribution:)` (contenido o diccionario), `marks` y `quote(block: true)` con su estilo.
+- [x] **Comillas anidadas** en español: la cita interna con “…” dentro de «…» sin escribirla a mano.
+      Hecho: `quote` en línea con las comillas del idioma y las de segundo nivel dentro (es, en, pt, fr, de, it).
 - [ ] **Adornos:** separadores de sección (`#ornament()`: asterismo ⁂, florón ❦, filete con glifo central),
       remate de capítulo, presets para `part-ornament`, y su relación con la clave `ornament` de `heading-style`.
 - [ ] Revisar cómo se llevan con las capitulares (`dropcap`, `ornate-dropcap`), que ya existen.
