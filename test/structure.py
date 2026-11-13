@@ -77,6 +77,8 @@ EXPECTED_ERRORS = [
     ("essay.with(note-columns: (middle: (:)))", "Claves válidas: inner, outer"),
     ("essay.with(outer: (width: 40mm))", "note-columns: (outer: …)"),
     ("essay.with(section-block-style: (abov: 1em))", "unexpected argument"),
+    ('article.with(debug: (verify: "error"))\n#verify[revisar la cifra]', "quedan 1 marcas verify sin resolver (pág. 1: revisar la cifra)"),
+    ('article.with(debug: (verify: "si"))', 'o "error"'),
 ]
 
 # La capitular es más alta que su línea y se solapa con ella por diseño

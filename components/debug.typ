@@ -6,7 +6,8 @@
 //   debug: (verify: true, lines: false)  las que indiques; las que no, apagadas
 //
 // Claves:
-//   verify   Resalta las marcas `verify[…]`, que si no son invisibles
+//   verify   Resalta las marcas `verify[…]`, que si no son invisibles. "error": además, la compilación
+//            falla si queda alguna, con su página (para la versión final)
 //   lines    Numera las líneas del cuerpo (como `line-numbers: true`)
 //   frame    Dibuja los límites de márgenes y columnas (`essay`)
 //
@@ -30,17 +31,30 @@
   if type(options) == dictionary {
     for (key, value) in options {
       assert(key in keys, message: "debug: clave desconocida «" + key + "». Claves válidas: " + keys.join(", "))
-      assert(type(value) == bool, message: "debug: «" + key + "» debe ser true o false")
+      assert(
+        type(value) == bool or (key == "verify" and value == "error"),
+        message: "debug: «" + key + "» debe ser true o false" + if key == "verify" { " o \"error\"" } else { "" },
+      )
       out.insert(key, value)
     }
   }
   out
 }
 
-// Fija las ayudas para el documento. `options` ya resuelto con `resolve`
+// Fija las ayudas para el documento. `options` ya resuelto con `resolve`. Con `verify: "error"`, al final
+// del documento falla si queda alguna marca `verify`
 #let setup(options, body) = {
   state-debug.update(options)
   body
+  if options.verify == "error" {
+    context {
+      let items = query(<dc-verify>)
+      if items.len() > 0 {
+        let where = items.map(it => "pág. " + str(it.location().page()) + ": " + if it.value.text == "" { "(sin nota)" } else { it.value.text })
+        panic("debug: quedan " + str(items.len()) + " marcas verify sin resolver (" + where.join("; ") + ")")
+      }
+    }
+  }
 }
 
 // El texto de un contenido, para el dato consultable
@@ -57,7 +71,7 @@
   // La página no se guarda en el valor: dentro de una nota al margen movida por `carry`, `here()` cambia entre
   // pasadas y el documento no converge. La da `item.location().page()`
   [#metadata((text: plain(body), kind: kind))<dc-verify>]
-  if state-debug.get().verify {
+  if state-debug.get().verify != false {
     // La marca no deja hueco en el texto final; en depuración se separa de la palabra anterior
     h(0.3em, weak: true)
     highlight(fill: rgb("#ffe58a"), extent: 1pt, [#text(size: 0.8em, weight: "bold", kind)~#body])
@@ -66,7 +80,7 @@
 
 /// Lista las marcas `verify` del documento con su página (solo con `debug: (verify: true)`)
 #let verify-list(title: [Pendientes de verificar]) = context {
-  if not state-debug.get().verify { return }
+  if state-debug.get().verify == false { return }
   let items = query(<dc-verify>)
   block(breakable: false)[
     #set par.line(numbering: none)
