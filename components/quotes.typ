@@ -5,7 +5,7 @@
 //   quote-style: (preset: "modern", verse: (rule: none))
 //
 // Tres roles, cada uno un diccionario:
-//   epigraph    width, align (el bloque en la página), text-align (del texto), size, text, attribution-text,
+//   epigraph    width, align (el bloque en la página), text-align (del texto), justify, size, text, attribution-text,
 //               attribution-align, attribution-upper, above, below
 //   blockquote  indent, size, text, text-align, rule, rule-gap, above, below
 //   verse       indent, size, text, text-align, rule, rule-gap, above, below
@@ -16,7 +16,7 @@
 
 #let soft = luma(45%)
 
-#let epigraph-keys = ("width", "align", "text-align", "size", "text", "attribution-text", "attribution-align", "attribution-upper", "above", "below")
+#let epigraph-keys = ("width", "align", "text-align", "justify", "size", "text", "attribution-text", "attribution-align", "attribution-upper", "above", "below")
 #let block-keys = ("indent", "size", "text", "text-align", "rule", "rule-gap", "above", "below")
 #let roles = (epigraph: epigraph-keys, blockquote: block-keys, verse: block-keys)
 #let text-keys = ("text", "attribution-text")
@@ -27,6 +27,7 @@
     width: 70%,
     align: right,
     text-align: start,
+    justify: false,
     size: 0.95em,
     text: (:),
     attribution-text: (style: "normal", size: 0.85em),

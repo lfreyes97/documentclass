@@ -8,7 +8,7 @@
 #import "components/glosa/glosa.typ": note, notefigure, wideblock
 #import "components/tocs/tocs.typ"
 #import "components/dropcap.typ" as dropcap-mod
-#import "components/environments.typ": blockquote, epigraph, verse
+#import "components/environments.typ": blockquote, epigraph, epigraph-page, epigraphs, verse
 #import "components/titlepage.typ": colophon, half-title
 #import "components/headings.typ": blank-page, part
 #import "components/debug.typ": verify, verify-list

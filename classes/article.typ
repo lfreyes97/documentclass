@@ -89,6 +89,7 @@
   let style = themes.check(style)
   let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "article")
   quotes.current.update(quotes.resolve(themes.pick(quote-style, style, "classic")))
+  headings.facing-pages-state.update(facing-pages)
   let page-style = themes.pick(page-style, style, none)
   // El tema también fija el estilo de los índices; un `tocs.setup` posterior lo sustituye
   show: body => if style != auto { tocs-mod.setup(style: style, body) } else { body }

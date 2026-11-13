@@ -70,10 +70,13 @@ temas, y el `part-ornament` es contenido suelto. Nada de esto sigue `style`.
       diccionario que `heading-style`.
       Hecho: `quote-style` (`components/quotes.typ`) en las cinco clases, con los tres roles y los tres temas. El
       `classic` de `epigraph` conserva el aspecto de antes (texto a la derecha).
-- [ ] **Epígrafe como componente global**, en todas las clases: posición (apertura de capítulo, inicio de sección,
+- [x] **Epígrafe como componente global**, en todas las clases: posición (apertura de capítulo, inicio de sección,
       página propia del libro), formato de la atribución (— Autor, *Obra*, año), alineación con la columna en
       `essay`, varios epígrafes seguidos. El de `essay` que hoy se arma a mano (bloque al 78 %, cursiva de
       9.5 pt, atribución a la derecha) sería su `classic`.
+      Hecho: atribución estructurada (`author`, `work`, `article`, `year`, `note`), `epigraphs` (varios seguidos),
+      `epigraph-page` y el epígrafe de `essay` como su estilo por defecto (78 %, justificado, 9.5 pt). La posición
+      (apertura de capítulo, sección) la da dónde se escribe; no hay parámetro.
 - [ ] **Cita larga** (`blockquote`): sangría, filete lateral, comillas, atribución con fuente; integrar con el
       `quote` nativo de Typst (`show quote.where(block: true)`).
 - [ ] **Comillas anidadas** en español: la cita interna con “…” dentro de «…» sin escribirla a mano.
