@@ -25,6 +25,7 @@
 
 // Oradores y plantilla declarados en la clase (requieren `context`)
 #let template-state = state("dc-debate-template", none)
+#let program-state = state("dc-debate-program", ())
 #let marks-state = state("dc-debate-marks", mark-defaults)
 #let speakers-state = state("dc-debate-speakers", (:))
 #let turn-style-state = state("dc-debate-turn-style", "classic")
@@ -268,31 +269,53 @@
 }
 
 /// Segmento del debate, un título ligero (nivel 2): `#segment("opening", speaker: "bahnsen", time: duration(minutes: 30))`.
+/// Sin tipo, `#segment()` abre el siguiente del programa (`program`, por defecto el de la plantilla), con su
+/// orador y su tiempo; lo que se dé con nombre lo sustituye.
 /// - `kind`: presentación (`opening`), réplica (`rebuttal`), contrainterrogatorio (`cross`), preguntas del
 ///   público (`questions`), conclusión (`closing`), introducción, ronda o tema; la plantilla fija cuáles
-///   admite. Con `none`, `title` es obligatorio.
+///   admite. Con `none`, `title` es obligatorio. Un segmento con tipo no gasta uno del programa.
 /// - `speaker`: clave del orador del segmento, que se añade al título.
 /// - `time`: duración (`duration(minutes: 30)`) o texto, en una línea bajo el título.
 /// - `title`: título propio; por defecto, la etiqueta traducida del tipo.
-#let segment(kind, speaker: none, time: none, title: auto) = context {
-  let speakers = speakers-state.get()
-  if kind == none { assert(title != auto, message: "segment: sin tipo (`none`) hay que dar `title`") } else {
-    debates.check-kind(template-state.get(), kind)
-  }
-  if speaker != none {
-    assert(
-      speaker in speakers,
-      message: "segment: orador desconocido «" + repr(speaker) + "». Oradores declarados: " + speakers.keys().join(", "),
-    )
-  }
-  let name = if title != auto { title } else { i18n.get(kind) }
-  let shown = if speaker != none { [#name — #speakers.at(speaker).short] } else { name }
-  let duration = if type(time) == duration { [#calc.round(time.minutes()) min] } else { time }
-  [#metadata((title: shown, speaker: if speaker != none { speakers.at(speaker).short })) <dc-segment>]
-  heading(level: 2, shown)
-  if duration != none {
-    v(-0.3em)
-    block(above: 0pt, below: 0.6em, text(size: 0.85em, style: "italic", fill: luma(110), duration))
+#let segment(..args, speaker: auto, time: auto, title: auto) = {
+  assert(args.pos().len() <= 1, message: "segment: lleva a lo sumo un tipo, p. ej. `#segment(\"opening\")`")
+  if args.named().len() > 0 { panic("segment: argumento desconocido «" + args.named().keys().first() + "»") }
+  let kind = args.pos().at(0, default: auto)
+  let counter = counter("dc-segment-program")
+  context {
+    let speakers = speakers-state.get()
+    let step = if kind == auto {
+      let program = program-state.get()
+      let n = counter.get().first()
+      assert(
+        n < program.len(),
+        message: "segment: no queda ningún segmento en el programa (" + str(program.len()) + "). Da el tipo, `#segment(\"closing\")`, o amplía `program`",
+      )
+      program.at(n)
+    } else { (kind: kind) }
+    let kind = step.kind
+    let speaker = if speaker != auto { speaker } else { step.at("speaker", default: none) }
+    let time = if time != auto { time } else { step.at("time", default: none) }
+    let title = if title != auto { title } else { step.at("title", default: auto) }
+    if kind == none { assert(title != auto, message: "segment: sin tipo (`none`) hay que dar `title`") } else {
+      debates.check-kind(template-state.get(), kind)
+    }
+    if speaker != none {
+      assert(
+        speaker in speakers,
+        message: "segment: orador desconocido «" + repr(speaker) + "». Oradores declarados: " + speakers.keys().join(", "),
+      )
+    }
+    let name = if title != auto { title } else { i18n.get(kind) }
+    let shown = if speaker != none { [#name — #speakers.at(speaker).short] } else { name }
+    let duration = if type(time) == duration { [#calc.round(time.minutes()) min] } else { time }
+    if args.pos().len() == 0 { counter.step() }
+    [#metadata((title: shown, speaker: if speaker != none { speakers.at(speaker).short })) <dc-segment>]
+    heading(level: 2, shown)
+    if duration != none {
+      v(-0.3em)
+      block(above: 0pt, below: 0.6em, text(size: 0.85em, style: "italic", fill: luma(110), duration))
+    }
   }
 }
 
@@ -316,6 +339,9 @@
   template: none,
   // Marcas de la transcripción (`crowd`, `inaudible`, `at`): true, false o un diccionario
   marks: true,
+  // Segmentos que `#segment()` abre uno tras otro: auto (los de la plantilla, con los oradores en el orden de
+  // `speakers`), none, o una lista de diccionarios `(kind:, speaker:, time:, title:)`
+  program: auto,
   // Estilo de los turnos: "classic" (rótulo en línea) o "modern" (rótulo en su línea). auto = el del tema
   turn-style: auto,
   paper: "a5",
@@ -355,6 +381,7 @@
   let page-style = themes.pick(page-style, style, "running-segment")
   speakers-state.update(speakers)
   template-state.update(template)
+  program-state.update(debates.resolve-program(program, template, speakers))
   turn-style-state.update(turn-style)
   marks-state.update(check-marks(marks))
 

@@ -27,11 +27,12 @@ por dentro, estas piezas:
 - [x] **Turnos como elemento.** `#turn[Sproul][...]` (o `#speaker`), con los oradores declarados en la clase:
       `speakers: (bahnsen: (name:, short:, role:), ...)`. Estilo uniforme del nombre, turno que continúa tras una
       interrupción sin repetir la etiqueta, y oradores no identificados o del público como casos propios.
-- [~] **Estructura del debate.** Segmentos con nombre (presentación, réplica, contrainterrogatorio, preguntas del
+- [x] **Estructura del debate.** Segmentos con nombre (presentación, réplica, contrainterrogatorio, preguntas del
       público, conclusión), cada uno con su orador y su tiempo, y encabezados ligeros: sin página de parte ni
       apertura de capítulo (un `heading-style` propio). Hecho: `segment`, las plantillas `two-speakers`, `panel` e
       `interview` y su validación. `heading-style` propio: la clase `debate` tiene el rol `segment` (entre `section` y `subsection`) en los tres
-      temas. Falta un segmento que se abra solo con el orador y el tiempo de la plantilla.
+      temas. `#segment()` sin tipo abre el siguiente de `program` (por defecto el de la
+      plantilla, con los oradores en el orden de `speakers`; los tiempos se dan en `program`).
 - [x] **Marcas de la transcripción.** Reacciones del público, `[inaudible]`, interrupciones, códigos de tiempo
       opcionales (`#at("12:30")`) y notas del traductor distintas de las notas del editor.
       Hecho: `crowd`, `inaudible`, `at` y `tnote`, con `marks:` para quitarlas o mostrar los tiempos; una

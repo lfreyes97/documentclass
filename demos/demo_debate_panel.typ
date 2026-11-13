@@ -9,6 +9,13 @@
   venue: "Feria del Libro",
   date: "2026",
   titlepage: true,
+  // Los segmentos que abre `#segment()`, con su orador y su tiempo
+  program: (
+    (kind: "introduction", speaker: "marta", time: duration(minutes: 5)),
+    (kind: "round", time: duration(minutes: 30)),
+    (kind: "questions"),
+    (kind: "closing", speaker: "marta"),
+  ),
   turn-style: "modern",
   speakers: (
     ana: (name: "Ana Prieto", short: "Prieto", role: "editora"),
@@ -18,11 +25,11 @@
   ),
 )
 
-#segment("introduction", speaker: "marta", time: duration(minutes: 5))
+#segment()
 
 #turn("marta")[Buenas tardes. Hoy hablamos del libro impreso y de su futuro, con tres personas que lo conocen bien.]
 
-#segment("round", time: duration(minutes: 30))
+#segment()
 
 #turn("marta")[Empecemos por Ana: ¿el papel tiene los días contados?]
 #turn("ana")[
@@ -34,12 +41,12 @@
 ]
 #turn("eva")[En la biblioteca vemos las dos cosas, y los préstamos digitales no reducen los de papel.]
 
-#segment("questions")
+#segment()
 
 #turn(none, label: "Asistente")[¿Qué pasa con los libros descatalogados?]
 #turn("eva")[Ahí lo digital es una salvación: lo que no se reimprime, se escanea.]
 
-#segment("closing", speaker: "marta")
+#segment()
 
 #turn("marta")[Gracias a todos. Seguiremos esta conversación en la próxima feria.]
 

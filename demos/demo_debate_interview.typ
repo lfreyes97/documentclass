@@ -14,12 +14,12 @@
   ),
 )
 
-#segment("introduction")
+#segment()
 
 #turn("rosa")[#at("00:00") Pablo, ¿cómo empezó todo?]
 #turn("pablo")[Con un rótulo mal espaciado en una tienda de mi barrio. No pude dejar de verlo.]
 
-#segment("topic", title: "Las fuentes y la lectura", time: duration(minutes: 12))
+#segment(title: "Las fuentes y la lectura", time: duration(minutes: 12))
 
 #turn("rosa")[#at("03:40") ¿Importa la fuente que se elige?]
 #turn("pablo")[
@@ -30,6 +30,6 @@
 #turn("rosa", cont: false)[¿Y en pantalla?]
 #turn("pablo")[Lo mismo, pero con menos control, y ahí está el reto.]
 
-#segment("closing")
+#segment()
 
 #turn("rosa")[#at("11:55") Gracias, Pablo.]

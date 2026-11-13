@@ -61,3 +61,59 @@
     )
   }
 }
+
+// Programa por defecto de una plantilla: los segmentos que `#segment()` va abriendo uno tras otro. Los oradores
+// salen del orden de `speakers` (el primero, el segundo…) y el moderador abre y cierra. Sin tiempos: se dan en
+// `program`. Para otro orden de intervenciones, `program` explícito.
+#let default-program(template, speakers) = {
+  if template == none { return () }
+  let keys = speakers.keys()
+  let debaters = keys.filter(k => not speakers.at(k).moderator)
+  let moderator = keys.find(k => speakers.at(k).moderator)
+  if template == "two-speakers" {
+    let (a, b) = debaters
+    (
+      if moderator != none { (kind: "introduction", speaker: moderator) },
+      (kind: "opening", speaker: a),
+      (kind: "opening", speaker: b),
+      (kind: "rebuttal", speaker: a),
+      (kind: "rebuttal", speaker: b),
+      (kind: "questions"),
+      (kind: "closing", speaker: a),
+      (kind: "closing", speaker: b),
+    ).filter(s => s != none)
+  } else if template == "panel" {
+    (
+      (kind: "introduction", speaker: moderator),
+      (kind: "round"),
+      (kind: "questions"),
+      (kind: "closing", speaker: moderator),
+    )
+  } else {
+    ((kind: "introduction"), (kind: "topic"), (kind: "closing"))
+  }
+}
+
+#let program-keys = ("kind", "speaker", "time", "title")
+
+// `program`: auto (el de la plantilla), none o una lista de diccionarios (kind, speaker, time, title) ya
+// completos; devuelve la lista validada
+#let resolve-program(program, template, speakers) = {
+  let program = if program == auto { default-program(template, speakers) } else if program == none { () } else { program }
+  assert(type(program) == array, message: "program debe ser auto, none o una lista de diccionarios `(kind:, speaker:, time:, title:)`")
+  for (n, step) in program.enumerate(start: 1) {
+    assert(type(step) == dictionary, message: "program: el segmento " + str(n) + " debe ser un diccionario `(kind:, speaker:, time:, title:)`")
+    for key in step.keys() {
+      assert(key in program-keys, message: "program: clave desconocida «" + key + "» en el segmento " + str(n) + ". Claves válidas: " + program-keys.join(", "))
+    }
+    assert("kind" in step, message: "program: al segmento " + str(n) + " le falta `kind`")
+    check-kind(template, step.kind)
+    if step.at("speaker", default: none) != none {
+      assert(
+        step.speaker in speakers,
+        message: "program: el segmento " + str(n) + " tiene el orador desconocido «" + repr(step.speaker) + "». Oradores declarados: " + speakers.keys().join(", "),
+      )
+    }
+  }
+  program
+}
