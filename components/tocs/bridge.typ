@@ -3,14 +3,18 @@
 // documento que no la use, donde estos estados quedan en su valor inicial.
 //
 //   dc-use-parts    solo book lo fija (true o false): delata la clase book
-//   matter-section  "front" | "main" | "back" en book
-//   appendix-mode   true tras `#show: appendix`
+//   dc-matter       "front" | "main" | "back" en book
+//   dc-appendix     true tras `#show: appendix`
 //   dc-fonts        fuentes resueltas por rol (toc, minitoc…)
 //   dc-labels       etiquetas que el documento sobrescribe con `labels`
+//
+// Son un contrato: el README los documenta («States»), y cambiar una clave o un valor rompe tocs
+// usado sin la clase y cualquier código ajeno que los lea. Todos los estados de la clase llevan el
+// prefijo `dc-`; los de glosa, `_glosa_`, y los de tocs, `tocs-`.
 
 #let use-parts = state("dc-use-parts", none)
-#let matter = state("matter-section", none)
-#let appendix = state("appendix-mode", false)
+#let matter = state("dc-matter", none)
+#let appendix = state("dc-appendix", false)
 #let fonts = state("dc-fonts", none)
 #let labels = state("dc-labels", (:))
 

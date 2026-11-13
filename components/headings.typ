@@ -6,8 +6,8 @@
 #import "numbering.typ" as numbering-mod
 #import "openings.typ"
 
-#let matter-state = state("matter-section", "front")
-#let appendix-state = state("appendix-mode", false)
+#let matter-state = state("dc-matter", "front")
+#let appendix-state = state("dc-appendix", false)
 // false: `=` es capítulo (book con `use-parts: false`)
 #let use-parts-state = state("dc-use-parts", true)
 
