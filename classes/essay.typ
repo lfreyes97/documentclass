@@ -98,6 +98,7 @@
   chapter-title-style: (size: 1.3em, weight: "black"), // Sin `font` = rol `title`
   section-numbering: "I.",
   section-block-style: (above: 42pt, below: 14pt),
+  equation-numbering: false, // Numerar ecuaciones en bloque, en todo el ensayo: (1), (2)…
   // Portada: none (sin ella, por defecto), auto o true (la de la clase, con título, subtítulo, autor y
   // editorial) o contenido (una propia). Como en book y report
   titlepage: none,
@@ -131,6 +132,7 @@
   )
   set text(font: fonts.body, lang: lang)
   show raw: set text(font: fonts.mono)
+  set math.equation(numbering: "(1)") if equation-numbering
   show: microtype-mod.setup.with(microtype)
   let debug = debug-mod.resolve(debug)
   show: debug-mod.setup.with(debug)

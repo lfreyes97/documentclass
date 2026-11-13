@@ -147,7 +147,7 @@ All classes accept the following common parameters:
 
 ### Specific Parameters
 - **Book**: `part-ornament`, `logo`, `titlepage`, `equation-numbering`, `use-parts`, `cover` (see [Covers](#covers)), and `minitoc` (`true`, or a dictionary of `tocs.partial` options; see [Tables of contents](#tables-of-contents-tocs)).
-- **Article**: `cols` (column count), `abstract`.
+- **Article**: `cols` (column count), `abstract`, `equation-numbering`.
 - **Report**: `abstract`, `logo`, `titlepage`, `equation-numbering`.
 - **Essay**: see [Essay Class](#essay-class).
 
@@ -253,7 +253,7 @@ As shown in @neutral...   // "Chapter 1" / "Capítulo 1"
 - **Report**: chapters `1`, sections `1.1`, subsections `1.1.1`.
 - **Article**: sections `1.`, `1.1`, `1.1.1`.
 
-In `book` and `report`, figures and tables are numbered within the chapter (`2.3`, `A.1`). Set `equation-numbering: true` to number display equations the same way, as `(2.1)`. In `article` they are numbered through the whole document.
+In `book` and `report`, figures and tables are numbered within the chapter (`2.3`, `A.1`). Set `equation-numbering: true` to number display equations the same way, as `(2.1)`. In `article` and `essay` figures, tables and, with `equation-numbering: true`, equations are numbered through the whole document: `(1)`, `(2)`…
 
 `#heading(numbering: none)[...]` gives an unnumbered heading in any class. `#bibliography("refs.bib")` and `#outline()` produce unnumbered headings; in `book` they sit at chapter level, not as a part.
 

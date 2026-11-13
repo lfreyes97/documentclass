@@ -78,6 +78,7 @@
   // contents, abstract, figures, tables (ver components/i18n.typ)
   labels: (:),
   cols: 1,
+  equation-numbering: false, // Numerar ecuaciones en bloque, en todo el documento: (1), (2)…
   // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
   // true, false o un diccionario con spacing, tracking, hyphenation y glue
   microtype: true,
@@ -135,6 +136,7 @@
   show heading: set heading(supplement: i18n.term("section"))
   show bibliography: set heading(numbering: none)
   show outline: set heading(numbering: none)
+  set math.equation(numbering: "(1)") if equation-numbering
 
   // Las fuentes de cada nivel; el estilo (tamaños, espacios) viene de `heading-style`
   // Typst da a cada título su propio tamaño; los `em` del estilo se miden contra el cuerpo
