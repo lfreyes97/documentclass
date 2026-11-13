@@ -26,7 +26,7 @@ Una nueva sección principal ("2. Resultados").
 
 // `equation-numbering`: en article, (1), (2)… en todo el documento
 $ a^2 + b^2 = c^2 $ <pitagoras>
-$ e^(i pi) + 1 = 0 $ <euler>
+$ a + b = c $ <euler>
 Como dicen @pitagoras y @euler.
 #context assert.eq(counter(math.equation).final(), (2,))
 #context assert.eq(query(<euler>).first().numbering, "(1)")
