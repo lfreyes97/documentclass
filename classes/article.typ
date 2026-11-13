@@ -139,16 +139,16 @@
   show heading.where(level: 4): set text(font: fonts.h4)
 
   show heading.where(level: 1): it => context {
-    headings.run-heading(it, openings.run-leaf(heading-style, "section"), fonts.h1)
+    headings.run-heading(it, openings.run-leaf(heading-style, "section"), fonts.h1, sticky: true)
   }
   show heading.where(level: 2): it => context {
-    headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h2)
+    headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h2, sticky: true)
   }
   show heading.where(level: 3): it => context {
-    headings.run-heading(it, openings.run-leaf(heading-style, "subsubsection"), fonts.h3)
+    headings.run-heading(it, openings.run-leaf(heading-style, "subsubsection"), fonts.h3, sticky: true)
   }
   show heading.where(level: 4): it => context {
-    headings.run-heading(it, openings.run-leaf(heading-style, "paragraph"), fonts.h4)
+    headings.run-heading(it, openings.run-leaf(heading-style, "paragraph"), fonts.h4, sticky: true)
   }
 
   // Footnotes

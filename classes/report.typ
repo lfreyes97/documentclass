@@ -149,16 +149,16 @@
     headings.opening(it, openings.leaf(heading-style, "chapter", none), fonts.h1, none, reset: true, in-block: true)
   }
   show heading.where(level: 2): it => context {
-    headings.run-heading(it, openings.run-leaf(heading-style, "section"), fonts.h2, in-block: true)
+    headings.run-heading(it, openings.run-leaf(heading-style, "section"), fonts.h2, in-block: true, sticky: true)
   }
   show heading.where(level: 3): it => context {
-    headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h3, in-block: true)
+    headings.run-heading(it, openings.run-leaf(heading-style, "subsection"), fonts.h3, in-block: true, sticky: true)
   }
   show heading.where(level: 4): it => context {
-    headings.run-heading(it, openings.run-leaf(heading-style, "subsubsection"), fonts.h4, in-block: true)
+    headings.run-heading(it, openings.run-leaf(heading-style, "subsubsection"), fonts.h4, in-block: true, sticky: true)
   }
   show heading.where(level: 5): it => context {
-    headings.run-heading(it, openings.run-leaf(heading-style, "paragraph"), fonts.heading, in-block: true)
+    headings.run-heading(it, openings.run-leaf(heading-style, "paragraph"), fonts.heading, in-block: true, sticky: true)
   }
 
   // Footnotes

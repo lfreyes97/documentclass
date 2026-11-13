@@ -48,6 +48,11 @@ REFERENCED = {
     "test/structure_book.typ",
 }
 
+# Variantes que se compilan además del archivo tal cual, con `--input clave=valor`
+VARIANTS = {
+    "test/orphan_headings.typ": [("class", "article"), ("class", "report")],
+}
+
 # La capitular es más alta que su línea y se solapa con ella por diseño
 NO_OVERLAP_CHECK = {"test/dropcaps.typ"}
 
@@ -62,10 +67,11 @@ def fail(name: str, message: str) -> None:
     print(f"  FALLA {message}")
 
 
-def compile_pdf(source: Path, out: Path) -> str | None:
+def compile_pdf(source: Path, out: Path, inputs: tuple[tuple[str, str], ...] = ()) -> str | None:
     """Compila; devuelve el mensaje de error o None."""
+    extra = [arg for key, value in inputs for arg in ("--input", f"{key}={value}")]
     run = subprocess.run(
-        ["typst", "compile", "--root", str(ROOT), "--ignore-system-fonts", str(source), str(out)],
+        ["typst", "compile", "--root", str(ROOT), "--ignore-system-fonts", *extra, str(source), str(out)],
         capture_output=True,
         text=True,
     )
@@ -306,6 +312,12 @@ def main() -> int:
                 check_verify(rel, pages, visible=source.name == "verify_on.typ")
             if rel in REFERENCED and not args.no_reference:
                 check_reference(rel, rel, pages, pdf, args.update)
+            for key, value in VARIANTS.get(rel, []):
+                variant = f"{rel} ({key}={value})"
+                print(variant)
+                error = compile_pdf(source, out_dir / f"{source.stem}-{value}.pdf", ((key, value),))
+                if error:
+                    fail(variant, f"no compila: {error}")
     finally:
         shutil.rmtree(out_dir, ignore_errors=True)
 

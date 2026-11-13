@@ -172,8 +172,8 @@
 }
 
 // Título de sección con el estilo `s` de openings.run-leaf. Requiere `context`
-#let run-heading(it, s, font, in-block: false) = {
-  if not in-block { v(s.above) }
+// `sticky: true` lo pega al párrafo que sigue (las clases book, report y article); debate lo pega por su cuenta
+#let run-heading(it, s, font, in-block: false, sticky: false) = {
   let body = if s.title-smallcaps { smallcaps(it.body) } else { it.body }
   let body = if s.title-upper { upper(body) } else { body }
   let number = if numbered(it) and s.number-format != none {
@@ -185,7 +185,16 @@
     #body
   ]
   let line = if s.align == left { line } else { align(s.align, line) }
-  if in-block { block(width: 100%, above: s.above, below: s.below, line) } else {
+  // `sticky`: el título no se queda solo al pie de la página o la columna, pasa a la siguiente con su
+  // párrafo. Fuera de un bloque el título era un párrafo; ahora es un bloque con el mismo espaciado de
+  // párrafo (sus `em` medidos con el tamaño del título), así que el párrafo que sigue ya no se sangra
+  if in-block { block(width: 100%, above: s.above, below: s.below, sticky: sticky, line) } else if sticky {
+    v(s.above)
+    let size = s.title-text.at("size", default: 1em).to-absolute()
+    block(width: 100%, spacing: par.spacing.abs + par.spacing.em * size, sticky: true, line)
+    v(s.below)
+  } else {
+    v(s.above)
     line
     v(s.below)
   }
@@ -246,10 +255,10 @@
   }
 
   // NIVELES 3 A 6: SECCIONES (3.1, A.1), SUBSECCIONES (3.1.1), …
-  show heading.where(level: 3): it => context { run-heading(it, openings.run-leaf(style, "section"), fonts.h3) }
-  show heading.where(level: 4): it => context { run-heading(it, openings.run-leaf(style, "subsection"), fonts.h4) }
-  show heading.where(level: 5): it => context { run-heading(it, openings.run-leaf(style, "subsubsection"), fonts.heading) }
-  show heading.where(level: 6): it => context { run-heading(it, openings.run-leaf(style, "paragraph"), fonts.heading) }
+  show heading.where(level: 3): it => context { run-heading(it, openings.run-leaf(style, "section"), fonts.h3, sticky: true) }
+  show heading.where(level: 4): it => context { run-heading(it, openings.run-leaf(style, "subsection"), fonts.h4, sticky: true) }
+  show heading.where(level: 5): it => context { run-heading(it, openings.run-leaf(style, "subsubsection"), fonts.heading, sticky: true) }
+  show heading.where(level: 6): it => context { run-heading(it, openings.run-leaf(style, "paragraph"), fonts.heading, sticky: true) }
 
   body
 }
