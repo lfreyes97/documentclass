@@ -41,6 +41,37 @@
 /// Pie con «Pág. 3 de 12» en el borde exterior, bajo la columna de notas. Requiere `context`.
 #let running-footer() = glosa.header(text-style: (size: 8.5pt, number-type: "old-style"), page-label())
 
+// Columnas de notas por defecto: `far` (borde a columna), `width` (columna) y `sep` (columna a texto)
+#let note-column-defaults = (
+  inner: (far: 16mm, width: 15mm, sep: 8mm),
+  outer: (far: 16mm, width: 45mm, sep: 8mm),
+)
+
+// `note-columns` completo: lo que no se indica conserva el valor por defecto
+#let resolve-note-columns(spec) = {
+  assert(
+    type(spec) == dictionary,
+    message: "essay: note-columns debe ser un diccionario, p. ej. `note-columns: (outer: (width: 50mm))`",
+  )
+  let out = note-column-defaults
+  for (side, value) in spec {
+    assert(
+      side in note-column-defaults,
+      message: "essay: clave desconocida «" + side + "» en note-columns. Claves válidas: inner, outer",
+    )
+    assert(type(value) == dictionary, message: "essay: note-columns." + side + " debe ser un diccionario con far, width y sep")
+    for (key, v) in value {
+      assert(
+        key in ("far", "width", "sep"),
+        message: "essay: clave desconocida «" + key + "» en note-columns." + side + ". Claves válidas: far, width, sep",
+      )
+      assert(type(v) == length, message: "essay: note-columns." + side + "." + key + " debe ser una longitud")
+    }
+    out.insert(side, out.at(side) + value)
+  }
+  out
+}
+
 #let essay(
   title: none, // Título de la portada (`titlepage`) y de los metadatos
   subtitle: none, // Subtítulo de la portada
@@ -55,10 +86,13 @@
   notes: "margin",
   // Márgenes de la página con `notes: "footnote"` (auto, longitud o diccionario, ver components/margins.typ)
   margin: auto,
-  // Márgenes con `notes: "margin"`: cada lado tiene `far` (borde a columna de notas), `width` (columna de
-  // notas) y `sep` (columna de notas a texto). `facing-pages: true` alterna interior/exterior.
-  inner: (far: 16mm, width: 15mm, sep: 8mm),
-  outer: (far: 16mm, width: 45mm, sep: 8mm),
+  // Columnas de notas con `notes: "margin"`: `inner` y `outer`, cada una con `far` (borde a columna de
+  // notas), `width` (columna de notas) y `sep` (columna de notas a texto); lo que no se indica conserva el
+  // valor por defecto (`note-column-defaults`). `facing-pages: true` alterna interior y exterior
+  note-columns: (:),
+  // Obsoletos: ahora son `note-columns: (inner: …, outer: …)`
+  inner: none,
+  outer: none,
   top: 2.5cm,
   bottom: 2.5cm,
   facing-pages: false, // Doble cara (el `twoside` de LaTeX): `inner` y `outer` alternan
@@ -114,6 +148,16 @@
   debug: false,
   body,
 ) = {
+  for (name, value) in (inner: inner, outer: outer) {
+    if value != none {
+      panic("essay: " + name + " ahora es la clave `" + name + "` de note-columns: `note-columns: (" + name + ": …)`")
+    }
+  }
+  let (inner, outer) = resolve-note-columns(note-columns)
+  // Los estilos de texto y de bloque fallan ya con un argumento desconocido, aunque no se usen
+  let _ = text(..chapter-number-style)[]
+  let _ = text(..chapter-title-style)[]
+  let _ = block(..section-block-style)
   let fonts = fonts-mod.resolve(fonts)
   fonts-mod.current.update(fonts)
   i18n.check(labels)

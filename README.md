@@ -111,7 +111,7 @@ Section 1 starts here.
 #show: essay.with(
   author: "Author Name",
   fonts: (body: "EB Garamond"),
-  outer: (far: 16mm, width: 45mm, sep: 8mm), // margin-note column
+  note-columns: (outer: (width: 50mm)), // wider margin-note column
   facing-pages: true,                        // alternate inner/outer
 )
 

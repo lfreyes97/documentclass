@@ -2,7 +2,7 @@
 #import "../lib.typ": essay, note
 #show: essay.with(
   author: "Autor", date: datetime(year: 2026, month: 1, day: 5), top: 32mm, bottom: 16mm,
-  outer: (far: 16mm, width: 45mm, sep: 8mm), inner: (far: 16mm, width: 0mm, sep: 8mm),
+  note-columns: (inner: (width: 0mm)),
   line-numbers: (every: 5),
 )
 

@@ -10,6 +10,7 @@ Compila cada archivo de test/ y demos/ y revisa el PDF resultante:
   - en `pagestyle_noparts.typ`: un libro sin partes lleva cabeceras desde el primer capítulo;
   - en `structure_book.typ`: las páginas vacías son versos, cada verso lleva la parte y cada
     recto el capítulo vigentes, las aperturas no llevan cabecera y el índice lista los capítulos;
+  - cada opción mal escrita de EXPECTED_ERRORS falla con un mensaje que dice qué escribir;
   - el texto de cada página coincide con el de test/reference/ (solo los archivos con
     referencia, que no se versionan: se crean con --update y sirven para comparar cambios en
     la propia máquina; sin ellas se salta la comparación).
@@ -54,6 +55,29 @@ VARIANTS = {
     "test/orphan_headings.typ": [("class", "article"), ("class", "report")],
     "test/titlepages.typ": [("class", "book"), ("class", "report"), ("class", "article"), ("titlepage", "none")],
 }
+
+# Opciones mal escritas: cada una debe fallar con un mensaje que contenga el texto dado (las familias de
+# opciones de tipo diccionario listan sus claves válidas)
+EXPECTED_ERRORS = [
+    ('book.with(fonts: (bodi: "X"))', "Roles válidos"),
+    ('book.with(labels: (capitulo: "X"))', "chapter"),
+    ("book.with(microtype: (spacin: 1))", "Opciones válidas"),
+    ("book.with(margin: (insde: 1cm))", "Claves válidas"),
+    ("book.with(margin: (left: 1cm))", "usa `inside` y `outside`"),
+    ("book.with(page-style: (headr: none))", "Claves válidas"),
+    ("book.with(heading-style: (chapter: (alin: left)))", "Claves válidas"),
+    ("book.with(line-numbers: (evry: 5))", "Claves válidas"),
+    ("book.with(debug: (verfy: true))", "Claves válidas"),
+    ("book.with(cover: (frnt: none))", "Claves válidas: front, back, data, options"),
+    ("book.with(cover-data: (isbn: 1))", "cover: (front: …, data: …)"),
+    ("book.with(minitoc: (deep: 2))", "Opciones: style"),
+    ("book.with(custom-titlepage: [x])", "ahora se llama titlepage"),
+    ('book.with(titlepage: "x.typ")', "no una ruta"),
+    ("essay.with(note-columns: (outer: (wide: 1mm)))", "Claves válidas: far, width, sep"),
+    ("essay.with(note-columns: (middle: (:)))", "Claves válidas: inner, outer"),
+    ("essay.with(outer: (width: 40mm))", "note-columns: (outer: …)"),
+    ("essay.with(section-block-style: (abov: 1em))", "unexpected argument"),
+]
 
 # La capitular es más alta que su línea y se solapa con ella por diseño
 NO_OVERLAP_CHECK = {"test/dropcaps.typ"}
@@ -285,6 +309,22 @@ def check_verify(name: str, pages: list[str], visible: bool) -> None:
         fail(name, f"la consulta <dc-verify> no devuelve las dos marcas: {run.stdout.strip() or run.stderr.strip()[:80]}")
 
 
+def check_errors(out: Path) -> None:
+    """Cada opción de EXPECTED_ERRORS falla al compilar, con su mensaje."""
+    for setup, expected in EXPECTED_ERRORS:
+        source = f'#import "/lib.typ": *\n#show: {setup}\n= A\n'
+        run = subprocess.run(
+            ["typst", "compile", "--root", str(ROOT), "--ignore-system-fonts", "-", str(out)],
+            input=source,
+            capture_output=True,
+            text=True,
+        )
+        if run.returncode == 0:
+            fail("errores", f"`{setup}` compila y debía fallar")
+        elif expected not in run.stderr:
+            fail("errores", f"`{setup}` falla sin «{expected}»: {run.stderr.strip().splitlines()[0][:100]}")
+
+
 def check_reference(name: str, source: str, pages: list[str], pdf: Path, update: bool) -> None:
     """Texto de cada página (`.txt`) y posición de sus líneas (`.geometry`)."""
     stem = REFERENCE / Path(source).stem
@@ -363,6 +403,9 @@ def main() -> int:
                 error = compile_pdf(source, out_dir / f"{source.stem}-{value}.pdf", ((key, value),))
                 if error:
                     fail(variant, f"no compila: {error}")
+        if not args.k or args.k in "errores":
+            print("errores de opciones")
+            check_errors(out_dir / "errores.pdf")
     finally:
         shutil.rmtree(out_dir, ignore_errors=True)
 

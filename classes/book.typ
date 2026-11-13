@@ -87,6 +87,14 @@
 ) = {
   titlepage-mod.check-old(custom-titlepage, "book")
   covers.check-old(back-cover, cover-data, cover-options)
+  assert(
+    type(minitoc) in (bool, dictionary) or minitoc == none,
+    message: "book: minitoc debe ser true, false o un diccionario de opciones de `tocs.partial`",
+  )
+  // Las opciones del minitoc fallan ya, aunque el libro no tenga partes; `scope` es solo de `partial`
+  if type(minitoc) == dictionary {
+    let _ = tocs-mod.check(arguments(..minitoc.pairs().filter(((k, _)) => k != "scope").to-dict()))
+  }
   let style = themes.check(style)
   let page-style = themes.pick(page-style, style, "classic")
   let heading-style = themes.pick(heading-style, style, "classic")
