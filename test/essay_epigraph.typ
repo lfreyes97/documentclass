@@ -1,7 +1,7 @@
 // En `essay`, `#epigraph` sale como el epígrafe del ensayo: bloque al 78 %, texto justificado a la izquierda,
 // cursiva y atribución estructurada a la derecha
 #import "../lib.typ": epigraph, essay
-#show: essay.with(author: "Autor Demo", top: 32mm, bottom: 16mm, outer: (far: 16mm, width: 45mm, sep: 8mm))
+#show: essay.with(author: "Autor Demo", top: 32mm, bottom: 16mm, note-columns: (outer: (far: 16mm, width: 45mm, sep: 8mm)))
 
 = Título del ensayo
 
