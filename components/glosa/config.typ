@@ -22,6 +22,7 @@
     clearance: config.at("clearance", default: 12pt),
     overflow: config.at("overflow", default: "carry"),
     overflow-mark: config.at("overflow-mark", default: auto),
+    mode: config.at("mode", default: "margin"),
   )
 }
 
@@ -126,6 +127,10 @@
   /// text: ```typc auto``` (a small arrow), ```typc none``` or content.
   /// -> auto | none | content
   overflow-mark: auto,
+  /// Where notes go: ```typc "margin"``` (the margin columns) or ```typc "footnote"```, where
+  /// notes become footnotes, note figures plain figures and wide blocks plain blocks.
+  /// -> "margin" | "footnote"
+  mode: "margin",
   /// -> content
   body,
 ) = {}

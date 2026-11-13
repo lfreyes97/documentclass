@@ -183,6 +183,11 @@
     let flush-numbering = if flush-numbering == auto { anchor-numbering != auto } else { flush-numbering }
     let anchor-numbering = if anchor-numbering == auto { numbering } else { anchor-numbering }
 
+    // Without margin columns the note is a footnote; the metadata keeps `@label` references working
+    if _config.get().mode == "footnote" {
+      return [#metadata((note: true, anchor: none))<_glosa_note>#footnote(body)]
+    }
+
     let shift = if shift == auto { if numbering != none { true } else { "avoid" } } else { shift }
 
     let text-style = (size: 9.35pt, style: "normal", weight: "regular", ..defaults.text-style, ..text-style)
@@ -505,6 +510,13 @@
       }).width
       if width < 8pt { 8pt } else { width }
     } else { 0pt }
+
+    // Without margin columns a note figure is an ordinary figure
+    if _config.get().mode == "footnote" {
+      let index = query(selector(<_glosa_notefigure>).before(here())).len()
+      let figure-label = std.label("_glosa_notefigure__" + str(index))
+      return [#figure(content, gap: gap, placement: none, ..figureargs)#figure-label#metadata((label: figure-label))<_glosa_notefigure_meta>]
+    }
 
     set figure.caption(position: bottom)
     show figure.caption: it => {

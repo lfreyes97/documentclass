@@ -59,6 +59,9 @@ El ensayo real ya está revisado (ver `HECHO.md`). Queda la clase:
 - [ ] **Desborde de notas:** una consulta (`typst query … '<glosa-overflow>'`) y una marca en `debug-frame`
       para las páginas que aún desbordan. Hoy solo se detecta el desborde por arriba: no se mueve una
       nota que choca con un bloque ancho (`wideblock`), y la última página no puede pasar notas.
+- [ ] **`notes: "footnote"`:** en este modo el título del ensayo se imprime en el cuerpo, donde esté el `= …`, así que si
+      va después de un bloque de autor se ve al revés; resolverlo con el bloque común de título. Los `@ref` a una nota
+      imprimen el número de la nota, que puede no coincidir con el de la nota al pie si hay notas al pie corrientes.
 - [ ] El tiempo de compilación del ensayo pasó de 2.5 s a 5.7 s con `carry`: ver si se puede bajar.
 
 ## Clase para debates

@@ -86,6 +86,9 @@
   body,
 ) = (
   context {
+    // Without margin columns there is nothing to extend into
+    if _config.get().mode == "footnote" { return block(width: 100%, body) }
+
     let left-margin = get-left()
     let right-margin = get-right()
 

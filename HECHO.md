@@ -79,6 +79,9 @@ bien: no hizo falta tocarlos.
   sin desborde el resultado es idéntico. `setup` pasó a `glosa/setup.typ`.
 - Notas al pie con símbolos que reinician en cada página (`footnote-counter: "page"`, `d1b1ea7`) y sin asterisco,
   que como superíndice queda en un punto: `footnote-symbols` empieza en `†` (`ea264db`).
+- Modo sin columna `notes: "footnote"`: las notas al margen son notas al pie en una sola serie numérica, las figuras
+  al margen figuras normales y los bloques anchos bloques normales; los márgenes salen de `margin`
+  (`test/essay_footnotes.typ`). `glosa` ganó la opción `mode`.
 - Fecha fija (`913f520`): `date` es `none` por defecto, sin fecha en la cabecera ni en los metadatos del PDF.
   Una `datetime` o un texto la ponen; `datetime.today()` devuelve la de hoy.
 
