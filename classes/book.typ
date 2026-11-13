@@ -6,6 +6,7 @@
 #import "../components/microtype.typ" as microtype-mod
 #import "../components/i18n.typ"
 #import "../components/lines.typ"
+#import "../components/debug.typ" as debug-mod
 #import "../components/numbering.typ" as numbering-mod
 
 #import "../components/layout.typ"
@@ -74,6 +75,9 @@
   // Líneas numeradas para citar por página y línea o para revisar: false, true o un diccionario
   // (ver components/lines.typ)
   line-numbers: false,
+  // Ayudas de depuración: false, true o un diccionario con `verify`, `lines` y `frame` (ver
+  // components/debug.typ). Con `verify` se ven las marcas `#verify[…]`, que si no son invisibles
+  debug: false,
   body,
 ) = {
   let style = themes.check(style)
@@ -94,7 +98,9 @@
   )
   show raw: set text(font: fonts.mono)
   show: microtype-mod.setup.with(microtype)
-  show: lines.setup.with(line-numbers)
+  let debug = debug-mod.resolve(debug)
+  show: debug-mod.setup.with(debug)
+  show: lines.setup.with(if debug.lines and line-numbers == false { true } else { line-numbers })
 
   // Configuración de página base (márgenes para todo el documento, incluida la portada)
   set page(

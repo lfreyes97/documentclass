@@ -10,6 +10,7 @@
 #import "components/environments.typ": blockquote, epigraph, verse
 #import "components/titlepage.typ": colophon, half-title
 #import "components/headings.typ": blank-page, part
+#import "components/debug.typ": verify, verify-list
 
 // Índices: los nombres de LaTeX, con la API de `tocs` (opciones, presets y estilos
 // por nivel). `tocs.setup` fija opciones para todo el documento.

@@ -222,6 +222,23 @@ def check_no_date(name: str, pages: list[str]) -> None:
             fail(name, f"la página {n} lleva una fecha en la cabecera: «{head[:60]}»")
 
 
+def check_verify(name: str, pages: list[str], visible: bool) -> None:
+    """`verify[…]` es invisible para el lector y se ve con `debug: (verify: true)`; en los dos casos la consulta
+    `<dc-verify>` devuelve las marcas con su página."""
+    text = " ".join(pages)
+    if visible and "VERIFICAR" not in text:
+        fail(name, "con debug las marcas verify no se ven")
+    if not visible and "VERIFICAR" in text:
+        fail(name, "sin debug las marcas verify son visibles para el lector")
+    run = subprocess.run(
+        ["typst", "eval", "--root", str(ROOT), "query(<dc-verify>).map(it => it.value.page)", "--in", str(ROOT / name)],
+        capture_output=True,
+        text=True,
+    )
+    if run.returncode != 0 or run.stdout.strip() != "[1,1]":
+        fail(name, f"la consulta <dc-verify> no devuelve las dos marcas: {run.stdout.strip() or run.stderr.strip()[:80]}")
+
+
 def check_reference(name: str, source: str, pages: list[str], pdf: Path, update: bool) -> None:
     """Texto de cada página (`.txt`) y posición de sus líneas (`.geometry`)."""
     stem = REFERENCE / Path(source).stem
@@ -283,6 +300,8 @@ def main() -> int:
                 check_structure_book(rel, pages)
             if source.name == "essay_default.typ":
                 check_no_date(rel, pages)
+            if source.name in ("verify_off.typ", "verify_on.typ"):
+                check_verify(rel, pages, visible=source.name == "verify_on.typ")
             if rel in REFERENCED and not args.no_reference:
                 check_reference(rel, rel, pages, pdf, args.update)
     finally:

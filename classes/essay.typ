@@ -6,6 +6,7 @@
 #import "../components/microtype.typ" as microtype-mod
 #import "../components/i18n.typ"
 #import "../components/lines.typ"
+#import "../components/debug.typ" as debug-mod
 #import "../components/margins.typ"
 
 /// Numeral arábigo volado para las notas al margen, continuo en todo el documento (el
@@ -102,6 +103,9 @@
   // Líneas numeradas para citar por página y línea o para revisar: false, true o un diccionario
   // (ver components/lines.typ)
   line-numbers: false,
+  // Ayudas de depuración: false, true o un diccionario con `verify`, `lines` y `frame` (ver
+  // components/debug.typ). Con `verify` se ven las marcas `#verify[…]`, que si no son invisibles
+  debug: false,
   body,
 ) = {
   let fonts = fonts-mod.resolve(fonts)
@@ -123,7 +127,9 @@
   set text(font: fonts.body, lang: lang)
   show raw: set text(font: fonts.mono)
   show: microtype-mod.setup.with(microtype)
-  show: lines.setup.with(line-numbers)
+  let debug = debug-mod.resolve(debug)
+  show: debug-mod.setup.with(debug)
+  show: lines.setup.with(if debug.lines and line-numbers == false { true } else { line-numbers })
   set page(paper: paper)
 
   let number-style = (font: fonts.title, ..chapter-number-style)
@@ -321,5 +327,5 @@
     },
   )
 
-  if debug-frame { glosa.show-frame(result) } else { result }
+  if debug-frame or debug.frame { glosa.show-frame(result) } else { result }
 }

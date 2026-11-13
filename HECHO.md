@@ -91,6 +91,14 @@ bien: no hizo falta tocarlos.
   Typst, reinicia por página, se puede mostrar cada N líneas y no numera títulos, notas al pie, pies de figura,
   portadas ni bloques de título.
 
+## Depuración: `debug` y `verify`
+
+- `debug` (`false`, `true` o un diccionario `verify`/`lines`/`frame`) en `book`, `report`, `article` y `essay`
+  (`components/debug.typ`, `test/verify_off.typ`, `test/verify_on.typ`). Reúne `line-numbers` y el `debug-frame` de `essay`.
+- `#verify[…]`: marca lo pendiente de comprobar. Invisible para el lector; deja un dato consultable con su página
+  (`typst eval 'query(<dc-verify>).map(it => it.value)' --in …`) y, con `verify` encendido, sale resaltado.
+  `#verify-list()` lista los pendientes. Sustituye a los `[VERIFICAR …]` escritos a mano.
+
 ## Decisiones tomadas
 
 - `tocs` canónico, `margin` único con `facing-pages`, `report` con `plain`, `style` como tema común, `overflow:

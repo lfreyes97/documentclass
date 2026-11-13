@@ -62,6 +62,9 @@ El ensayo real ya está revisado (ver `HECHO.md`). Queda la clase:
 - [ ] **`notes: "footnote"`:** en este modo el título del ensayo se imprime en el cuerpo, donde esté el `= …`, así que si
       va después de un bloque de autor se ve al revés; resolverlo con el bloque común de título. Los `@ref` a una nota
       imprimen el número de la nota, que puede no coincidir con el de la nota al pie si hay notas al pie corrientes.
+- [ ] **`verify`:** migrar los 38 `[VERIFICAR …]` del ensayo real a `#verify[…]` (en el texto de una nota, quitar el espacio
+      antes de la marca para que el texto final no quede con un hueco). Valorar un modo estricto (`debug: (verify: "error")`)
+      para que la compilación final falle si queda alguna.
 - [ ] El tiempo de compilación del ensayo pasó de 2.5 s a 5.7 s con `carry`: ver si se puede bajar.
 
 ## Clase para debates
