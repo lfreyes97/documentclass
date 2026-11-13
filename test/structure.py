@@ -52,6 +52,7 @@ REFERENCED = {
 # Variantes que se compilan además del archivo tal cual, con `--input clave=valor`
 VARIANTS = {
     "test/orphan_headings.typ": [("class", "article"), ("class", "report")],
+    "test/titlepages.typ": [("class", "book"), ("class", "report"), ("class", "article"), ("titlepage", "none")],
 }
 
 # La capitular es más alta que su línea y se solapa con ella por diseño
@@ -242,6 +243,14 @@ def check_noparts(name: str, pages: list[str]) -> None:
         fail(name, "no se encontró ninguna apertura de capítulo")
 
 
+def check_titlepage(name: str, pages: list[str]) -> None:
+    """La portada del ensayo lleva el bloque común de título: título, subtítulo, autor y editorial."""
+    first = " ".join(lines_of(pages[0])) if pages else ""
+    for word in ("TituloComun", "SubtituloComun", "AutorComun", "EditorialComun"):
+        if word.lower() not in first.lower():
+            fail(name, f"la portada no lleva «{word}»")
+
+
 def check_no_date(name: str, pages: list[str]) -> None:
     """Un ensayo sin `date` no lleva fecha en la cabecera: ningún año en las primeras líneas."""
     for n, page in enumerate(pages, 1):
@@ -329,6 +338,8 @@ def main() -> int:
                 check_structure_book(rel, pages)
             if source.name == "pagestyle_noparts.typ":
                 check_noparts(rel, pages)
+            if source.name == "titlepages.typ":
+                check_titlepage(rel, pages)
             if source.name == "essay_default.typ":
                 check_no_date(rel, pages)
             if source.name in ("verify_off.typ", "verify_on.typ"):

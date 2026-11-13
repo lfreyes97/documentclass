@@ -24,6 +24,7 @@
   subtitle: none,
   author: none,
   date: none,
+  publisher: none,
 ) = {
   v(2em)
   align(center)[
@@ -34,6 +35,10 @@
     }
     #v(1.2em)
     #text(size: 12pt)[#author]
+    #if publisher != none {
+      v(0.3em)
+      smallcaps(text(size: 10pt, tracking: 0.08em, publisher))
+    }
     #if date != none {
       v(0.3em)
       text(size: 11pt)[#date]
@@ -47,6 +52,7 @@
   subtitle: none,
   author: none,
   date: none,
+  publisher: none,
   abstract: none,
   abstract-title: auto, // auto = etiqueta traducida
   // Parámetros de página
@@ -164,6 +170,7 @@
     subtitle: subtitle,
     author: author,
     date: date,
+    publisher: publisher,
   )))
 
   // Abstract

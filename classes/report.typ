@@ -1,6 +1,6 @@
 // Clase report — equivalente a \documentclass{report} de LaTeX
 
-#import "../components/titlepage.typ"
+#import "../components/titlepage.typ" as titlepage-mod
 #import "../components/layout.typ"
 #import "../components/matter.typ"
 #import "../components/fonts.typ" as fonts-mod
@@ -30,7 +30,9 @@
   logo: none,
   abstract: none,
   abstract-title: auto, // auto = etiqueta traducida
-  custom-titlepage: none,
+  // Portada: auto (la de la clase), none (sin portada) o contenido (una propia)
+  titlepage: auto,
+  custom-titlepage: none, // Obsoleto: ahora es `titlepage`
   // Parámetros de página
   paper: "a4",
   font-size: 11pt,
@@ -65,6 +67,7 @@
   debug: false,
   body,
 ) = {
+  titlepage-mod.check-old(custom-titlepage, "report")
   let style = themes.check(style)
   let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "report")
   let page-style = themes.pick(page-style, style, "plain")
@@ -101,8 +104,9 @@
   )
 
   // Titlepage
-  lines.off(titlepage.render(
-    custom: custom-titlepage,
+  lines.off(titlepage-mod.render(
+    titlepage: titlepage,
+    class: "report",
     title: title,
     subtitle: subtitle,
     author: author,

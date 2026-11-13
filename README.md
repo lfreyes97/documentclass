@@ -146,9 +146,9 @@ All classes accept the following common parameters:
 - `debug`: Debugging aids, invisible to the reader: `false` by default, `true` turns on all of them, or a dictionary picks: `debug: (verify: true, lines: true, frame: true)`. `verify` shows the `#verify[…]` marks, `lines` numbers the lines (as `line-numbers: true`) and `frame` draws the margins and columns (`essay`). `#verify[check the page]` marks something pending: it prints nothing, but leaves a queryable record with its page whether or not `debug` is on (`typst eval 'query(<dc-verify>).map(it => it.value)' --in essay.typ`), and with `verify` on it is highlighted. `#verify-list()` lists the pending ones.
 
 ### Specific Parameters
-- **Book**: `part-ornament`, `logo`, `custom-titlepage`, `equation-numbering`, `use-parts`, `cover` (see [Covers](#covers)), and `minitoc` (`true`, or a dictionary of `tocs.partial` options; see [Tables of contents](#tables-of-contents-tocs)).
+- **Book**: `part-ornament`, `logo`, `titlepage`, `equation-numbering`, `use-parts`, `cover` (see [Covers](#covers)), and `minitoc` (`true`, or a dictionary of `tocs.partial` options; see [Tables of contents](#tables-of-contents-tocs)).
 - **Article**: `cols` (column count), `abstract`.
-- **Report**: `abstract`, `logo`, `custom-titlepage`, `equation-numbering`.
+- **Report**: `abstract`, `logo`, `titlepage`, `equation-numbering`.
 - **Essay**: see [Essay Class](#essay-class).
 
 With `use-parts: false`, `=` is a chapter and `==` a section; parts are created with `#part[Title]`. `tableofcontents(depth: 2)` still counts from the chapter. `facing-pages` (on by default in `book`) lays the front out as a printed book: after the cover the title page starts on a recto, and the contents and the rest of the front matter do too, so the versos are blank and carry no header or folio (cover, blank, title, blank, contents). `facing-pages: false` removes those versos, for a PDF read on screen. In `book`, any blank page left by a page break (the verso before a part or chapter, or your own `#pagebreak(to: "odd")`) gets no header or folio. `#blank-page()` inserts an intentionally blank page the same way.
@@ -194,13 +194,13 @@ A section heading (`section` and below) is kept with the paragraph that follows 
 
 `header` and `footer` each take `left`, `center`, `right` (content or `ctx => content`), `odd`/`even` for rectos and versos (used with `facing-pages: true`; otherwise every page is `odd`), `rule`, `text` and `when` (`ctx => bool`). Spaces you give replace the preset's; `rule`, `text` and `when` merge with them. `ctx` has `part`, `chapter`, `section` (the title in force on the page, like `\markboth`), `folio`, `page`, `title`, `author`, `started`, `opening`, `blank`, `numbered` and `matter`. Unknown keys fail with the list of valid ones.
 
-`logo`, `part-ornament` and `custom-titlepage` take content, not file paths. Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
+`logo`, `part-ornament` and `titlepage` take content, not file paths. Typst resolves paths relative to the file that reads them, so a path string would point inside the package:
 
 ```typst
 #show: book.with(
   logo: image("escudo.png", width: 30%),
   part-ornament: image("ornament.svg", width: 80%),
-  custom-titlepage: include "my-titlepage.typ",
+  titlepage: include "my-titlepage.typ",
 )
 ```
 

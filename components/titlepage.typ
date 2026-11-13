@@ -82,9 +82,32 @@
   ]
 }
 
-// Lógica del componente
+// Valor de `titlepage`, común a las clases: auto o true = la portada de la clase; none o false = sin
+// portada; contenido = una portada propia. Devuelve "default", none o el contenido
+#let choose(value, class: "book") = {
+  if type(value) == str {
+    panic(
+      class + ": titlepage debe ser contenido, no una ruta: usa `titlepage: include \"" + value + "\"`",
+    )
+  }
+  if value == auto or value == true { "default" } else if value == none or value == false { none } else if (
+    type(value) == content
+  ) { value } else {
+    panic(class + ": titlepage debe ser auto, true, false, none o contenido, no " + repr(value))
+  }
+}
+
+// `custom-titlepage` pasó a llamarse `titlepage`
+#let check-old(custom-titlepage, class) = {
+  if custom-titlepage != none {
+    panic(class + ": custom-titlepage ahora se llama titlepage: `titlepage: include \"portada.typ\"`")
+  }
+}
+
+// Portada de book y report: la de la clase, ninguna o la propia (ver `choose`)
 #let render(
-  custom: none, // none = default, contenido = portada personalizada
+  titlepage: auto,
+  class: "book",
   title: none,
   subtitle: none,
   author: none,
@@ -92,8 +115,8 @@
   publisher: none,
   logo: none,
 ) = {
-  if custom == none {
-    // Usar titlepage por defecto
+  let choice = choose(titlepage, class: class)
+  if choice == "default" {
     default(
       title: title,
       subtitle: subtitle,
@@ -102,14 +125,7 @@
       publisher: publisher,
       logo: logo,
     )
-  } else if type(custom) == str {
-    panic(
-      "custom-titlepage debe ser contenido, no una ruta: usa `custom-titlepage: include \""
-        + custom
-        + "\"`",
-    )
   } else {
-    // Titlepage personalizado del usuario
-    custom
+    choice
   }
 }

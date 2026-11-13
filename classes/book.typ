@@ -1,4 +1,4 @@
-#import "../components/titlepage.typ"
+#import "../components/titlepage.typ" as titlepage-mod
 #import "../components/matter.typ"
 #import "../components/footer.typ"
 #import "../components/headings.typ"
@@ -21,13 +21,16 @@
 )
 
 #let book(
-  custom-titlepage: none,
   title: none,
   subtitle: none,
   author: none,
   date: none,
   publisher: none,
   logo: none,
+  // Portada: auto (la de la clase, con título, subtítulo, autor, editorial, fecha y logo), none (sin
+  // portada) o contenido (una propia, p. ej. `include "portada.typ"`)
+  titlepage: auto,
+  custom-titlepage: none, // Obsoleto: ahora es `titlepage`
   part-ornament: none,
   // Parámetros de página (equivalente a \documentclass[a5paper]{book})
   paper: "a5",
@@ -80,6 +83,7 @@
   debug: false,
   body,
 ) = {
+  titlepage-mod.check-old(custom-titlepage, "book")
   let style = themes.check(style)
   let page-style = themes.pick(page-style, style, "classic")
   let heading-style = themes.pick(heading-style, style, "classic")
@@ -123,8 +127,9 @@
   headings.facing-pages-state.update(facing-pages)
   if facing-pages { context headings.blank-verso() }
 
-  lines.off(titlepage.render(
-    custom: custom-titlepage,
+  lines.off(titlepage-mod.render(
+    titlepage: titlepage,
+    class: "book",
     title: title,
     subtitle: subtitle,
     author: author,

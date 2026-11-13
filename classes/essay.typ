@@ -8,6 +8,7 @@
 #import "../components/lines.typ"
 #import "../components/debug.typ" as debug-mod
 #import "../components/margins.typ"
+#import "../components/titlepage.typ" as titlepage-mod
 
 /// Numeral arábigo volado para las notas al margen, continuo en todo el documento (el
 /// contador nunca se reinicia), para poder citarlas como «nota 42».
@@ -41,8 +42,10 @@
 #let running-footer() = glosa.header(text-style: (size: 8.5pt, number-type: "old-style"), page-label())
 
 #let essay(
-  title: none, // Título de la portada (`titlepage: true`) y de los metadatos
+  title: none, // Título de la portada (`titlepage`) y de los metadatos
+  subtitle: none, // Subtítulo de la portada
   author: none, // Autor de la cabecera y de la portada
+  publisher: none, // Editorial de la portada
   // Fecha de la cabecera: contenido o `datetime`. none = sin fecha, así el PDF no cambia al recompilar
   // otro día; `datetime.today()` pone la de hoy. Una `datetime` también fija la fecha del PDF
   date: none,
@@ -95,7 +98,9 @@
   chapter-title-style: (size: 1.3em, weight: "black"), // Sin `font` = rol `title`
   section-numbering: "I.",
   section-block-style: (above: 42pt, below: 14pt),
-  titlepage: false, // Portada con `title` y `author`
+  // Portada: none (sin ella, por defecto), auto o true (la de la clase, con título, subtítulo, autor y
+  // editorial) o contenido (una propia). Como en book y report
+  titlepage: none,
   debug-frame: false, // Dibuja los límites de márgenes y columnas
   // Ajustes de justificación y espacios de no ruptura (ver components/microtype.typ):
   // true, false o un diccionario con spacing, tracking, hyphenation y glue
@@ -195,17 +200,29 @@
     },
   )
 
-  let titlepage-content = if titlepage {
-    assert(title != none, message: "essay: pasa `title:` cuando `titlepage: true`")
+  let titlepage = titlepage-mod.choose(titlepage, class: "essay")
+  let titlepage-content = if titlepage == "default" {
+    assert(title != none, message: "essay: pasa `title:` cuando `titlepage` es auto o true")
     [
       #align(center + horizon)[
         #set text(font: fonts.title)
         #text(size: 2em, weight: "black", title)
+        #if subtitle != none {
+          v(0.6em)
+          text(size: 1.2em, style: "italic", subtitle)
+        }
         #v(1.5em)
         #text(size: 1.1em, author)
+        #if publisher != none {
+          v(2em)
+          smallcaps(text(tracking: 0.08em, publisher))
+        }
       ]
       #pagebreak()
     ]
+  } else if titlepage != none {
+    titlepage
+    pagebreak(weak: true)
   }
 
   // Párrafos justificados, enlaces subrayados y pies de figura como notas al margen
