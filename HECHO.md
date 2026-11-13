@@ -99,8 +99,50 @@ bien: no hizo falta tocarlos.
   (`typst eval 'query(<dc-verify>).map(it => it.value)' --in …`) y, con `verify` encendido, sale resaltado.
   `#verify-list()` lista los pendientes. Sustituye a los `[VERIFICAR …]` escritos a mano.
 
+## Clase `debate` (`b8db407`…`859cc65`)
+
+- `debate` es una clase propia para transcripciones: debate, mesa redonda o entrevista (`classes/debate.typ`,
+  `components/debates.typ`; demos `demo_debate`, `demo_debate_panel`, `demo_debate_interview`,
+  `test/debate_program.typ`).
+- Oradores declarados (`speakers`) y `#turn("clave")` en estilo `classic` (rótulo en línea) o `modern` (en su línea),
+  con `cont: true` para un turno que sigue y `label:` para quien no está declarado.
+- Plantillas `two-speakers`, `panel` e `interview`: fijan los segmentos admitidos y cuántos oradores y moderadores
+  lleva el formato. `#segment` (título ligero, rol `segment` en `heading-style`) con orador y tiempo, y `program`:
+  `#segment()` abre el siguiente del programa de la plantilla.
+- Marcas de la transcripción (`crowd`, `inaudible`, `at`, `tnote`) y `marks:` para quitarlas o mostrar los tiempos.
+- Datos del debate (`venue`, `original`, moderador) y portadilla «A frente a B» con `titlepage: true`; `cover` y
+  `back-cover` de coverbook, como en `book`.
+- Cabecera `running-segment` (oradores de la página y segmento): `ctx.segment`, `ctx.speaker` y `ctx.speakers` en
+  `page-style`.
+- `turn(id:)` y `cite-turn("id")` dan «Bahnsen, Pág. 3, l. 16», calculado al compilar con las marcas `<dc-line>` de
+  `lines.setup(track: true)`.
+- `speakers-index()` y `glossary(…)` con `gloss("clave")[…]`.
+- Saltos de página con `breaks` ("turn", "segment", "section", none; por plantilla) y `start` en `heading-style`:
+  los turnos de intercambio van de corrido y los discursos abren página.
+- Estilo de títulos (`heading-style`) para `debate`: roles `section`, `segment`, `subsection`… en los tres temas.
+- Libro de Bahnsen migrado a una copia con la clase (`Presup/bahnsen-debate/Bahnsen-DebateSproul-debate.typ`, 118
+  turnos, 4 segmentos, glosario de 12 entradas): no falta ningún texto respecto al original.
+
+## Citas, epígrafes y adornos (`6ec0709`, `d244d34`, `948320f`, `f5e28be`)
+
+- `quote-style` (`components/quotes.typ`) en las cinco clases: tema o diccionario por rol (`epigraph`, `blockquote`,
+  `verse`), con el mismo mecanismo que `heading-style`. `classic` conserva el aspecto anterior.
+- Epígrafe: atribución estructurada (`author`, `work`, `article`, `year`, `note`), `epigraphs` (varios seguidos),
+  `epigraph-page` y, en `essay`, el estilo del epígrafe que se armaba a mano (78 %, justificado). `align-to` pasó a
+  `align`.
+- `blockquote(attribution:, marks:)` y `quote(block: true)` con su estilo; las citas en línea (`#quote`) anidan las
+  comillas del idioma (es, en, pt, fr, de, it).
+- `ornament` (`components/ornaments.typ`): asterismo, florón, filete con rombo, puntos y rombo, dibujados con trazos;
+  su nombre vale en `part-ornament` y en la clave `ornament` de `heading-style`.
+
+## Pruebas
+
+- Las referencias de `test/reference/` dejaron de versionarse (`9e58dae`): se crean con `python3 test/structure.py
+  --update` y, si faltan, `structure.py` salta la comparación.
+
 ## Decisiones tomadas
 
 - `tocs` canónico, `margin` único con `facing-pages`, `report` con `plain`, `style` como tema común, `overflow:
   "carry"` por defecto.
+- `debate` es una clase propia, no un modo de `book`; con `breaks: "turn"` solo los discursos abren página por turno.
 - La versión (`0.1.0`) no es urgente: es de desarrollo, se sube cuando convenga.
