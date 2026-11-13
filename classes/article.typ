@@ -85,7 +85,7 @@
 ) = {
   let style = themes.check(style)
   let heading-style = openings.resolve(themes.pick(heading-style, style, "classic"), class: "article")
-  let page-style = themes.pick(page-style, style, none)
+  let page-style = themes.pick(page-style, style, "plain")
   // El tema también fija el estilo de los índices; un `tocs.setup` posterior lo sustituye
   show: body => if style != auto { tocs-mod.setup(style: style, body) } else { body }
   set document(author: if type(author) in (str, array) { author } else { () }, title: title) // Los metadatos solo aceptan texto

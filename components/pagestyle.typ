@@ -21,7 +21,7 @@
 //   folio                   Número de página ya formateado con la numeración de la página
 //   page                    Número físico de página
 //   title, author           Los del documento
-//   started                 false antes de la primera división del documento
+//   started                 false antes de la primera división del documento (parte o capítulo)
 //   opening                 "part" o "chapter" si la página abre una; si no, none
 //   blank                   Página en blanco intencional (reverso antes de una parte)
 //   numbered                false si la página no lleva numeración
@@ -236,11 +236,13 @@
   let n = here().page()
   let roles = bridge.classes.at(class)
   let current = (part: none, chapter: none, section: none)
-  let first-level = roles.values().first()
+  // La primera división (parte o capítulo) empieza el documento: un libro sin partes
+  // (`use-parts: false`) también lleva cabeceras
+  let top-level = bridge.top-level(class)
   let started = false
   for h in query(heading).filter(h => h.location().page() <= n) {
     let role = bridge.role-of(class, h.level)
-    if h.level == first-level { started = true }
+    if h.level <= top-level { started = true }
     if role == "part" {
       current = (part: h, chapter: none, section: none)
     } else if role == "chapter" {

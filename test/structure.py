@@ -7,6 +7,7 @@ Compila cada archivo de test/ y demos/ y revisa el PDF resultante:
   - ninguna página lleva solo un folio (una página en blanco que debía quedar vacía);
   - los folios crecen: romanos en el front matter, arábigos después;
   - ninguna línea de texto se solapa con otra (índices pegados a la línea anterior);
+  - en `pagestyle_noparts.typ`: un libro sin partes lleva cabeceras desde el primer capítulo;
   - en `structure_book.typ`: las páginas vacías son versos, cada verso lleva la parte y cada
     recto el capítulo vigentes, las aperturas no llevan cabecera y el índice lista los capítulos;
   - el texto de cada página coincide con el de test/reference/ (solo los archivos con
@@ -221,6 +222,26 @@ def check_structure_book(name: str, pages: list[str]) -> None:
             fail(name, f"el índice no lista «{title}»")
 
 
+def check_noparts(name: str, pages: list[str]) -> None:
+    """`classic` sin partes: tras el primer capítulo, el verso lleva el título del libro y el recto el
+    capítulo vigente (las aperturas, ninguno)."""
+    chapter = None
+    for n, page in enumerate(pages, 1):
+        lines = lines_of(page)
+        if not lines:
+            continue
+        if lines[0].startswith("CAPÍTULO"):
+            chapter = next((line for line in lines[1:3] if line.startswith("Capitulo")), chapter)
+            continue
+        if chapter is None:
+            continue
+        expected = "LibroSinPartes" if n % 2 == 0 else chapter
+        if lines[0] != expected:
+            fail(name, f"página {n}: la cabecera es «{lines[0][:30]}» y debía ser «{expected}»")
+    if chapter is None:
+        fail(name, "no se encontró ninguna apertura de capítulo")
+
+
 def check_no_date(name: str, pages: list[str]) -> None:
     """Un ensayo sin `date` no lleva fecha en la cabecera: ningún año en las primeras líneas."""
     for n, page in enumerate(pages, 1):
@@ -306,6 +327,8 @@ def main() -> int:
                 check_overlap(rel, pdf)
             if source.name == "structure_book.typ":
                 check_structure_book(rel, pages)
+            if source.name == "pagestyle_noparts.typ":
+                check_noparts(rel, pages)
             if source.name == "essay_default.typ":
                 check_no_date(rel, pages)
             if source.name in ("verify_off.typ", "verify_on.typ"):
