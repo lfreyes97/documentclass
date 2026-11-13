@@ -22,16 +22,20 @@ resuelve a mano. Lo que ese libro hace, y lo que le falta:
 Una clase `debate` con plantillas (formatos de debate: dos oradores con moderador, mesa redonda, entrevista) y,
 por dentro, estas piezas:
 
-- [ ] **Diseño y fixture.** Extraer un fragmento del libro actual (30–50 turnos, con una interrupción, una
+- [x] **Diseño y fixture.** Extraer un fragmento del libro actual (30–50 turnos, con una interrupción, una
       reacción del público y una pregunta) como demo y prueba, antes de escribir la clase.
-- [ ] **Turnos como elemento.** `#turn[Sproul][...]` (o `#speaker`), con los oradores declarados en la clase:
+- [x] **Turnos como elemento.** `#turn[Sproul][...]` (o `#speaker`), con los oradores declarados en la clase:
       `speakers: (bahnsen: (name:, short:, role:), ...)`. Estilo uniforme del nombre, turno que continúa tras una
       interrupción sin repetir la etiqueta, y oradores no identificados o del público como casos propios.
-- [ ] **Estructura del debate.** Segmentos con nombre (presentación, réplica, contrainterrogatorio, preguntas del
+- [~] **Estructura del debate.** Segmentos con nombre (presentación, réplica, contrainterrogatorio, preguntas del
       público, conclusión), cada uno con su orador y su tiempo, y encabezados ligeros: sin página de parte ni
-      apertura de capítulo (un `heading-style` propio).
-- [ ] **Marcas de la transcripción.** Reacciones del público, `[inaudible]`, interrupciones, códigos de tiempo
+      apertura de capítulo (un `heading-style` propio). Hecho: `segment`, las plantillas `two-speakers`, `panel` e
+      `interview` y su validación. Falta el `heading-style` propio (hoy son títulos de nivel 2 con el preajuste de
+      `article`) y un segmento que se abra solo con el orador y el tiempo de la plantilla.
+- [x] **Marcas de la transcripción.** Reacciones del público, `[inaudible]`, interrupciones, códigos de tiempo
       opcionales (`#at("12:30")`) y notas del traductor distintas de las notas del editor.
+      Hecho: `crowd`, `inaudible`, `at` y `tnote`, con `marks:` para quitarlas o mostrar los tiempos; una
+      interrupción es un `turn` con `cont: true`, sin marca propia.
 - [ ] **Datos del debate en la clase:** proposición o tema, oradores, moderador, lugar, fecha, título y serie
       originales, y una portadilla "A frente a B". Depende del bloque común de título.
 - [ ] **Cabecera con el segmento actual o el orador:** `page-style` necesita `speaker` y `segment` en `ctx`.
