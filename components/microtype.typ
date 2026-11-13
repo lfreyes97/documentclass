@@ -13,8 +13,8 @@
 //                      Subirlo reduce los guiones; con ±0.012em de interletra
 //                      el espacio sigue repartido de forma pareja.
 //   glue               Espacios de no ruptura tras abreviaturas, tratamientos,
-//                      iniciales y libros numerados, y la raya pegada a la
-//                      palabra anterior.
+//                      iniciales y libros numerados; la raya de cierre pegada a
+//                      la palabra anterior y la de apertura a la siguiente.
 //
 // `overhang` (puntuación que sobresale del margen) ya viene activado en Typst.
 
@@ -89,10 +89,19 @@
     content
   })
 
-  // La raya no abre línea: se pega a la palabra anterior (WORD JOINER) y se
-  // permite el corte tras ella. Con espacios («texto —inciso— texto») el corte
-  // ocurre en el espacio, como antes.
-  show regex("—"): it => [#sym.wj#it.text]
+  // La raya pegada a una palabra no abre línea: se une a ella con un WORD JOINER
+  // («la ética— y», «word—word»). Tras ella se puede cortar
+  show regex("\\S—"): it => {
+    let chars = it.text.clusters()
+    [#chars.slice(0, -1).join()#sym.wj#chars.last()]
+  }
+  // La raya que abre un inciso («texto —inciso— texto») no cierra línea: se une a la
+  // palabra que sigue. El corte en el espacio de antes sigue permitido, así que el
+  // inciso puede empezar línea, como pide la ortografía
+  show regex("\\s—\\p{L}"): it => {
+    let chars = it.text.clusters()
+    [#chars.slice(0, -1).join()#sym.wj#chars.last()]
+  }
   body
 }
 

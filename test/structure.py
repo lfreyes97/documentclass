@@ -370,6 +370,16 @@ def check_structure_article(name: str, pages: list[str]) -> None:
             fail(name, f"página {n}: la cabecera es «{lines[0]}» y debía ser «{current}»")
 
 
+def check_dashes(name: str, pages: list[str]) -> None:
+    """En test/microtype.typ ninguna línea acaba en una raya de apertura ni empieza con una de cierre."""
+    for line in (line for page in pages for line in lines_of(page)):
+        bare = line.replace("\u2060", "")
+        if bare.endswith(" —") or bare == "—":
+            fail(name, f"una línea acaba en raya de apertura: «{line}»")
+        if bare.startswith("— y"):
+            fail(name, f"una línea empieza con la raya de cierre: «{line}»")
+
+
 def check_no_date(name: str, pages: list[str]) -> None:
     """Un ensayo sin `date` no lleva fecha en la cabecera: ningún año en las primeras líneas."""
     for n, page in enumerate(pages, 1):
@@ -483,6 +493,8 @@ def main() -> int:
                 check_structure_report(rel, pages)
             if source.name == "structure_article.typ":
                 check_structure_article(rel, pages)
+            if source.name == "microtype.typ":
+                check_dashes(rel, pages)
             if source.name == "tocs_depth.typ":
                 check_toc_depth(rel, pages)
             if source.name == "titlepages.typ":

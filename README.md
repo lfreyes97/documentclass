@@ -418,7 +418,7 @@ All the classes apply a few adjustments to justified text, on by default. `micro
 
 - **`spacing` and `tracking`** are Typst's `par.justification-limits`. With room to adjust both, Typst spreads the correction over many lines instead of loading it on the worst ones. `±0.012em` is about 0.13pt per letter at 11pt, below what the eye picks up.
 - **`hyphenation`** raises the cost of hyphenating (Typst's `text.costs`), so words break less often.
-- **`glue`** puts a no-break space after short abbreviations before a number (`p. 12`, `Col. 2:3`), titles (`Dr. Bahnsen`), initials (`L. F. Reyes`), numbered books (`1 Corintios`) and `n.º`, so a reference never splits across lines. It also keeps a dash (`—`) with the word before it, so it never starts a line.
+- **`glue`** puts a no-break space after short abbreviations before a number (`p. 12`, `Col. 2:3`), titles (`Dr. Bahnsen`), initials (`L. F. Reyes`), numbered books (`1 Corintios`) and `n.º`, so a reference never splits across lines. It also keeps a dash (`—`) attached to a word with it: a closing dash (`la ética— y`) never starts a line, and the opening dash of an aside (`texto —inciso`) never ends one, though the aside may start a line.
 
 On a 39-page Spanish book (EB Garamond, A5) these defaults cut hyphenated lines from 8.1% to 3.4% and the spread of word spaces by about a quarter, and no abbreviation, title or dash was left at a line break. A document that already looked right can re-flow, so recheck page breaks after updating. Hanging punctuation (`overhang`) is already on in Typst.
 

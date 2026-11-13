@@ -1,5 +1,5 @@
 // Microtipografía: reglas de no ruptura, validación de opciones y efecto en un libro
-#import "../components/microtype.typ": defaults, glue, nbsp, resolve
+#import "../components/microtype.typ": defaults, glue, glue-setup, nbsp, resolve
 
 #let n = nbsp
 #assert.eq(glue("cf. Col. 2:3"), "cf. Col." + n + "2:3")
@@ -16,5 +16,12 @@
 #assert.eq(resolve(false), none)
 #assert.eq(resolve((hyphenation: 150%)).hyphenation, 150%)
 #assert.eq(resolve((hyphenation: 150%)).glue, true)
+
+// La raya: la de apertura de un inciso no cierra línea y la de cierre no la abre; con espacio delante, el
+// inciso puede empezar línea. Cada ancho fuerza un corte distinto (structure.py comprueba los finales de línea)
+#show: glue-setup
+#for width in (2cm, 2.2cm, 2.6cm, 3cm) {
+  block(width: width, par(justify: false)[RAYA palabras inteligible —la lógica— y fin])
+}
 
 OK
