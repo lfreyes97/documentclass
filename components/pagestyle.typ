@@ -26,8 +26,8 @@
 //   blank                   Página en blanco intencional (reverso antes de una parte)
 //   numbered                false si la página no lleva numeración
 //   matter                  "front", "main" o "back" en book; none en otras clases
-//   segment, speaker        En debate: título del segmento vigente (contenido) y el orador que
-//                           le dio `#segment(speaker:)`; none fuera de un segmento o sin orador
+//   segment, speaker        En debate: título del segmento de la página (el vigente en lo alto, o el que
+//                           empieza en su tercio superior) y el orador que le dio `#segment(speaker:)`; none fuera de un segmento o sin orador
 //   speakers                En debate: los oradores que hablan en la página, sin repetir, en orden
 //                           (lista de textos; vacía en las demás clases)
 
@@ -258,11 +258,16 @@
   } else if on-page(current.chapter) { "chapter" }
   let body(h) = if h != none { h.body }
   // Segmentos y turnos de un debate (`#segment` y `#turn` dejan una marca invisible)
-  let segments = query(<dc-segment>).filter(m => m.location().page() <= n)
+  // El segmento de la cabecera: el que manda en lo alto de la página, salvo que otro empiece en su tercio
+  // superior (una página que abre con un título lleva ese título, no el anterior)
+  let before = query(<dc-segment>).filter(m => m.location().page() < n)
+  let starting = query(<dc-segment>).filter(m => m.location().page() == n)
+  let near-top = starting.filter(m => m.location().position().y < page.height / 3)
+  let segments = if near-top.len() > 0 { (near-top.first(),) } else if before.len() > 0 { (before.last(),) } else { starting }
   let speakers = query(<dc-turn>).filter(m => m.location().page() == n).map(m => m.value).dedup()
   (
-    segment: if segments.len() > 0 { segments.last().value.title },
-    speaker: if segments.len() > 0 { segments.last().value.speaker },
+    segment: if segments.len() > 0 { segments.first().value.title },
+    speaker: if segments.len() > 0 { segments.first().value.speaker },
     speakers: speakers,
     part: body(current.part),
     chapter: body(current.chapter),

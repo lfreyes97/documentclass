@@ -135,7 +135,7 @@
   let moderators = speakers.values().filter(s => s.moderator).map(s => s.name)
   let size = if titlepage { 1.3 } else { 1 }
   let content = align(center)[
-    #text(size: 18pt * size, weight: "bold")[#title]
+    #text(size: 18pt * size, weight: "bold", hyphenate: false)[#title]
     #if subtitle != none { v(0.4em); text(size: 11pt * size, style: "italic")[#subtitle] }
     #if debaters.len() > 0 {
       v(0.9em)
